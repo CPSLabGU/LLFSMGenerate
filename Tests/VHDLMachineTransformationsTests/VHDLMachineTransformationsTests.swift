@@ -6,7 +6,7 @@ final class VHDLMachineTransformationsTests: XCTestCase {
 
     /// Default test function.
     func testExample() throws {
-        XCTAssertTrue(true)
+        XCTAssertEqual(VHDLMachineTransformations().text, "Hello, World!")
         // XCTest Documentation
         // https://developer.apple.com/documentation/xctest
 
