@@ -55,7 +55,7 @@
 // 
 
 /// A point in 2-dimensions.
-public struct Point2D {
+public struct Point2D: Equatable, Hashable, Codable, Sendable {
 
     /// The x-coordinate of the point.
     public var x: Double
