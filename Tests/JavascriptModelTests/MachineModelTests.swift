@@ -95,6 +95,84 @@ final class MachineModelTests: XCTestCase {
         )
     ]
 
+    /// The JSON representation of the default model.
+    let json = """
+    {
+        \"states\": [
+            {
+                \"name\": \"state1\",
+                \"variables\": \"state1_variables\",
+                \"actions\": [
+                    {
+                        \"name\": \"action1\",
+                        \"code\": \"state1_code1\"
+                    }
+                ],
+                \"layout\": {
+                    \"position\": {
+                        \"x\": 0,
+                        \"y\": 0
+                    },
+                    \"dimensions\": {
+                        \"x\": 1,
+                        \"y\": 1
+                    }
+                }
+            },
+            {
+                \"name\": \"state2\",
+                \"variables\": \"state2_variables\",
+                \"actions\": [
+                    {
+                        \"name\": \"action1\",
+                        \"code\": \"state2_code1\"
+                    }
+                ],
+                \"layout\": {
+                    \"position\": {
+                        \"x\": 2,
+                        \"y\": 2
+                    },
+                    \"dimensions\": {
+                        \"x\": 3,
+                        \"y\": 3
+                    }
+                }
+            }
+        ],
+        \"externalVariables\": \"externals\",
+        \"machineVariables\": \"machines\",
+        \"includes\": \"includes\",
+        \"transitions\": [
+            {
+                \"source\": \"state1\",
+                \"target\": \"state2\",
+                \"condition\": \"condition\",
+                \"layout\": {
+                    \"path\": {
+                        \"source\": {
+                            \"x\": 1,
+                            \"y\": 1
+                        },
+                        \"target\": {
+                            \"x\": 2,
+                            \"y\": 2
+                        },
+                        \"control0\": {
+                            \"x\": 1,
+                            \"y\": 2
+                        },
+                        \"control1\": {
+                            \"x\": 2,
+                            \"y\": 1
+                        }
+                    }
+                }
+            }
+        ]
+    }
+    """
+
     /// Test the init sets the stored properties correctly.
     func testInit() {
         let model = MachineModel(
@@ -195,6 +273,20 @@ final class MachineModelTests: XCTestCase {
         XCTAssertEqual(model.machineVariables, "machines")
         XCTAssertEqual(model.includes, "includes")
         XCTAssertEqual(model.transitions, newTransitions)
+    }
+
+    /// Test that the machine model can be initialised from a JSON string.
+    func testJSONInit() {
+        let model = MachineModel(
+            states: states,
+            externalVariables: "externals",
+            machineVariables: "machines",
+            includes: "includes",
+            transitions: transitions
+        )
+        XCTAssertEqual(model, MachineModel(jsonString: json))
+        XCTAssertNil(MachineModel(jsonString: "{}"))
+        XCTAssertNil(MachineModel(jsonString: ""))
     }
 
 }
