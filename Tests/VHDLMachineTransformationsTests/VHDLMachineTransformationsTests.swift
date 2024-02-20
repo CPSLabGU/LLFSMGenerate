@@ -1,8 +1,12 @@
-import XCTest
 @testable import VHDLMachineTransformations
+import XCTest
 
+/// Test class for default struct.
 final class VHDLMachineTransformationsTests: XCTestCase {
+
+    /// Default test function.
     func testExample() throws {
+        XCTAssertTrue(true)
         // XCTest Documentation
         // https://developer.apple.com/documentation/xctest
 
