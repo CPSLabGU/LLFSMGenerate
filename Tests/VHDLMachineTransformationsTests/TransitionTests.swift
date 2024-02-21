@@ -1,4 +1,4 @@
-// Transition+jsInit.swift
+// TransitionTests.swift
 // VHDLMachineTransformations
 // 
 // Created by Morgan McColl.
@@ -56,31 +56,58 @@
 
 import JavascriptModel
 import VHDLMachines
+@testable import VHDLMachineTransformations
 import VHDLParsing
+import XCTest
 
-/// Add javascript model conversion.
-extension Transition {
+/// Test class for ``Transition`` extensions.
+final class TransitionTests: XCTestCase {
 
-    /// Convert a javascript model into a transition.
-    /// - Parameters:
-    ///   - model: The javascript model of this transition.
-    ///   - states: The states that exist in the machine this transition belongs too.
-    @inlinable
-    public init?(jsModel model: TransitionModel, states: [State]) {
-        guard
-            let condition = TransitionCondition(rawValue: model.condition),
-            let sourceName = VariableName(rawValue: model.source),
-            let targetName = VariableName(rawValue: model.target),
-            let source = states.firstIndex(where: { $0.name == sourceName }),
-            let target = states.firstIndex(where: { $0.name == targetName })
-        else {
-            return nil
-        }
-        self.init(
-            condition: condition,
-            source: source,
-            target: target
+    /// The model to convert.
+    let model = TransitionModel(
+        source: "state1",
+        target: "state2",
+        condition: "true",
+        layout: TransitionLayout(path: BezierPath(
+            source: Point2D(x: 0, y: 0),
+            target: Point2D(x: 1, y: 1),
+            control0: Point2D(x: 2, y: 2),
+            control1: Point2D(x: 3, y: 3)
+        ))
+    )
+
+    // swiftlint:disable force_unwrapping
+
+    /// Some states to use for the conversion.
+    let states = [
+        State(name: VariableName(rawValue: "state1")!, actions: [:], signals: [], externalVariables: []),
+        State(name: VariableName(rawValue: "state2")!, actions: [:], signals: [], externalVariables: [])
+    ]
+
+    // swiftlint:enable force_unwrapping
+
+    /// Test the conversion from a model to a transition.
+    func testModelConversion() {
+        let transition = Transition(jsModel: model, states: states)
+        let expected = Transition(
+            condition: .conditional(condition: .literal(value: true)),
+            source: 0,
+            target: 1
         )
+        XCTAssertEqual(transition, expected)
+    }
+
+    /// Test invalid model.
+    func testInvalidModel() {
+        var model = model
+        var model2 = model
+        var model3 = model
+        model.condition = "1 + 2"
+        XCTAssertNil(Transition(jsModel: model, states: states))
+        model2.source = "state3"
+        XCTAssertNil(Transition(jsModel: model2, states: states))
+        model3.target = "state 2"
+        XCTAssertNil(Transition(jsModel: model3, states: states))
     }
 
 }
