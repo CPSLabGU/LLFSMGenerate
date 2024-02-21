@@ -63,6 +63,9 @@ public struct StateModel: Equatable, Hashable, Codable, Sendable {
     /// The variables local to the state.
     public var variables: String
 
+    /// The names of the external variables accessed by this state.
+    public var externalVariables: String
+
     /// The actions within the state.
     public var actions: [ActionModel]
 
@@ -73,12 +76,20 @@ public struct StateModel: Equatable, Hashable, Codable, Sendable {
     /// - Parameters:
     ///   - name: The name of the state.
     ///   - variables: The variables local to the state.
+    ///   - externalVariables: The names of the external variables accessed by this state.
     ///   - actions: The actions within the state.
     ///   - layout: The layout of the state.
     @inlinable
-    public init(name: String, variables: String, actions: [ActionModel], layout: StateLayout) {
+    public init(
+        name: String,
+        variables: String,
+        externalVariables: String,
+        actions: [ActionModel],
+        layout: StateLayout
+    ) {
         self.name = name
         self.variables = variables
+        self.externalVariables = externalVariables
         self.actions = actions
         self.layout = layout
     }

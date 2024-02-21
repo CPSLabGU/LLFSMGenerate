@@ -65,6 +65,7 @@ final class MachineModelTests: XCTestCase {
         StateModel(
             name: "state1",
             variables: "state1_variables",
+            externalVariables: "state1_externals",
             actions: [
                 ActionModel(name: "action1", code: "state1_code1")
             ],
@@ -73,6 +74,7 @@ final class MachineModelTests: XCTestCase {
         StateModel(
             name: "state2",
             variables: "state2_variables",
+            externalVariables: "state2_externals",
             actions: [
                 ActionModel(name: "action1", code: "state2_code1")
             ],
@@ -102,6 +104,7 @@ final class MachineModelTests: XCTestCase {
             {
                 \"name\": \"state1\",
                 \"variables\": \"state1_variables\",
+                \"externalVariables\": \"state1_externals\",
                 \"actions\": [
                     {
                         \"name\": \"action1\",
@@ -122,6 +125,7 @@ final class MachineModelTests: XCTestCase {
             {
                 \"name\": \"state2\",
                 \"variables\": \"state2_variables\",
+                \"externalVariables\": \"state2_externals\",
                 \"actions\": [
                     {
                         \"name\": \"action1\",
@@ -202,6 +206,7 @@ final class MachineModelTests: XCTestCase {
             StateModel(
                 name: "state3",
                 variables: "state3_variables",
+                externalVariables: "state3_externals",
                 actions: [
                     ActionModel(name: "action1", code: "state3_code1")
                 ],

@@ -64,9 +64,16 @@ final class StateModelTests: XCTestCase {
     func testInit() {
         let actions = [ActionModel(name: "OnEntry", code: "123")]
         let layout = StateLayout(position: Point2D(x: 0, y: 0), dimensions: Point2D(x: 1, y: 1))
-        let state = StateModel(name: "name", variables: "variables", actions: actions, layout: layout)
+        let state = StateModel(
+            name: "name",
+            variables: "variables",
+            externalVariables: "externals",
+            actions: actions,
+            layout: layout
+        )
         XCTAssertEqual(state.name, "name")
         XCTAssertEqual(state.variables, "variables")
+        XCTAssertEqual(state.externalVariables, "externals")
         XCTAssertEqual(state.actions, actions)
         XCTAssertEqual(state.layout, layout)
     }
@@ -75,27 +82,43 @@ final class StateModelTests: XCTestCase {
     func testSetters() {
         let actions = [ActionModel(name: "OnEntry", code: "123")]
         let layout = StateLayout(position: Point2D(x: 0, y: 0), dimensions: Point2D(x: 1, y: 1))
-        var state = StateModel(name: "name", variables: "variables", actions: actions, layout: layout)
+        var state = StateModel(
+            name: "name",
+            variables: "variables",
+            externalVariables: "externals",
+            actions: actions,
+            layout: layout
+        )
         state.name = "newName"
         XCTAssertEqual(state.name, "newName")
         XCTAssertEqual(state.variables, "variables")
+        XCTAssertEqual(state.externalVariables, "externals")
         XCTAssertEqual(state.actions, actions)
         XCTAssertEqual(state.layout, layout)
         state.variables = "newVariables"
         XCTAssertEqual(state.name, "newName")
         XCTAssertEqual(state.variables, "newVariables")
+        XCTAssertEqual(state.externalVariables, "externals")
+        XCTAssertEqual(state.actions, actions)
+        XCTAssertEqual(state.layout, layout)
+        state.externalVariables = "newExternals"
+        XCTAssertEqual(state.name, "newName")
+        XCTAssertEqual(state.variables, "newVariables")
+        XCTAssertEqual(state.externalVariables, "newExternals")
         XCTAssertEqual(state.actions, actions)
         XCTAssertEqual(state.layout, layout)
         let newActions = [ActionModel(name: "OnExit", code: "456")]
         state.actions = newActions
         XCTAssertEqual(state.name, "newName")
         XCTAssertEqual(state.variables, "newVariables")
+        XCTAssertEqual(state.externalVariables, "newExternals")
         XCTAssertEqual(state.actions, newActions)
         XCTAssertEqual(state.layout, layout)
         let newLayout = StateLayout(position: Point2D(x: 2, y: 2), dimensions: Point2D(x: 3, y: 3))
         state.layout = newLayout
         XCTAssertEqual(state.name, "newName")
         XCTAssertEqual(state.variables, "newVariables")
+        XCTAssertEqual(state.externalVariables, "newExternals")
         XCTAssertEqual(state.actions, newActions)
         XCTAssertEqual(state.layout, newLayout)
     }
