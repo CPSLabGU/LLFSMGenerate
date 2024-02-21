@@ -85,7 +85,7 @@ extension State {
         }
         let actions = Dictionary(uniqueKeysWithValues: zip(actionNamesParsed, actionCodeParsed))
         let signalsRaw = model.variables.components(separatedBy: ";")
-            .map{ $0.trimmingCharacters(in: .whitespacesAndNewlines) }
+            .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
             .filter { !$0.isEmpty }
             .map { $0 + ";" }
         let signalsParsed = signalsRaw.compactMap(LocalSignal.init(rawValue:))

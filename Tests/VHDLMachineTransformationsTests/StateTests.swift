@@ -64,7 +64,7 @@ import XCTest
 final class StateTests: XCTestCase {
 
     /// A model to convert.
-    let model = StateModel(
+    var model = StateModel(
         name: "state1",
         variables: "signal x: std_logic;\nsignal y: std_logic := '1';",
         externalVariables: "extX\nextY",
@@ -118,6 +118,17 @@ final class StateTests: XCTestCase {
 
     /// Create the expected result before every test.
     override func setUp() {
+        model = StateModel(
+            name: "state1",
+            variables: "signal x: std_logic;\nsignal y: std_logic := '1';",
+            externalVariables: "extX\nextY",
+            actions: [
+                ActionModel(name: "OnEntry", code: "x <= '1';"),
+                ActionModel(name: "OnExit", code: "y <= '0';"),
+                ActionModel(name: "Internal", code: "x <= '0';")
+            ],
+            layout: StateLayout(position: Point2D(x: 0, y: 0), dimensions: Point2D(x: 300, y: 200))
+        )
         expected = State(
             name: VariableName(rawValue: "state1")!,
             actions: [
@@ -152,10 +163,37 @@ final class StateTests: XCTestCase {
 
     // swiftlint:enable force_unwrapping
 
-    /// Test that the state model is correctly converted into a state.
+    /// Test the state model is correctly converted into a state.
     func testStateModelConversion() {
         let state = State(jsModel: model)
         XCTAssertEqual(state, expected)
+    }
+
+    /// Test for invalid name in model conversion.
+    func testInvalidNameInModelConversion() {
+        model.name = "state 1"
+        XCTAssertNil(State(jsModel: model))
+    }
+
+    /// Test the initialiser returns nil for invalid actions.
+    func testInvalidActions() {
+        var model2 = model
+        model.actions[0].code = "This is invalid"
+        XCTAssertNil(State(jsModel: model))
+        model2.actions[0].name = "Invalid name"
+        XCTAssertNil(State(jsModel: model2))
+    }
+
+    /// Test the initialiser returns nil for invalid variables.
+    func testInvalidVariables() {
+        model.variables += "\nThis is invalid;"
+        XCTAssertNil(State(jsModel: model))
+    }
+
+    /// Test invalid external variables return nil.
+    func testInvalidExternalVariables() {
+        model.externalVariables += "\nThis is invalid"
+        XCTAssertNil(State(jsModel: model))
     }
 
 }
