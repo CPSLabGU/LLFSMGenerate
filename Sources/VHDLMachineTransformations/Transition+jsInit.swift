@@ -61,16 +61,12 @@ import VHDLParsing
 extension Transition {
 
     public init?(jsModel model: TransitionModel, states: [State]) {
-        let compare = { (state: State, modelName: String) in
-            guard let rawName = VariableName(rawValue: modelName) else {
-                return false
-            }
-            return state.name == rawName
-        }
         guard
             let condition = TransitionCondition(rawValue: model.condition),
-            let source = states.firstIndex(where: { compare($0, model.source) }),
-            let target = states.firstIndex(where: { compare($0, model.target) })
+            let sourceName = VariableName(rawValue: model.source),
+            let targetName = VariableName(rawValue: model.target),
+            let source = states.firstIndex(where: { $0.name == sourceName }),
+            let target = states.firstIndex(where: { $0.name == targetName })
         else {
             return nil
         }
