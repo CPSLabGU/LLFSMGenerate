@@ -173,7 +173,9 @@ final class MachineModelTests: XCTestCase {
                     }
                 }
             }
-        ]
+        ],
+        \"initialState\": \"state1\",
+        \"suspendedState\": \"state2\"
     }
     """
 
@@ -184,13 +186,17 @@ final class MachineModelTests: XCTestCase {
             externalVariables: "externals",
             machineVariables: "machines",
             includes: "includes",
-            transitions: transitions
+            transitions: transitions,
+            initialState: "state1",
+            suspendedState: "state2"
         )
         XCTAssertEqual(model.states, states)
         XCTAssertEqual(model.externalVariables, "externals")
         XCTAssertEqual(model.machineVariables, "machines")
         XCTAssertEqual(model.includes, "includes")
         XCTAssertEqual(model.transitions, transitions)
+        XCTAssertEqual(model.initialState, "state1")
+        XCTAssertEqual(model.suspendedState, "state2")
     }
 
     /// Test the state setter mutates the stored properties correctly.
@@ -200,7 +206,9 @@ final class MachineModelTests: XCTestCase {
             externalVariables: "externals",
             machineVariables: "machines",
             includes: "includes",
-            transitions: transitions
+            transitions: transitions,
+            initialState: "state1",
+            suspendedState: "state2"
         )
         let newStates = [
             StateModel(
@@ -219,6 +227,8 @@ final class MachineModelTests: XCTestCase {
         XCTAssertEqual(model.machineVariables, "machines")
         XCTAssertEqual(model.includes, "includes")
         XCTAssertEqual(model.transitions, transitions)
+        XCTAssertEqual(model.initialState, "state1")
+        XCTAssertEqual(model.suspendedState, "state2")
     }
 
     /// Test primitive setters function correctly.
@@ -228,7 +238,9 @@ final class MachineModelTests: XCTestCase {
             externalVariables: "externals",
             machineVariables: "machines",
             includes: "includes",
-            transitions: transitions
+            transitions: transitions,
+            initialState: "state1",
+            suspendedState: "state2"
         )
         model.externalVariables = "newExternals"
         XCTAssertEqual(model.states, states)
@@ -236,18 +248,40 @@ final class MachineModelTests: XCTestCase {
         XCTAssertEqual(model.machineVariables, "machines")
         XCTAssertEqual(model.includes, "includes")
         XCTAssertEqual(model.transitions, transitions)
+        XCTAssertEqual(model.initialState, "state1")
+        XCTAssertEqual(model.suspendedState, "state2")
         model.machineVariables = "newMachines"
         XCTAssertEqual(model.states, states)
         XCTAssertEqual(model.externalVariables, "newExternals")
         XCTAssertEqual(model.machineVariables, "newMachines")
         XCTAssertEqual(model.includes, "includes")
         XCTAssertEqual(model.transitions, transitions)
+        XCTAssertEqual(model.initialState, "state1")
+        XCTAssertEqual(model.suspendedState, "state2")
         model.includes = "newIncludes"
         XCTAssertEqual(model.states, states)
         XCTAssertEqual(model.externalVariables, "newExternals")
         XCTAssertEqual(model.machineVariables, "newMachines")
         XCTAssertEqual(model.includes, "newIncludes")
         XCTAssertEqual(model.transitions, transitions)
+        XCTAssertEqual(model.initialState, "state1")
+        XCTAssertEqual(model.suspendedState, "state2")
+        model.initialState = "state3"
+        XCTAssertEqual(model.states, states)
+        XCTAssertEqual(model.externalVariables, "newExternals")
+        XCTAssertEqual(model.machineVariables, "newMachines")
+        XCTAssertEqual(model.includes, "newIncludes")
+        XCTAssertEqual(model.transitions, transitions)
+        XCTAssertEqual(model.initialState, "state3")
+        XCTAssertEqual(model.suspendedState, "state2")
+        model.suspendedState = "state4"
+        XCTAssertEqual(model.states, states)
+        XCTAssertEqual(model.externalVariables, "newExternals")
+        XCTAssertEqual(model.machineVariables, "newMachines")
+        XCTAssertEqual(model.includes, "newIncludes")
+        XCTAssertEqual(model.transitions, transitions)
+        XCTAssertEqual(model.initialState, "state3")
+        XCTAssertEqual(model.suspendedState, "state4")
     }
 
     /// Test transition setter functions correctly.
@@ -257,7 +291,9 @@ final class MachineModelTests: XCTestCase {
             externalVariables: "externals",
             machineVariables: "machines",
             includes: "includes",
-            transitions: transitions
+            transitions: transitions,
+            initialState: "state1",
+            suspendedState: "state2"
         )
         let newTransitions = [
             TransitionModel(
@@ -278,6 +314,8 @@ final class MachineModelTests: XCTestCase {
         XCTAssertEqual(model.machineVariables, "machines")
         XCTAssertEqual(model.includes, "includes")
         XCTAssertEqual(model.transitions, newTransitions)
+        XCTAssertEqual(model.initialState, "state1")
+        XCTAssertEqual(model.suspendedState, "state2")
     }
 
     /// Test that the machine model can be initialised from a JSON string.
@@ -287,7 +325,9 @@ final class MachineModelTests: XCTestCase {
             externalVariables: "externals",
             machineVariables: "machines",
             includes: "includes",
-            transitions: transitions
+            transitions: transitions,
+            initialState: "state1",
+            suspendedState: "state2"
         )
         XCTAssertEqual(model, MachineModel(jsonString: json))
         XCTAssertNil(MachineModel(jsonString: "{}"))
