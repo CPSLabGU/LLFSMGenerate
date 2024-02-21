@@ -66,7 +66,7 @@ final class StateTests: XCTestCase {
     /// A model to convert.
     let model = StateModel(
         name: "state1",
-        variables: "x: std_logic;\ny: std_logic := '1';",
+        variables: "signal x: std_logic;\nsignal y: std_logic := '1';",
         externalVariables: "extX\nextY",
         actions: [
             ActionModel(name: "OnEntry", code: "x <= '1';"),
