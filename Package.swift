@@ -11,11 +11,13 @@ let package = Package(
         // packages.
         .library(
             name: "VHDLMachineTransformations",
-            targets: ["VHDLMachineTransformations"]
+            targets: ["VHDLMachineTransformations", "JavascriptModel"]
         )
     ],
     dependencies: [
-        .package(url: "https://github.com/apple/swift-docc-plugin", from: "1.1.0")
+        .package(url: "https://github.com/apple/swift-docc-plugin", from: "1.1.0"),
+        .package(url: "https://github.com/mipalgu/VHDLMachines", from: "1.2.4"),
+        .package(url: "https://github.com/mipalgu/VHDLParsing", from: "2.4.0")
     ],
     targets: [
         // Targets are the basic building blocks of a package, defining a module or a test suite.
@@ -24,12 +26,17 @@ let package = Package(
             name: "JavascriptModel"
         ),
         .target(
-            name: "VHDLMachineTransformations"
+            name: "VHDLMachineTransformations",
+            dependencies: [
+                .target(name: "JavascriptModel"),
+                .product(name: "VHDLMachines", package: "VHDLMachines"),
+                .product(name: "VHDLParsing", package: "VHDLParsing")
+            ]
         ),
         .testTarget(name: "JavascriptModelTests", dependencies: ["JavascriptModel"]),
         .testTarget(
             name: "VHDLMachineTransformationsTests",
-            dependencies: ["VHDLMachineTransformations"]
+            dependencies: ["VHDLMachineTransformations", "VHDLParsing", "VHDLMachines", "JavascriptModel"]
         )
     ]
 )
