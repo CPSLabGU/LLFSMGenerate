@@ -66,6 +66,8 @@ extension MachineModel {
     ///   - machine: The machine to create the model for.
     ///   - stateLayouts: The layout of the states within the machine.
     ///   - transitionLayouts: The layout of the transitions in the machine.
+    /// - Warning: This will return nil if the number of stateLayouts or transitionLayouts do not match the
+    ///            machine.
     @inlinable
     public init?(machine: Machine, stateLayouts: [StateLayout], transitionLayouts: [TransitionLayout]) {
         guard
