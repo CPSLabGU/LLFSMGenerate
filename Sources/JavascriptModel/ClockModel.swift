@@ -1,4 +1,4 @@
-// StateModel.swift
+// ClockModel.swift
 // VHDLMachineTransformations
 // 
 // Created by Morgan McColl.
@@ -54,44 +54,25 @@
 // Fifth Floor, Boston, MA  02110-1301, USA.
 // 
 
-/// An abstract model of a state within an LLFSM.
-public struct StateModel: Equatable, Hashable, Codable, Sendable {
+/// A model of a clock signal. This struct represents the user-entered input for a clock signal definition.
+public struct ClockModel: Equatable, Hashable, Codable, Sendable {
 
-    /// The name of the state.
+    /// The name of the clock.
     public var name: String
 
-    /// The variables local to the state.
-    public var variables: String
+    /// The frequency of the clock represented as <number><unit> where <unit> is one of: Hz, kHz, MHz, GHz,
+    /// THz.
+    public var frequency: String
 
-    /// The names of the external variables accessed by this state.
-    public var externalVariables: String
-
-    /// The actions within the state.
-    public var actions: [ActionModel]
-
-    /// The layout of the state.
-    public var layout: StateLayout
-
-    /// Creates a new state model with name, variables, actions and layout.
+    /// Create a new clock from its stored properties.
     /// - Parameters:
-    ///   - name: The name of the state.
-    ///   - variables: The variables local to the state.
-    ///   - externalVariables: The names of the external variables accessed by this state.
-    ///   - actions: The actions within the state.
-    ///   - layout: The layout of the state.
+    ///   - name: The name of the clock.
+    ///   - frequency: The frequency of the clock represented as <number><unit> where <unit> is one of: Hz,
+    ///                kHz, MHz, GHz, THz.
     @inlinable
-    public init(
-        name: String,
-        variables: String,
-        externalVariables: String,
-        actions: [ActionModel],
-        layout: StateLayout
-    ) {
+    public init(name: String, frequency: String) {
         self.name = name
-        self.variables = variables
-        self.externalVariables = externalVariables
-        self.actions = actions
-        self.layout = layout
+        self.frequency = frequency
     }
 
 }

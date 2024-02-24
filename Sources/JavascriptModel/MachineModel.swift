@@ -72,6 +72,17 @@ public struct MachineModel: Equatable, Hashable, Codable, Sendable {
     /// The transitions between states in this machine.
     public var transitions: [TransitionModel]
 
+    /// The name of the initial state.
+    public var initialState: String
+
+    /// The name of the suspended state. This property may be `nil` indicating that the machine has no
+    /// suspended state.
+    public var suspendedState: String?
+
+    /// The clocks used in this machine. The first clock in the array represents the clock driving the
+    /// machines execution.
+    public var clocks: [ClockModel]
+
     /// Initialise this machine with it's stored properties.
     /// - Parameters:
     ///   - states: The states within the machine.
@@ -79,19 +90,30 @@ public struct MachineModel: Equatable, Hashable, Codable, Sendable {
     ///   - machineVariables: The variables local to this machine.
     ///   - includes: The includes required for this machine.
     ///   - transitions: The transitions between states in this machine.
+    ///   - initialState: The name of the initial state.
+    ///   - suspendedState: The name of the suspended state. This property may be `nil` indicating that the
+    ///                     machine has no suspended state.
+    ///   - clocks: The clocks used in the machine.
+    /// - SeeAlso: ``StateModel``, ``Clock``.
     @inlinable
     public init(
         states: [StateModel],
         externalVariables: String,
         machineVariables: String,
         includes: String,
-        transitions: [TransitionModel]
+        transitions: [TransitionModel],
+        initialState: String,
+        suspendedState: String? = nil,
+        clocks: [ClockModel]
     ) {
         self.states = states
         self.externalVariables = externalVariables
         self.machineVariables = machineVariables
         self.includes = includes
         self.transitions = transitions
+        self.initialState = initialState
+        self.suspendedState = suspendedState
+        self.clocks = clocks
     }
 
 }

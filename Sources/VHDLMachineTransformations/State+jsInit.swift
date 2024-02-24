@@ -1,4 +1,4 @@
-// StateModel.swift
+// State+jsInit.swift
 // VHDLMachineTransformations
 // 
 // Created by Morgan McColl.
@@ -54,44 +54,57 @@
 // Fifth Floor, Boston, MA  02110-1301, USA.
 // 
 
-/// An abstract model of a state within an LLFSM.
-public struct StateModel: Equatable, Hashable, Codable, Sendable {
+import Foundation
+import JavascriptModel
+import VHDLMachines
+import VHDLParsing
 
-    /// The name of the state.
-    public var name: String
+/// Add init from ``StateModel``.
+extension State {
 
-    /// The variables local to the state.
-    public var variables: String
-
-    /// The names of the external variables accessed by this state.
-    public var externalVariables: String
-
-    /// The actions within the state.
-    public var actions: [ActionModel]
-
-    /// The layout of the state.
-    public var layout: StateLayout
-
-    /// Creates a new state model with name, variables, actions and layout.
-    /// - Parameters:
-    ///   - name: The name of the state.
-    ///   - variables: The variables local to the state.
-    ///   - externalVariables: The names of the external variables accessed by this state.
-    ///   - actions: The actions within the state.
-    ///   - layout: The layout of the state.
+    /// Initialise a state from its Javascript model.
+    /// - Parameter model: The javascript model that represents this state.
+    /// - SeeAlso: ``StateModel``.
     @inlinable
-    public init(
-        name: String,
-        variables: String,
-        externalVariables: String,
-        actions: [ActionModel],
-        layout: StateLayout
-    ) {
-        self.name = name
-        self.variables = variables
-        self.externalVariables = externalVariables
-        self.actions = actions
-        self.layout = layout
+    public init?(model: StateModel) {
+        guard let name = VariableName(rawValue: model.name) else {
+            return nil
+        }
+        let actionNames = model.actions.map(\.name)
+        let actionNamesParsed = actionNames.compactMap(VariableName.init(rawValue:))
+        guard actionNames.count == actionNamesParsed.count else {
+            return nil
+        }
+        let actionCode = model.actions.map(\.code)
+        let actionCodeParsed = actionCode.compactMap(SynchronousBlock.init(rawValue:))
+        guard
+            actionCode.count == actionCodeParsed.count,
+            actionNamesParsed.count == actionCodeParsed.count
+        else {
+            return nil
+        }
+        let actions = Dictionary(uniqueKeysWithValues: zip(actionNamesParsed, actionCodeParsed))
+        let signalsRaw = model.variables.components(separatedBy: ";")
+            .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
+            .filter { !$0.isEmpty }
+            .map { $0 + ";" }
+        let signalsParsed = signalsRaw.compactMap(LocalSignal.init(rawValue:))
+        guard signalsParsed.count == signalsRaw.count else {
+            return nil
+        }
+        let externalsRaw = model.externalVariables.components(separatedBy: .newlines)
+            .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
+            .filter { !$0.isEmpty }
+        let externalVariables = externalsRaw.compactMap(VariableName.init(rawValue:))
+        guard externalsRaw.count == externalVariables.count else {
+            return nil
+        }
+        self.init(
+            name: name,
+            actions: actions,
+            signals: signalsParsed,
+            externalVariables: externalVariables
+        )
     }
 
 }

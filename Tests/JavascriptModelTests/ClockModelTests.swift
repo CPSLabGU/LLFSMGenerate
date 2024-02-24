@@ -1,4 +1,4 @@
-// StateModel.swift
+// ClockModelTests.swift
 // VHDLMachineTransformations
 // 
 // Created by Morgan McColl.
@@ -54,44 +54,34 @@
 // Fifth Floor, Boston, MA  02110-1301, USA.
 // 
 
-/// An abstract model of a state within an LLFSM.
-public struct StateModel: Equatable, Hashable, Codable, Sendable {
+@testable import JavascriptModel
+import XCTest
 
-    /// The name of the state.
-    public var name: String
+/// Test class for ``ClockModel``.
+final class ClockModelTests: XCTestCase {
 
-    /// The variables local to the state.
-    public var variables: String
+    /// The name of the clock under test.
+    let clkName = "clk"
 
-    /// The names of the external variables accessed by this state.
-    public var externalVariables: String
+    /// The frequency of the clock under test.
+    let frequency = "100 MHz"
 
-    /// The actions within the state.
-    public var actions: [ActionModel]
+    /// Test the init sets the stored properties correctly.
+    func testInit() {
+        let clock = ClockModel(name: clkName, frequency: frequency)
+        XCTAssertEqual(clock.name, clkName)
+        XCTAssertEqual(clock.frequency, frequency)
+    }
 
-    /// The layout of the state.
-    public var layout: StateLayout
-
-    /// Creates a new state model with name, variables, actions and layout.
-    /// - Parameters:
-    ///   - name: The name of the state.
-    ///   - variables: The variables local to the state.
-    ///   - externalVariables: The names of the external variables accessed by this state.
-    ///   - actions: The actions within the state.
-    ///   - layout: The layout of the state.
-    @inlinable
-    public init(
-        name: String,
-        variables: String,
-        externalVariables: String,
-        actions: [ActionModel],
-        layout: StateLayout
-    ) {
-        self.name = name
-        self.variables = variables
-        self.externalVariables = externalVariables
-        self.actions = actions
-        self.layout = layout
+    /// Test the setters set the stored properties correctly.
+    func testSetters() {
+        var clock = ClockModel(name: clkName, frequency: frequency)
+        clock.name = "newName"
+        XCTAssertEqual(clock.name, "newName")
+        XCTAssertEqual(clock.frequency, frequency)
+        clock.frequency = "200 MHz"
+        XCTAssertEqual(clock.name, "newName")
+        XCTAssertEqual(clock.frequency, "200 MHz")
     }
 
 }

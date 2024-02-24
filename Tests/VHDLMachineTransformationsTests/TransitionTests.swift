@@ -1,4 +1,4 @@
-// StateModel.swift
+// TransitionTests.swift
 // VHDLMachineTransformations
 // 
 // Created by Morgan McColl.
@@ -54,44 +54,60 @@
 // Fifth Floor, Boston, MA  02110-1301, USA.
 // 
 
-/// An abstract model of a state within an LLFSM.
-public struct StateModel: Equatable, Hashable, Codable, Sendable {
+import JavascriptModel
+import VHDLMachines
+@testable import VHDLMachineTransformations
+import VHDLParsing
+import XCTest
 
-    /// The name of the state.
-    public var name: String
+/// Test class for ``Transition`` extensions.
+final class TransitionTests: XCTestCase {
 
-    /// The variables local to the state.
-    public var variables: String
+    /// The model to convert.
+    let model = TransitionModel(
+        source: "state1",
+        target: "state2",
+        condition: "true",
+        layout: TransitionLayout(path: BezierPath(
+            source: Point2D(x: 0, y: 0),
+            target: Point2D(x: 1, y: 1),
+            control0: Point2D(x: 2, y: 2),
+            control1: Point2D(x: 3, y: 3)
+        ))
+    )
 
-    /// The names of the external variables accessed by this state.
-    public var externalVariables: String
+    // swiftlint:disable force_unwrapping
 
-    /// The actions within the state.
-    public var actions: [ActionModel]
+    /// Some states to use for the conversion.
+    let states = [
+        State(name: VariableName(rawValue: "state1")!, actions: [:], signals: [], externalVariables: []),
+        State(name: VariableName(rawValue: "state2")!, actions: [:], signals: [], externalVariables: [])
+    ]
 
-    /// The layout of the state.
-    public var layout: StateLayout
+    // swiftlint:enable force_unwrapping
 
-    /// Creates a new state model with name, variables, actions and layout.
-    /// - Parameters:
-    ///   - name: The name of the state.
-    ///   - variables: The variables local to the state.
-    ///   - externalVariables: The names of the external variables accessed by this state.
-    ///   - actions: The actions within the state.
-    ///   - layout: The layout of the state.
-    @inlinable
-    public init(
-        name: String,
-        variables: String,
-        externalVariables: String,
-        actions: [ActionModel],
-        layout: StateLayout
-    ) {
-        self.name = name
-        self.variables = variables
-        self.externalVariables = externalVariables
-        self.actions = actions
-        self.layout = layout
+    /// Test the conversion from a model to a transition.
+    func testModelConversion() {
+        let transition = Transition(model: model, states: states)
+        let expected = Transition(
+            condition: .conditional(condition: .literal(value: true)),
+            source: 0,
+            target: 1
+        )
+        XCTAssertEqual(transition, expected)
+    }
+
+    /// Test invalid model.
+    func testInvalidModel() {
+        var model = model
+        var model2 = model
+        var model3 = model
+        model.condition = "1 + 2"
+        XCTAssertNil(Transition(model: model, states: states))
+        model2.source = "state3"
+        XCTAssertNil(Transition(model: model2, states: states))
+        model3.target = "state 2"
+        XCTAssertNil(Transition(model: model3, states: states))
     }
 
 }

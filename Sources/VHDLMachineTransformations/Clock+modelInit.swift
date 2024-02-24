@@ -1,4 +1,4 @@
-// StateModel.swift
+// Clock+modelInit.swift
 // VHDLMachineTransformations
 // 
 // Created by Morgan McColl.
@@ -54,44 +54,46 @@
 // Fifth Floor, Boston, MA  02110-1301, USA.
 // 
 
-/// An abstract model of a state within an LLFSM.
-public struct StateModel: Equatable, Hashable, Codable, Sendable {
+import Foundation
+import JavascriptModel
+import VHDLMachines
+import VHDLParsing
 
-    /// The name of the state.
-    public var name: String
+/// Add init from ``ClockModel``.
+extension Clock {
 
-    /// The variables local to the state.
-    public var variables: String
-
-    /// The names of the external variables accessed by this state.
-    public var externalVariables: String
-
-    /// The actions within the state.
-    public var actions: [ActionModel]
-
-    /// The layout of the state.
-    public var layout: StateLayout
-
-    /// Creates a new state model with name, variables, actions and layout.
-    /// - Parameters:
-    ///   - name: The name of the state.
-    ///   - variables: The variables local to the state.
-    ///   - externalVariables: The names of the external variables accessed by this state.
-    ///   - actions: The actions within the state.
-    ///   - layout: The layout of the state.
+    /// Create a clock from its javascript model.
+    /// - Parameter model: The javascript model representing this clock.
     @inlinable
-    public init(
-        name: String,
-        variables: String,
-        externalVariables: String,
-        actions: [ActionModel],
-        layout: StateLayout
-    ) {
-        self.name = name
-        self.variables = variables
-        self.externalVariables = externalVariables
-        self.actions = actions
-        self.layout = layout
+    public init?(model: ClockModel) {
+        guard let name = VariableName(rawValue: model.name) else {
+            return nil
+        }
+        let frequency = model.frequency.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard frequency.count >= 3 else {
+            return nil
+        }
+        let separator = frequency[frequency.index(
+            frequency.startIndex, offsetBy: frequency.count - 3
+        )]
+        guard let scalar = separator.unicodeScalars.first else {
+            return nil
+        }
+        let unitLength: Int
+        if UInt(String(separator)) != nil || CharacterSet.whitespacesAndNewlines.contains(scalar) {
+            unitLength = 2
+        } else {
+            unitLength = 3
+        }
+        guard let unit = Clock.FrequencyUnit(rawValue: String(frequency.suffix(unitLength))) else {
+            return nil
+        }
+        let numberRaw = String(frequency.prefix(frequency.count - unitLength))
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+        guard let number = UInt(numberRaw) else {
+            return nil
+        }
+        self.init(name: name, frequency: number, unit: unit)
     }
 
 }

@@ -65,6 +65,7 @@ final class MachineModelTests: XCTestCase {
         StateModel(
             name: "state1",
             variables: "state1_variables",
+            externalVariables: "state1_externals",
             actions: [
                 ActionModel(name: "action1", code: "state1_code1")
             ],
@@ -73,6 +74,7 @@ final class MachineModelTests: XCTestCase {
         StateModel(
             name: "state2",
             variables: "state2_variables",
+            externalVariables: "state2_externals",
             actions: [
                 ActionModel(name: "action1", code: "state2_code1")
             ],
@@ -95,6 +97,23 @@ final class MachineModelTests: XCTestCase {
         )
     ]
 
+    /// The clocks in the machine.
+    let clocks = [
+        ClockModel(name: "clk", frequency: "100 MHz")
+    ]
+
+    /// The model under test.
+    lazy var model = MachineModel(
+        states: states,
+        externalVariables: "externals",
+        machineVariables: "machines",
+        includes: "includes",
+        transitions: transitions,
+        initialState: "state1",
+        suspendedState: "state2",
+        clocks: clocks
+    )
+
     /// The JSON representation of the default model.
     let json = """
     {
@@ -102,6 +121,7 @@ final class MachineModelTests: XCTestCase {
             {
                 \"name\": \"state1\",
                 \"variables\": \"state1_variables\",
+                \"externalVariables\": \"state1_externals\",
                 \"actions\": [
                     {
                         \"name\": \"action1\",
@@ -122,6 +142,7 @@ final class MachineModelTests: XCTestCase {
             {
                 \"name\": \"state2\",
                 \"variables\": \"state2_variables\",
+                \"externalVariables\": \"state2_externals\",
                 \"actions\": [
                     {
                         \"name\": \"action1\",
@@ -169,39 +190,49 @@ final class MachineModelTests: XCTestCase {
                     }
                 }
             }
-        ]
+        ],
+        \"initialState\": \"state1\",
+        \"suspendedState\": \"state2\",
+        \"clocks\": [{
+            \"name\": \"clk\",
+            \"frequency\": \"100 MHz\"
+        }]
     }
     """
 
-    /// Test the init sets the stored properties correctly.
-    func testInit() {
-        let model = MachineModel(
+    /// Reset the model before every test.
+    override func setUp() {
+        model = MachineModel(
             states: states,
             externalVariables: "externals",
             machineVariables: "machines",
             includes: "includes",
-            transitions: transitions
+            transitions: transitions,
+            initialState: "state1",
+            suspendedState: "state2",
+            clocks: clocks
         )
+    }
+
+    /// Test the init sets the stored properties correctly.
+    func testInit() {
         XCTAssertEqual(model.states, states)
         XCTAssertEqual(model.externalVariables, "externals")
         XCTAssertEqual(model.machineVariables, "machines")
         XCTAssertEqual(model.includes, "includes")
         XCTAssertEqual(model.transitions, transitions)
+        XCTAssertEqual(model.initialState, "state1")
+        XCTAssertEqual(model.suspendedState, "state2")
+        XCTAssertEqual(model.clocks, clocks)
     }
 
     /// Test the state setter mutates the stored properties correctly.
     func testStateSetter() {
-        var model = MachineModel(
-            states: states,
-            externalVariables: "externals",
-            machineVariables: "machines",
-            includes: "includes",
-            transitions: transitions
-        )
         let newStates = [
             StateModel(
                 name: "state3",
                 variables: "state3_variables",
+                externalVariables: "state3_externals",
                 actions: [
                     ActionModel(name: "action1", code: "state3_code1")
                 ],
@@ -214,46 +245,62 @@ final class MachineModelTests: XCTestCase {
         XCTAssertEqual(model.machineVariables, "machines")
         XCTAssertEqual(model.includes, "includes")
         XCTAssertEqual(model.transitions, transitions)
+        XCTAssertEqual(model.initialState, "state1")
+        XCTAssertEqual(model.suspendedState, "state2")
+        XCTAssertEqual(model.clocks, clocks)
     }
 
     /// Test primitive setters function correctly.
     func testPrimitveSetters() {
-        var model = MachineModel(
-            states: states,
-            externalVariables: "externals",
-            machineVariables: "machines",
-            includes: "includes",
-            transitions: transitions
-        )
         model.externalVariables = "newExternals"
         XCTAssertEqual(model.states, states)
         XCTAssertEqual(model.externalVariables, "newExternals")
         XCTAssertEqual(model.machineVariables, "machines")
         XCTAssertEqual(model.includes, "includes")
         XCTAssertEqual(model.transitions, transitions)
+        XCTAssertEqual(model.initialState, "state1")
+        XCTAssertEqual(model.suspendedState, "state2")
+        XCTAssertEqual(model.clocks, clocks)
         model.machineVariables = "newMachines"
         XCTAssertEqual(model.states, states)
         XCTAssertEqual(model.externalVariables, "newExternals")
         XCTAssertEqual(model.machineVariables, "newMachines")
         XCTAssertEqual(model.includes, "includes")
         XCTAssertEqual(model.transitions, transitions)
+        XCTAssertEqual(model.initialState, "state1")
+        XCTAssertEqual(model.suspendedState, "state2")
+        XCTAssertEqual(model.clocks, clocks)
         model.includes = "newIncludes"
         XCTAssertEqual(model.states, states)
         XCTAssertEqual(model.externalVariables, "newExternals")
         XCTAssertEqual(model.machineVariables, "newMachines")
         XCTAssertEqual(model.includes, "newIncludes")
         XCTAssertEqual(model.transitions, transitions)
+        XCTAssertEqual(model.initialState, "state1")
+        XCTAssertEqual(model.suspendedState, "state2")
+        XCTAssertEqual(model.clocks, clocks)
+        model.initialState = "state3"
+        XCTAssertEqual(model.states, states)
+        XCTAssertEqual(model.externalVariables, "newExternals")
+        XCTAssertEqual(model.machineVariables, "newMachines")
+        XCTAssertEqual(model.includes, "newIncludes")
+        XCTAssertEqual(model.transitions, transitions)
+        XCTAssertEqual(model.initialState, "state3")
+        XCTAssertEqual(model.suspendedState, "state2")
+        XCTAssertEqual(model.clocks, clocks)
+        model.suspendedState = "state4"
+        XCTAssertEqual(model.states, states)
+        XCTAssertEqual(model.externalVariables, "newExternals")
+        XCTAssertEqual(model.machineVariables, "newMachines")
+        XCTAssertEqual(model.includes, "newIncludes")
+        XCTAssertEqual(model.transitions, transitions)
+        XCTAssertEqual(model.initialState, "state3")
+        XCTAssertEqual(model.suspendedState, "state4")
+        XCTAssertEqual(model.clocks, clocks)
     }
 
     /// Test transition setter functions correctly.
     func testTransitionSetters() {
-        var model = MachineModel(
-            states: states,
-            externalVariables: "externals",
-            machineVariables: "machines",
-            includes: "includes",
-            transitions: transitions
-        )
         let newTransitions = [
             TransitionModel(
                 source: "state3",
@@ -273,17 +320,29 @@ final class MachineModelTests: XCTestCase {
         XCTAssertEqual(model.machineVariables, "machines")
         XCTAssertEqual(model.includes, "includes")
         XCTAssertEqual(model.transitions, newTransitions)
+        XCTAssertEqual(model.initialState, "state1")
+        XCTAssertEqual(model.suspendedState, "state2")
+        XCTAssertEqual(model.clocks, clocks)
+    }
+
+    /// Check that the clock setter sets the clocks correctly.
+    func testClocksSetter() {
+        let newClock = [
+            ClockModel(name: "clk2", frequency: "200 MHz")
+        ]
+        model.clocks = newClock
+        XCTAssertEqual(model.states, states)
+        XCTAssertEqual(model.externalVariables, "externals")
+        XCTAssertEqual(model.machineVariables, "machines")
+        XCTAssertEqual(model.includes, "includes")
+        XCTAssertEqual(model.transitions, transitions)
+        XCTAssertEqual(model.initialState, "state1")
+        XCTAssertEqual(model.suspendedState, "state2")
+        XCTAssertEqual(model.clocks, newClock)
     }
 
     /// Test that the machine model can be initialised from a JSON string.
     func testJSONInit() {
-        let model = MachineModel(
-            states: states,
-            externalVariables: "externals",
-            machineVariables: "machines",
-            includes: "includes",
-            transitions: transitions
-        )
         XCTAssertEqual(model, MachineModel(jsonString: json))
         XCTAssertNil(MachineModel(jsonString: "{}"))
         XCTAssertNil(MachineModel(jsonString: ""))

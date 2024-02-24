@@ -1,4 +1,4 @@
-// StateModel.swift
+// ClockTests.swift
 // VHDLMachineTransformations
 // 
 // Created by Morgan McColl.
@@ -54,44 +54,65 @@
 // Fifth Floor, Boston, MA  02110-1301, USA.
 // 
 
-/// An abstract model of a state within an LLFSM.
-public struct StateModel: Equatable, Hashable, Codable, Sendable {
+import JavascriptModel
+import VHDLMachines
+@testable import VHDLMachineTransformations
+import VHDLParsing
+import XCTest
 
-    /// The name of the state.
-    public var name: String
+/// Test class for `Clock` extensions.
+final class ClockTests: XCTestCase {
 
-    /// The variables local to the state.
-    public var variables: String
+    /// A model to use in the tests.
+    var model = ClockModel(name: "clk", frequency: "100 MHz")
 
-    /// The names of the external variables accessed by this state.
-    public var externalVariables: String
+    /// Initialise test variables before each test.
+    override func setUp() {
+        model = ClockModel(name: "clk", frequency: "100 MHz")
+    }
 
-    /// The actions within the state.
-    public var actions: [ActionModel]
+    /// Test the init parses the model correctly.
+    func testModelIsParsedCorrectly() {
+        // swiftlint:disable:next force_unwrapping
+        let clk = VariableName(rawValue: "clk")!
+        let expected = Clock(name: clk, frequency: 100, unit: .MHz)
+        XCTAssertEqual(expected, Clock(model: model))
+        model.frequency = "100MHz"
+        XCTAssertEqual(expected, Clock(model: model))
+        model.frequency = "100Hz"
+        let expected2 = Clock(name: clk, frequency: 100, unit: .Hz)
+        XCTAssertEqual(expected2, Clock(model: model))
+        model.frequency = "100 Hz"
+        XCTAssertEqual(expected2, Clock(model: model))
+        model.frequency = "1Hz"
+        let expected3 = Clock(name: clk, frequency: 1, unit: .Hz)
+        XCTAssertEqual(expected3, Clock(model: model))
+        model.frequency = "1 Hz"
+        XCTAssertEqual(expected3, Clock(model: model))
+    }
 
-    /// The layout of the state.
-    public var layout: StateLayout
+    /// Test init fails for invalid name in model.
+    func testInvalidName() {
+        model.name = "c l k"
+        XCTAssertNil(Clock(model: model))
+        model.name = ""
+        XCTAssertNil(Clock(model: model))
+        model.name = "   "
+        XCTAssertNil(Clock(model: model))
+    }
 
-    /// Creates a new state model with name, variables, actions and layout.
-    /// - Parameters:
-    ///   - name: The name of the state.
-    ///   - variables: The variables local to the state.
-    ///   - externalVariables: The names of the external variables accessed by this state.
-    ///   - actions: The actions within the state.
-    ///   - layout: The layout of the state.
-    @inlinable
-    public init(
-        name: String,
-        variables: String,
-        externalVariables: String,
-        actions: [ActionModel],
-        layout: StateLayout
-    ) {
-        self.name = name
-        self.variables = variables
-        self.externalVariables = externalVariables
-        self.actions = actions
-        self.layout = layout
+    /// Test init fails for invalid frequency.
+    func testInvalidFrequency() {
+        model.frequency = ""
+        XCTAssertNil(Clock(model: model))
+        model.frequency = "10"
+        XCTAssertNil(Clock(model: model))
+        model.frequency = "Hz"
+        XCTAssertNil(Clock(model: model))
+        model.frequency = "THz"
+        XCTAssertNil(Clock(model: model))
+        model.frequency = "1   1"
+        XCTAssertNil(Clock(model: model))
     }
 
 }
