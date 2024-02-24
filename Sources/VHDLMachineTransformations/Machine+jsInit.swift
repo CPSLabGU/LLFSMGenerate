@@ -63,7 +63,7 @@ extension Machine {
 
     public init?(model: MachineModel, path: URL? = nil) {
         let actionNames = Set(model.states.flatMap { $0.actions.map(\.name) })
-        let actionVariableNames = actionNames.compactMap(VariableName.init(rawValue:))
+        let actionVariableNames = actionNames.sorted().compactMap(VariableName.init(rawValue:))
         guard actionVariableNames.count == actionNames.count else {
             return nil
         }
@@ -88,10 +88,7 @@ extension Machine {
         guard let machineName = VariableName(rawValue: name) else {
             return nil
         }
-        let externalsRaw = model.externalVariables.components(separatedBy: ";")
-            .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
-            .filter { !$0.isEmpty }
-            .map { $0 +  ";" }
+        let externalsRaw = getStatements(model.externalVariables)
         let externalSignals = externalsRaw.compactMap(PortSignal.init(rawValue:))
         guard externalsRaw.count == externalSignals.count else {
             return nil
@@ -121,6 +118,15 @@ extension Machine {
                 return nil
             }
             suspendedIndex = index
+        }
+        let stateNames: [VariableName] = states.map(\.name) + states.flatMap { $0.signals.map(\.name) }
+            + actionVariableNames
+        let signalNames: [VariableName] = externalSignals.map(\.name) + machineSignals.map(\.name)
+            + clocks.map(\.name)
+        let allNames: [VariableName] = stateNames + signalNames + [machineName]
+        // Check for duplicate names.
+        guard Set(allNames).count == allNames.count else {
+            return nil
         }
         self.init(
             actions: actionVariableNames,
