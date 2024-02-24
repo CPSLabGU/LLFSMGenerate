@@ -58,8 +58,14 @@ import JavascriptModel
 import VHDLMachines
 import VHDLParsing
 
+/// Add action model conversion.
 extension ActionModel {
 
+    /// Create an `ActionModel` from it's parsed VHDL components.
+    /// - Parameters:
+    ///   - name: The name of the action.
+    ///   - code: The code within the action.
+    @inlinable
     public init(name: VariableName, code: SynchronousBlock) {
         self.init(name: name.rawValue, code: code.rawValue)
     }
