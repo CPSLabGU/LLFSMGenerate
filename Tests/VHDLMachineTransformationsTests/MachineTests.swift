@@ -240,6 +240,11 @@ final class MachineTests: XCTestCase {
     /// Test the model is converted correctly.
     func testConversionInit() {
         XCTAssertEqual(Machine(model: model), expected)
+        let path = URL(fileURLWithPath: "/tmp/subdir/NewMachine.machine", isDirectory: true)
+        // swiftlint:disable:next force_unwrapping
+        expected.name = VariableName(rawValue: "NewMachine")!
+        expected.path = path
+        XCTAssertEqual(Machine(model: model, path: path), expected)
     }
 
 }

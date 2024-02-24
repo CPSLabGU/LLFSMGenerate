@@ -59,6 +59,7 @@ import JavascriptModel
 import VHDLMachines
 import VHDLParsing
 
+/// Add conversion from a `MachineModel` to a `Machine`.
 extension Machine {
 
     public init?(model: MachineModel, path: URL? = nil) {
