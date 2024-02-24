@@ -247,4 +247,124 @@ final class MachineTests: XCTestCase {
         XCTAssertEqual(Machine(model: model, path: path), expected)
     }
 
+    /// Test for incorrect actions.
+    func testInvalidActions() {
+        model.states[0].actions = [ActionModel(name: "1 2 3", code: "null;")]
+        XCTAssertNil(Machine(model: model))
+        model.states[0].actions = [ActionModel(name: "OnExit", code: "invalid code")]
+        XCTAssertNil(Machine(model: model))
+    }
+
+    /// Test for invalid includes.
+    func testInvalidIncludes() {
+        model.includes += "\ninvalid code;"
+        XCTAssertNil(Machine(model: model))
+        model.includes = "This is invalid"
+        XCTAssertNil(Machine(model: model))
+        model.includes = ""
+        expected.includes = []
+        XCTAssertEqual(Machine(model: model), expected)
+    }
+
+    /// Test for invalid machine variables.
+    func testInvalidMachineVariables() {
+        model.machineVariables += "\ninvalid code;"
+        XCTAssertNil(Machine(model: model))
+        model.machineVariables = "This is invalid"
+        XCTAssertNil(Machine(model: model))
+        model.machineVariables = ""
+        expected.machineSignals = []
+        XCTAssertEqual(Machine(model: model), expected)
+    }
+
+    /// Test invalid path.
+    func testInvalidPath() {
+        XCTAssertNil(
+            Machine(model: model, path: URL(fileURLWithPath: "/tmp/invalid path", isDirectory: true))
+        )
+    }
+
+    /// Test invalid external variables are detected.
+    func testInvalidExternals() {
+        model.externalVariables += "\ninvalid code;"
+        XCTAssertNil(Machine(model: model))
+        model.externalVariables = "This is invalid"
+        XCTAssertNil(Machine(model: model))
+        model.externalVariables = ""
+        expected.externalSignals = []
+        XCTAssertEqual(Machine(model: model), expected)
+    }
+
+    /// Test invalid clocks are detected.
+    func testInvalidClocks() {
+        model.clocks += [ClockModel(name: "invalid name", frequency: "100 Hz")]
+        XCTAssertNil(Machine(model: model))
+        model.clocks = [ClockModel(name: "clk", frequency: "Invalid freq")]
+        XCTAssertNil(Machine(model: model))
+        model.clocks = []
+        XCTAssertNil(Machine(model: model))
+    }
+
+    /// Test for invalid transitions.
+    func testInvalidTransitions() {
+        model.transitions += [
+            TransitionModel(
+                source: "state2",
+                target: "state1",
+                condition: "invalid condition",
+                layout: TransitionLayout(path: BezierPath(
+                    source: Point2D(x: 2, y: 2),
+                    target: Point2D(x: 2, y: 1),
+                    control0: Point2D(x: 1, y: 2),
+                    control1: Point2D(x: 1, y: 1)
+                ))
+            )
+        ]
+        XCTAssertNil(Machine(model: model))
+        model.transitions = transitions
+        model.transitions[0].source = "invalidState"
+        XCTAssertNil(Machine(model: model))
+        model.transitions = []
+        expected.transitions = []
+        XCTAssertEqual(Machine(model: model), expected)
+    }
+
+    /// Test for invalid initial and suspended states.
+    func testInvalidInitialSuspended() {
+        var invalidInitial = model
+        invalidInitial.states[0].name = "NotInitialState"
+        XCTAssertNil(Machine(model: invalidInitial))
+        invalidInitial.initialState = ""
+        XCTAssertNil(Machine(model: invalidInitial))
+        invalidInitial.initialState = "state3"
+        XCTAssertNil(Machine(model: invalidInitial))
+        var invalidSuspended = model
+        invalidSuspended.states[0].name = "NotSuspendedState"
+        XCTAssertNil(Machine(model: invalidSuspended))
+        invalidSuspended.suspendedState = ""
+        XCTAssertNil(Machine(model: invalidSuspended))
+        invalidSuspended.suspendedState = "state3"
+        XCTAssertNil(Machine(model: invalidSuspended))
+        model.suspendedState = nil
+        XCTAssertNotNil(Machine(model: model))
+        model.suspendedState = "state3"
+        XCTAssertNil(Machine(model: model))
+    }
+
+    /// Test for unique names.
+    func testUniqueNames() {
+        model.clocks[0].name = "Machine0"
+        XCTAssertNil(Machine(model: model))
+        model.clocks[0].name = "OnEntry"
+        XCTAssertNil(Machine(model: model))
+        model.clocks[0].name = "x"
+        XCTAssertNil(Machine(model: model))
+        model.clocks[0].name = "y"
+        XCTAssertNil(Machine(model: model))
+        model.clocks[0].name = "s1_x"
+        XCTAssertNil(Machine(model: model))
+        model.clocks[0].name = "state1"
+        XCTAssertNil(Machine(model: model))
+    }
+
 }

@@ -62,6 +62,14 @@ import VHDLParsing
 /// Add conversion from a `MachineModel` to a `Machine`.
 extension Machine {
 
+    // swiftlint:disable cyclomatic_complexity
+    // swiftlint:disable function_body_length
+
+    /// Create a new machine from a javscript model located at an optional given path.
+    /// - Parameters:
+    ///   - model: The model representing this machine.
+    ///   - path: The path where the machine is located.
+    @inlinable
     public init?(model: MachineModel, path: URL? = nil) {
         let actionNames = Set(model.states.flatMap { $0.actions.map(\.name) })
         let actionVariableNames = actionNames.sorted().compactMap(VariableName.init(rawValue:))
@@ -150,5 +158,8 @@ extension Machine {
             architectureBody: nil
         )
     }
+
+    // swiftlint:enable function_body_length
+    // swiftlint:enable cyclomatic_complexity
 
 }
