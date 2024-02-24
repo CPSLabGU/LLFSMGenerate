@@ -88,7 +88,16 @@ extension Machine {
         guard let machineName = VariableName(rawValue: name) else {
             return nil
         }
-        guard let externalsAndClocks = ExternalsAndClocks(rawValue: model.externalVariables) else {
+        let externalsRaw = model.externalVariables.components(separatedBy: ";")
+            .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
+            .filter { !$0.isEmpty }
+            .map { $0 +  ";" }
+        let externalSignals = externalsRaw.compactMap(PortSignal.init(rawValue:))
+        guard externalsRaw.count == externalSignals.count else {
+            return nil
+        }
+        let clocks = model.clocks.compactMap(Clock.init(model:))
+        guard clocks.count == model.clocks.count, !clocks.isEmpty else {
             return nil
         }
         let states = model.states.compactMap { State(jsModel: $0) }
@@ -118,8 +127,8 @@ extension Machine {
             name: machineName,
             path: machinePath,
             includes: parsedIncludes,
-            externalSignals: externalsAndClocks.externals,
-            clocks: externalsAndClocks.clocks,
+            externalSignals: externalSignals,
+            clocks: clocks,
             drivingClock: 0,
             dependentMachines: [:],
             machineSignals: machineSignals,
