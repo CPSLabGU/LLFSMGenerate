@@ -79,6 +79,10 @@ public struct MachineModel: Equatable, Hashable, Codable, Sendable {
     /// suspended state.
     public var suspendedState: String?
 
+    /// The clocks used in this machine. The first clock in the array represents the clock driving the
+    /// machines execution.
+    public var clocks: [ClockModel]
+
     /// Initialise this machine with it's stored properties.
     /// - Parameters:
     ///   - states: The states within the machine.
@@ -89,6 +93,8 @@ public struct MachineModel: Equatable, Hashable, Codable, Sendable {
     ///   - initialState: The name of the initial state.
     ///   - suspendedState: The name of the suspended state. This property may be `nil` indicating that the
     ///                     machine has no suspended state.
+    ///   - clocks: The clocks used in the machine.
+    /// - SeeAlso: ``StateModel``, ``Clock``.
     @inlinable
     public init(
         states: [StateModel],
@@ -97,7 +103,8 @@ public struct MachineModel: Equatable, Hashable, Codable, Sendable {
         includes: String,
         transitions: [TransitionModel],
         initialState: String,
-        suspendedState: String? = nil
+        suspendedState: String? = nil,
+        clocks: [ClockModel]
     ) {
         self.states = states
         self.externalVariables = externalVariables
@@ -106,6 +113,7 @@ public struct MachineModel: Equatable, Hashable, Codable, Sendable {
         self.transitions = transitions
         self.initialState = initialState
         self.suspendedState = suspendedState
+        self.clocks = clocks
     }
 
 }
