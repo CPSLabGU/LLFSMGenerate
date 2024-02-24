@@ -66,7 +66,7 @@ extension Transition {
     ///   - model: The javascript model of this transition.
     ///   - states: The states that exist in the machine this transition belongs too.
     @inlinable
-    public init?(jsModel model: TransitionModel, states: [State]) {
+    public init?(model: TransitionModel, states: [State]) {
         guard
             let condition = TransitionCondition(rawValue: model.condition),
             let sourceName = VariableName(rawValue: model.source),

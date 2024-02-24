@@ -66,7 +66,7 @@ extension State {
     /// - Parameter model: The javascript model that represents this state.
     /// - SeeAlso: ``StateModel``.
     @inlinable
-    public init?(jsModel model: StateModel) {
+    public init?(model: StateModel) {
         guard let name = VariableName(rawValue: model.name) else {
             return nil
         }

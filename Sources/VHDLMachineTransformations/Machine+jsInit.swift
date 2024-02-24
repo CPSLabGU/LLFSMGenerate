@@ -61,7 +61,7 @@ import VHDLParsing
 
 extension Machine {
 
-    public init?(jsModel model: MachineModel, path: URL? = nil) {
+    public init?(model: MachineModel, path: URL? = nil) {
         let actionNames = Set(model.states.flatMap { $0.actions.map(\.name) })
         let actionVariableNames = actionNames.compactMap(VariableName.init(rawValue:))
         guard actionVariableNames.count == actionNames.count else {
@@ -100,11 +100,11 @@ extension Machine {
         guard clocks.count == model.clocks.count, !clocks.isEmpty else {
             return nil
         }
-        let states = model.states.compactMap { State(jsModel: $0) }
+        let states = model.states.compactMap { State(model: $0) }
         guard states.count == model.states.count else {
             return nil
         }
-        let transitions = model.transitions.compactMap { Transition(jsModel: $0, states: states) }
+        let transitions = model.transitions.compactMap { Transition(model: $0, states: states) }
         guard
             transitions.count == model.transitions.count,
             let initialName = VariableName(rawValue: model.initialState),

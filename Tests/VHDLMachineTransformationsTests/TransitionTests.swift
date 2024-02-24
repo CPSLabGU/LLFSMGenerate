@@ -88,7 +88,7 @@ final class TransitionTests: XCTestCase {
 
     /// Test the conversion from a model to a transition.
     func testModelConversion() {
-        let transition = Transition(jsModel: model, states: states)
+        let transition = Transition(model: model, states: states)
         let expected = Transition(
             condition: .conditional(condition: .literal(value: true)),
             source: 0,
@@ -103,11 +103,11 @@ final class TransitionTests: XCTestCase {
         var model2 = model
         var model3 = model
         model.condition = "1 + 2"
-        XCTAssertNil(Transition(jsModel: model, states: states))
+        XCTAssertNil(Transition(model: model, states: states))
         model2.source = "state3"
-        XCTAssertNil(Transition(jsModel: model2, states: states))
+        XCTAssertNil(Transition(model: model2, states: states))
         model3.target = "state 2"
-        XCTAssertNil(Transition(jsModel: model3, states: states))
+        XCTAssertNil(Transition(model: model3, states: states))
     }
 
 }

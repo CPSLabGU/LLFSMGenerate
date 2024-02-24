@@ -165,35 +165,35 @@ final class StateTests: XCTestCase {
 
     /// Test the state model is correctly converted into a state.
     func testStateModelConversion() {
-        let state = State(jsModel: model)
+        let state = State(model: model)
         XCTAssertEqual(state, expected)
     }
 
     /// Test for invalid name in model conversion.
     func testInvalidNameInModelConversion() {
         model.name = "state 1"
-        XCTAssertNil(State(jsModel: model))
+        XCTAssertNil(State(model: model))
     }
 
     /// Test the initialiser returns nil for invalid actions.
     func testInvalidActions() {
         var model2 = model
         model.actions[0].code = "This is invalid"
-        XCTAssertNil(State(jsModel: model))
+        XCTAssertNil(State(model: model))
         model2.actions[0].name = "Invalid name"
-        XCTAssertNil(State(jsModel: model2))
+        XCTAssertNil(State(model: model2))
     }
 
     /// Test the initialiser returns nil for invalid variables.
     func testInvalidVariables() {
         model.variables += "\nThis is invalid;"
-        XCTAssertNil(State(jsModel: model))
+        XCTAssertNil(State(model: model))
     }
 
     /// Test invalid external variables return nil.
     func testInvalidExternalVariables() {
         model.externalVariables += "\nThis is invalid"
-        XCTAssertNil(State(jsModel: model))
+        XCTAssertNil(State(model: model))
     }
 
 }
