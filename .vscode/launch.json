@@ -1,0 +1,28 @@
+{
+    "configurations": [
+        {
+            "type": "lldb",
+            "request": "launch",
+            "sourceLanguages": [
+                "swift"
+            ],
+            "args": [],
+            "cwd": "${workspaceFolder:VHDLMachineTransformations}",
+            "name": "Debug llfsmgenerate",
+            "program": "${workspaceFolder:VHDLMachineTransformations}/.build/debug/llfsmgenerate",
+            "preLaunchTask": "swift: Build Debug llfsmgenerate"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "sourceLanguages": [
+                "swift"
+            ],
+            "args": [],
+            "cwd": "${workspaceFolder:VHDLMachineTransformations}",
+            "name": "Release llfsmgenerate",
+            "program": "${workspaceFolder:VHDLMachineTransformations}/.build/release/llfsmgenerate",
+            "preLaunchTask": "swift: Build Release llfsmgenerate"
+        }
+    ]
+}
