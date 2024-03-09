@@ -66,7 +66,7 @@ extension Machine {
         guard var machine = Machine.initial(path: machine0Path) else {
             return nil
         }
-        machine.actions = [.onEntry, .onExit, .internal]
+        machine.actions = [.internal, .onEntry, .onExit]
         machine.name = .machine0
         machine.externalSignals = [
             PortSignal(type: .stdLogic, name: .x, mode: .input),

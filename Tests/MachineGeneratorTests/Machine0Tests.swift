@@ -84,26 +84,7 @@ final class Machine0Tests: XCTestCase {
             XCTFail("Failed to create machine and model.")
             return
         }
-        // XCTAssertEqual(result, machine)
-        XCTAssertEqual(machine.actions, result.actions)
-        XCTAssertEqual(machine.clocks, result.clocks)
-        XCTAssertEqual(machine.dependentMachines, result.dependentMachines)
-        XCTAssertEqual(machine.architectureBody, result.architectureBody)
-        XCTAssertEqual(machine.architectureHead, result.architectureHead)
-        XCTAssertEqual(machine.drivingClock, result.drivingClock)
-        XCTAssertEqual(machine.externalSignals, result.externalSignals)
-        XCTAssertEqual(machine.includes, result.includes)
-        XCTAssertEqual(machine.initialState, result.initialState)
-        XCTAssertEqual(machine.isParameterised, result.isParameterised)
-        XCTAssertEqual(machine.isSuspensible, result.isSuspensible)
-        XCTAssertEqual(machine.machineSignals, result.machineSignals)
-        XCTAssertEqual(machine.name, result.name)
-        XCTAssertEqual(machine.parameterSignals, result.parameterSignals)
-        XCTAssertEqual(machine.path, result.path)
-        XCTAssertEqual(machine.returnableSignals, result.returnableSignals)
-        XCTAssertEqual(machine.states, result.states)
-        XCTAssertEqual(machine.suspendedState, result.suspendedState)
-        XCTAssertEqual(machine.transitions, result.transitions)
+        XCTAssertEqual(result, machine)
     }
 
     /// Test the model generation is correct.
