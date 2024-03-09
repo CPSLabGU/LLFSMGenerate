@@ -54,13 +54,93 @@
 // Fifth Floor, Boston, MA  02110-1301, USA.
 // 
 
+import Foundation
+import JavascriptModel
 @testable import MachineGenerator
+import VHDLMachines
 import XCTest
 
 final class GeneratorTests: XCTestCase {
 
+    let encoder = JSONEncoder()
+
+    /// The path to the package root.
+    let packageRootPath = URL(
+        fileURLWithPath: String(
+            URL(fileURLWithPath: #file).pathComponents.prefix { $0 != "Tests" }
+                .joined(separator: "/")
+                .dropFirst()
+        ),
+        isDirectory: true
+    )
+
+    /// The path to the machines folder.
+    var machinesFolder: URL {
+        packageRootPath.appendingPathComponent("Tests/MachineGeneratorTests/machines", isDirectory: true)
+    }
+
+    /// The path to Machine0.
+    var machine0Path: URL {
+        machinesFolder.appendingPathComponent("Machine0.machine", isDirectory: true)
+    }
+
+    var jsonFile: URL {
+        machine0Path.appendingPathComponent("machine.json", isDirectory: false)
+    }
+
+    var modelFile: URL {
+        machine0Path.appendingPathComponent("model.json", isDirectory: false)
+    }
+
+    override func setUp() {
+        let createDir: ()? = try? FileManager.default
+            .createDirectory(at: machine0Path, withIntermediateDirectories: true)
+        guard
+            createDir != nil,
+            let machine = Machine(machine0LocatedInFolder: machinesFolder),
+            let data = try? encoder.encode(machine),
+            let modelData = try? encoder.encode(MachineModel.machine0)
+        else {
+            XCTFail("Failed to create machine!")
+            return
+        }
+        let result: ()? = try? data.write(to: jsonFile)
+        XCTAssertNotNil(result)
+        let modelResult: ()? = try? modelData.write(to: modelFile)
+        XCTAssertNotNil(modelResult)
+    }
+
+    override func tearDown() {
+        let result: ()? = try? FileManager.default.removeItem(at: machine0Path)
+        XCTAssertNotNil(result)
+    }
+
+    func tesSetters() {
+        var generator = Generate(exportModel: false, path: "")
+        generator.exportModel = true
+        XCTAssertTrue(generator.exportModel)
+        XCTAssertTrue(generator.path.isEmpty)
+        generator.path = "/tmp/Machine0.machine"
+        XCTAssertTrue(generator.exportModel)
+        XCTAssertEqual(generator.path, "/tmp/Machine0.machine")
+    }
+
+    func testComputedProperties() throws {
+        
+    }
+
     func testRun() {
         print("Hello World!")
+    }
+
+}
+
+extension Generate {
+
+    init(exportModel: Bool, path: String) {
+        self.init()
+        self.exportModel = exportModel
+        self.path = path
     }
 
 }
