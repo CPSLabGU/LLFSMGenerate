@@ -60,19 +60,21 @@ import JavascriptModel
 import VHDLMachines
 import XCTest
 
+/// Test class for ``Generate``.
 final class GeneratorTests: XCTestCase {
 
+    /// A JSON encoder.
     let encoder = JSONEncoder()
 
+    /// A URL to the package root.
+    let packagePath = URL(fileURLWithPath: #file).pathComponents.prefix { $0 != "Tests" }
+        .joined(separator: "/")
+        .dropFirst()
+
     /// The path to the package root.
-    let packageRootPath = URL(
-        fileURLWithPath: String(
-            URL(fileURLWithPath: #file).pathComponents.prefix { $0 != "Tests" }
-                .joined(separator: "/")
-                .dropFirst()
-        ),
-        isDirectory: true
-    )
+    var packageRootPath: URL {
+        URL(fileURLWithPath: String(packagePath), isDirectory: true)
+    }
 
     /// The path to the machines folder.
     var machinesFolder: URL {
@@ -84,14 +86,17 @@ final class GeneratorTests: XCTestCase {
         machinesFolder.appendingPathComponent("Machine0.machine", isDirectory: true)
     }
 
+    /// The path to the machines json file.
     var jsonFile: URL {
         machine0Path.appendingPathComponent("machine.json", isDirectory: false)
     }
 
+    /// The path to the machines model file.
     var modelFile: URL {
         machine0Path.appendingPathComponent("model.json", isDirectory: false)
     }
 
+    /// Create test machines before every test.
     override func setUp() {
         let createDir: ()? = try? FileManager.default
             .createDirectory(at: machine0Path, withIntermediateDirectories: true)
@@ -110,11 +115,13 @@ final class GeneratorTests: XCTestCase {
         XCTAssertNotNil(modelResult)
     }
 
+    /// Remove test machines before every test.
     override func tearDown() {
         let result: ()? = try? FileManager.default.removeItem(at: machine0Path)
         XCTAssertNotNil(result)
     }
 
+    /// Test the setters set the correct values.
     func tesSetters() {
         var generator = Generate(exportModel: false, path: "")
         generator.exportModel = true
@@ -125,18 +132,23 @@ final class GeneratorTests: XCTestCase {
         XCTAssertEqual(generator.path, "/tmp/Machine0.machine")
     }
 
+    /// Test computed properties function correctly.
     func testComputedProperties() throws {
-        
-    }
-
-    func testRun() {
-        print("Hello World!")
+        let pathRaw = String(packagePath) + "/Tests/MachineGeneratorTests/machines/Machine0.machine"
+        let generator = Generate(exportModel: false, path: pathRaw)
+        XCTAssertEqual(generator.pathURL, machine0Path)
+        XCTAssertEqual(try generator.machine, try Data(contentsOf: jsonFile))
+        XCTAssertEqual(try generator.model, try Data(contentsOf: modelFile))
+        XCTAssertEqual(generator.machinePath, jsonFile)
+        XCTAssertEqual(generator.modelPath, modelFile)
     }
 
 }
 
+/// Add initialiser for testing `Generate`.
 extension Generate {
 
+    /// Iniialise from stored properties.
     init(exportModel: Bool, path: String) {
         self.init()
         self.exportModel = exportModel
