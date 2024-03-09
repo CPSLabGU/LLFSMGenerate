@@ -66,6 +66,9 @@ final class GeneratorTests: XCTestCase {
     /// A JSON encoder.
     let encoder = JSONEncoder()
 
+    /// A JSON decoder.
+    let decoder = JSONDecoder()
+
     /// A path to Machine0.
     var pathRaw: String {
         String(packagePath) + "/Tests/MachineGeneratorTests/machines/Machine0.machine"
@@ -155,9 +158,13 @@ final class GeneratorTests: XCTestCase {
     func testCreateMachine() throws {
         let oldData = try Data(contentsOf: jsonFile)
         XCTAssertFalse(oldData.isEmpty)
+        try "Invalid data".write(to: jsonFile, atomically: true, encoding: .utf8)
         let generator = Generate(exportModel: false, path: pathRaw)
         try generator.createMachine()
-        XCTAssertEqual(oldData, try generator.machine)
+        let newData = try generator.machine
+        let newMachine = try decoder.decode(Machine.self, from: newData)
+        let oldMachine = try decoder.decode(Machine.self, from: oldData)
+        XCTAssertEqual(newMachine, oldMachine)
     }
 
 }
