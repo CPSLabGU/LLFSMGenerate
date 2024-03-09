@@ -124,7 +124,7 @@ extension MachineModel {
             StateModel(
                 name: "Initial",
                 variables: "signal InitialX: std_logic;",
-                externalVariables: "x, y",
+                externalVariables: "x\ny",
                 actions: [ActionModel(name: "OnEntry", code: "InitialX <= x and machineX;")],
                 layout: StateLayout(
                     position: Point2D(x: 0.0, y: 0.0),
