@@ -112,6 +112,19 @@ extension Machine {
         machine.transitions = [
             Transition(condition: .conditional(condition: .literal(value: true)), source: 0, target: 1)
         ]
+        machine.includes = [
+            .library(value: .ieee),
+            .include(statement: UseStatement(nonEmptyComponents: [
+                .module(name: .ieee),
+                .module(name: VariableName(rawValue: "std_logic_1164")!),
+                .all
+            ])!),
+            .include(statement: UseStatement(nonEmptyComponents: [
+                .module(name: .ieee),
+                .module(name: VariableName(rawValue: "math_real")!),
+                .all
+            ])!)
+        ]
         self = machine
     }
 
@@ -125,7 +138,10 @@ extension MachineModel {
                 name: "Initial",
                 variables: "signal InitialX: std_logic;",
                 externalVariables: "x\ny",
-                actions: [ActionModel(name: "OnEntry", code: "InitialX <= x and machineX;")],
+                actions: [
+                    ActionModel(name: "OnEntry", code: "InitialX <= x and machineX;"),
+                    ActionModel(name: "OnExit", code: "y <= InitialX;")
+                ],
                 layout: StateLayout(
                     position: Point2D(x: 0.0, y: 0.0),
                     dimensions: Point2D(x: 200.0, y: 100.0)
@@ -139,7 +155,7 @@ extension MachineModel {
         ],
         externalVariables: "x: in std_logic;\ny: out std_logic;",
         machineVariables: "signal machineX: std_logic;",
-        includes: "",
+        includes: "library IEEE;\nuse IEEE.std_logic_1164.all;\nuse IEEE.math_real.all;",
         transitions: [
             TransitionModel(
                 source: "Initial", target: "Finished", condition: "true", layout: TransitionLayout(
@@ -162,6 +178,8 @@ extension MachineModel {
 extension VariableName {
 
     static let clk = VariableName(rawValue: "clk")!
+
+    static let ieee = VariableName(rawValue: "IEEE")!
 
     static let finished = VariableName(rawValue: "Finished")!
 
