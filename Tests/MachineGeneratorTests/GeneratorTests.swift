@@ -137,8 +137,12 @@ final class GeneratorTests: XCTestCase {
         let pathRaw = String(packagePath) + "/Tests/MachineGeneratorTests/machines/Machine0.machine"
         let generator = Generate(exportModel: false, path: pathRaw)
         XCTAssertEqual(generator.pathURL, machine0Path)
-        XCTAssertEqual(try generator.machine, try Data(contentsOf: jsonFile))
-        XCTAssertEqual(try generator.model, try Data(contentsOf: modelFile))
+        let machineContents = try Data(contentsOf: jsonFile)
+        XCTAssertFalse(machineContents.isEmpty)
+        XCTAssertEqual(try generator.machine, machineContents)
+        let modelContents = try Data(contentsOf: modelFile)
+        XCTAssertFalse(modelContents.isEmpty)
+        XCTAssertEqual(try generator.model, modelContents)
         XCTAssertEqual(generator.machinePath, jsonFile)
         XCTAssertEqual(generator.modelPath, modelFile)
     }
