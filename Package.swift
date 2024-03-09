@@ -49,7 +49,12 @@ let package = Package(
         .testTarget(name: "JavascriptModelTests", dependencies: ["JavascriptModel"]),
         .testTarget(
             name: "MachineGeneratorTests",
-            dependencies: ["MachineGenerator", "JavascriptModel", "VHDLMachineTransformations"]
+            dependencies: [
+                .target(name: "MachineGenerator"),
+                .target(name: "JavascriptModel"),
+                .target(name: "VHDLMachineTransformations"),
+                .product(name: "VHDLMachines", package: "VHDLMachines")
+            ]
         ),
         .testTarget(
             name: "VHDLMachineTransformationsTests",
