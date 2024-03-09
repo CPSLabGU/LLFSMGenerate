@@ -66,6 +66,11 @@ final class GeneratorTests: XCTestCase {
     /// A JSON encoder.
     let encoder = JSONEncoder()
 
+    /// A path to Machine0.
+    var pathRaw: String {
+        String(packagePath) + "/Tests/MachineGeneratorTests/machines/Machine0.machine"
+    }
+
     /// A URL to the package root.
     let packagePath = URL(fileURLWithPath: #file).pathComponents.prefix { $0 != "Tests" }
         .joined(separator: "/")
@@ -134,7 +139,6 @@ final class GeneratorTests: XCTestCase {
 
     /// Test computed properties function correctly.
     func testComputedProperties() throws {
-        let pathRaw = String(packagePath) + "/Tests/MachineGeneratorTests/machines/Machine0.machine"
         let generator = Generate(exportModel: false, path: pathRaw)
         XCTAssertEqual(generator.pathURL, machine0Path)
         let machineContents = try Data(contentsOf: jsonFile)
@@ -145,6 +149,15 @@ final class GeneratorTests: XCTestCase {
         XCTAssertEqual(try generator.model, modelContents)
         XCTAssertEqual(generator.machinePath, jsonFile)
         XCTAssertEqual(generator.modelPath, modelFile)
+    }
+
+    /// Test the `createMachine` function correctly translates the model.
+    func testCreateMachine() throws {
+        let oldData = try Data(contentsOf: jsonFile)
+        XCTAssertFalse(oldData.isEmpty)
+        let generator = Generate(exportModel: false, path: pathRaw)
+        try generator.createMachine()
+        XCTAssertEqual(oldData, try generator.machine)
     }
 
 }
