@@ -124,8 +124,7 @@ struct Generate: ParsableCommand {
         guard let newModel = MachineModel(
             machine: machine, stateLayouts: stateLayouts, transitionLayouts: transitionLayouts
         ) else {
-            fputs("Cannot create valid model from machine.", stderr)
-            return
+            throw(GenerationError.invalidExportation(message: "Cannot create valid model from machine."))
         }
         let newData = try encoder.encode(newModel)
         try newData.write(to: modelPath)

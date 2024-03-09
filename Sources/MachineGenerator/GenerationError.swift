@@ -57,6 +57,9 @@
 /// Errors thrown by the generator.
 enum GenerationError: Error {
 
+    /// An error during the model generation process.
+    case invalidExportation(message: String)
+
     /// An error during the Machine generation process.
     case invalidGeneration(message: String)
 
