@@ -53,7 +53,8 @@ let package = Package(
                 .target(name: "MachineGenerator"),
                 .target(name: "JavascriptModel"),
                 .target(name: "VHDLMachineTransformations"),
-                .product(name: "VHDLMachines", package: "VHDLMachines")
+                .product(name: "VHDLMachines", package: "VHDLMachines"),
+                .product(name: "VHDLParsing", package: "VHDLParsing")
             ]
         ),
         .testTarget(
