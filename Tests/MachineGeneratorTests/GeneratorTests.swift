@@ -122,7 +122,7 @@ final class GeneratorTests: XCTestCase {
     }
 
     /// Test the setters set the correct values.
-    func tesSetters() {
+    func testSetters() {
         var generator = Generate(exportModel: false, path: "")
         generator.exportModel = true
         XCTAssertTrue(generator.exportModel)
