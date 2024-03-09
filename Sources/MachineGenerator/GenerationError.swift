@@ -1,4 +1,4 @@
-// Generate.swift
+// GenerationError.swift
 // VHDLMachineTransformations
 // 
 // Created by Morgan McColl.
@@ -54,81 +54,10 @@
 // Fifth Floor, Boston, MA  02110-1301, USA.
 // 
 
-import ArgumentParser
-import Foundation
-import JavascriptModel
-import VHDLMachines
-import VHDLMachineTransformations
+/// Errors thrown by the generator.
+enum GenerationError: Error {
 
-@main
-struct Generate: ParsableCommand {
-
-    @Flag(help: "Regenerate the Javascript model.")
-    var exportModel = false
-
-    @Argument(help: "The path to the machine folder.", completion: .directory)
-    var path: String
-
-    @inlinable var decoder: JSONDecoder {
-        JSONDecoder()
-    }
-
-    @inlinable var encoder: JSONEncoder { JSONEncoder() }
-
-    @inlinable var pathURL: URL {
-        URL(fileURLWithPath: path, isDirectory: true)
-    }
-
-    @inlinable var machine: Data {
-        get throws {
-            try Data(contentsOf: machinePath)
-        }
-    }
-
-    @inlinable var model: Data {
-        get throws {
-            try Data(contentsOf: modelPath)
-        }
-    }
-
-    @inlinable var machinePath: URL {
-        pathURL.appendingPathComponent("machine.json", isDirectory: false)
-    }
-
-    @inlinable var modelPath: URL {
-        pathURL.appendingPathComponent("model.json", isDirectory: false)
-    }
-
-    mutating func run() throws {
-        guard exportModel else {
-            try createMachine()
-            return
-        }
-        try createModel()
-    }
-
-    func createMachine() throws {
-        let model = try decoder.decode(MachineModel.self, from: model)
-        guard let machine = Machine(model: model) else {
-            throw GenerationError.invalidGeneration(message: "Cannot create valid machine from model.")
-        }
-        let data = try encoder.encode(machine)
-        try data.write(to: machinePath)
-    }
-
-    func createModel() throws {
-        let machine = try decoder.decode(Machine.self, from: machine)
-        let oldModel = try decoder.decode(MachineModel.self, from: model)
-        let stateLayouts = oldModel.states.map(\.layout)
-        let transitionLayouts = oldModel.transitions.map(\.layout)
-        guard let newModel = MachineModel(
-            machine: machine, stateLayouts: stateLayouts, transitionLayouts: transitionLayouts
-        ) else {
-            fputs("Cannot create valid model from machine.", stderr)
-            return
-        }
-        let newData = try encoder.encode(newModel)
-        try newData.write(to: modelPath)
-    }
+    /// An error during the Machine generation process.
+    case invalidGeneration(message: String)
 
 }
