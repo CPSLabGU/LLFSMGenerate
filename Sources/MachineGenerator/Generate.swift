@@ -99,8 +99,12 @@ struct Generate: ParsableCommand {
         pathURL.appendingPathComponent("model.json", isDirectory: false)
     }
 
-    mutating func run() {
-        print(path)
+    mutating func run() throws {
+        guard exportModel else {
+            try createMachine()
+            return
+        }
+        try createModel()
     }
 
     func createMachine() throws {
