@@ -76,7 +76,7 @@ struct Generate: ParsableCommand {
     @inlinable var encoder: JSONEncoder { JSONEncoder() }
 
     @inlinable var pathURL: URL {
-        URL(fileURLWithPath: path, isDirectory: false)
+        URL(fileURLWithPath: path, isDirectory: true)
     }
 
     @inlinable var machine: Data {
