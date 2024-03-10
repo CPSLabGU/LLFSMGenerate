@@ -56,10 +56,13 @@
 
 import ArgumentParser
 
+/// Main program for `llfsmgenerate`.
 @main
 struct LLFSMGenerate: ParsableCommand {
 
+    /// This struct acts as an umbrella struct to multiple `ParsableCommand` subcommands.
     static var configuration = CommandConfiguration(
+        commandName: "llfsmgenerate",
         abstract: "A utility for performing operations on LLFSM formats.",
         subcommands: [Generate.self]
     )
