@@ -167,6 +167,22 @@ final class GeneratorTests: XCTestCase {
         XCTAssertEqual(newMachine, oldMachine)
     }
 
+    /// Test that the createMachine function throws the correct error for an invalid model.
+    func testCreateMachineThrows() throws {
+        var model = MachineModel.machine0
+        model.externalVariables = "invalid data"
+        let data = try encoder.encode(model)
+        try data.write(to: modelFile)
+        let generator = Generate(exportModel: false, path: pathRaw)
+        XCTAssertThrowsError(try generator.createMachine()) {
+            guard let error = $0 as? GenerationError else {
+                XCTFail("Error is not of type GenerationError.")
+                return
+            }
+            XCTAssertEqual(error, .invalidGeneration(message: "Cannot create valid machine from model."))
+        }
+    }
+
 }
 
 /// Add initialiser for testing `Generate`.
