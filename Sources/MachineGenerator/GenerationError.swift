@@ -55,7 +55,7 @@
 // 
 
 /// Errors thrown by the generator.
-enum GenerationError: Error {
+enum GenerationError: Error, Equatable, Codable, Hashable, Sendable {
 
     /// An error during the model generation process.
     case invalidExportation(message: String)
