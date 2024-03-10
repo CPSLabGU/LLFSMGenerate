@@ -60,45 +60,63 @@ import JavascriptModel
 import VHDLMachines
 import VHDLMachineTransformations
 
+/// The Main program for transforming between machine formats.
 @main
 struct Generate: ParsableCommand {
 
-    @Flag(help: "Regenerate the Javascript model.")
+    // swiftlint:disable line_length
+
+    /// Whether to perform a model generation. If this flag is specified, the program will
+    /// generate the javascript model from the existing machine on the file system.
+    @Flag(
+        help: "Regenerate the Javascript model. If this flag is specified, the program will generate the javascript model from the existing machine on the file system."
+    )
     var exportModel = false
 
+    // swiftlint:enable line_length
+
+    /// The path to the machine folder.
     @Argument(help: "The path to the machine folder.", completion: .directory)
     var path: String
 
-    @inlinable var decoder: JSONDecoder {
-        JSONDecoder()
-    }
+    /// A JSON decoder.
+    @inlinable var decoder: JSONDecoder { JSONDecoder() }
 
+    /// A JSON encoder.
     @inlinable var encoder: JSONEncoder { JSONEncoder() }
 
+    /// A URL to the machine folder.
     @inlinable var pathURL: URL {
         URL(fileURLWithPath: path, isDirectory: true)
     }
 
+    /// A getter for the data contained within the machine file.
     @inlinable var machine: Data {
         get throws {
             try Data(contentsOf: machinePath)
         }
     }
 
+    /// A getter for the data contained within the model file.
     @inlinable var model: Data {
         get throws {
             try Data(contentsOf: modelPath)
         }
     }
 
+    /// A URL to the machine file.
     @inlinable var machinePath: URL {
         pathURL.appendingPathComponent("machine.json", isDirectory: false)
     }
 
+    /// A URL to the model file.
     @inlinable var modelPath: URL {
         pathURL.appendingPathComponent("model.json", isDirectory: false)
     }
 
+    /// The main function for the program.
+    /// - Throws: ``GenerationError``.
+    @inlinable
     mutating func run() throws {
         guard exportModel else {
             try createMachine()
@@ -107,6 +125,9 @@ struct Generate: ParsableCommand {
         try createModel()
     }
 
+    /// Create a machine from the model.
+    /// - Throws: `GenerationError.invalidGeneration` if the machine cannot be created from the model.
+    @inlinable
     func createMachine() throws {
         let model = try decoder.decode(MachineModel.self, from: model)
         guard let machine = Machine(model: model, path: pathURL) else {
@@ -116,6 +137,10 @@ struct Generate: ParsableCommand {
         try data.write(to: machinePath)
     }
 
+    /// Create a model from the machine.
+    /// - Throws: `GenerationError.invalidLayout` if the number of layouts do not match the
+    ///          number of states or transitions.
+    @inlinable
     func createModel() throws {
         let machine = try decoder.decode(Machine.self, from: machine)
         let oldModel = try decoder.decode(MachineModel.self, from: model)
