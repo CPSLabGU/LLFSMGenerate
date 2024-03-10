@@ -183,6 +183,22 @@ final class GeneratorTests: XCTestCase {
         }
     }
 
+    /// Test that the model is created correctly.
+    func testCreateModel() throws {
+        let oldData = try Data(contentsOf: modelFile)
+        XCTAssertFalse(oldData.isEmpty)
+        let oldModel = try decoder.decode(MachineModel.self, from: oldData)
+        var invalidModel = oldModel
+        invalidModel.externalVariables = "Invalid data"
+        let invalidData = try encoder.encode(invalidModel)
+        try invalidData.write(to: modelFile)
+        let generator = Generate(exportModel: true, path: pathRaw)
+        try generator.createModel()
+        let newData = try generator.model
+        let newModel = try decoder.decode(MachineModel.self, from: newData)
+        XCTAssertEqual(newModel, oldModel)
+    }
+
 }
 
 /// Add initialiser for testing `Generate`.
