@@ -61,8 +61,13 @@ import VHDLMachines
 import VHDLMachineTransformations
 
 /// The Main program for transforming between machine formats.
-@main
 struct Generate: ParsableCommand {
+
+    /// The command configuration describing a sub-command.
+    static var configuration = CommandConfiguration(
+        commandName: "model",
+        abstract: "A utility for converting LLFSM formats."
+    )
 
     // swiftlint:disable line_length
 
@@ -75,9 +80,13 @@ struct Generate: ParsableCommand {
 
     // swiftlint:enable line_length
 
-    /// The path to the machine folder.
-    @Argument(help: "The path to the machine folder.", completion: .directory)
-    var path: String
+    /// The shared options for the program.
+    @OptionGroup var options: PathArgument
+
+    /// The path to the machine folder as a string.
+    @inlinable var path: String {
+        options.path
+    }
 
     /// A JSON decoder.
     @inlinable var decoder: JSONDecoder { JSONDecoder() }
