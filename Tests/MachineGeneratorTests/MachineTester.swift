@@ -59,6 +59,7 @@ import JavascriptModel
 import VHDLMachines
 import XCTest
 
+/// A super class for mutating Machine0 on the file system.
 class MachineTester: XCTestCase {
 
         /// A JSON encoder.
