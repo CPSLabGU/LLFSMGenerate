@@ -61,73 +61,7 @@ import VHDLMachines
 import XCTest
 
 /// Test class for ``Generate``.
-final class GeneratorTests: XCTestCase {
-
-    /// A JSON encoder.
-    let encoder = JSONEncoder()
-
-    /// A JSON decoder.
-    let decoder = JSONDecoder()
-
-    /// A path to Machine0.
-    var pathRaw: String {
-        String(packagePath) + "/Tests/MachineGeneratorTests/machines/Machine0.machine"
-    }
-
-    /// A URL to the package root.
-    let packagePath = URL(fileURLWithPath: #file).pathComponents.prefix { $0 != "Tests" }
-        .joined(separator: "/")
-        .dropFirst()
-
-    /// The path to the package root.
-    var packageRootPath: URL {
-        URL(fileURLWithPath: String(packagePath), isDirectory: true)
-    }
-
-    /// The path to the machines folder.
-    var machinesFolder: URL {
-        packageRootPath.appendingPathComponent("Tests/MachineGeneratorTests/machines", isDirectory: true)
-    }
-
-    /// The path to Machine0.
-    var machine0Path: URL {
-        machinesFolder.appendingPathComponent("Machine0.machine", isDirectory: true)
-    }
-
-    /// The path to the machines json file.
-    var jsonFile: URL {
-        machine0Path.appendingPathComponent("machine.json", isDirectory: false)
-    }
-
-    /// The path to the machines model file.
-    var modelFile: URL {
-        machine0Path.appendingPathComponent("model.json", isDirectory: false)
-    }
-
-    /// Create test machines before every test.
-    override func setUp() {
-        let createDir: ()? = try? FileManager.default
-            .createDirectory(at: machine0Path, withIntermediateDirectories: true)
-        guard
-            createDir != nil,
-            let machine = Machine(machine0LocatedInFolder: machinesFolder),
-            let data = try? encoder.encode(machine),
-            let modelData = try? encoder.encode(MachineModel.machine0)
-        else {
-            XCTFail("Failed to create machine!")
-            return
-        }
-        let result: ()? = try? data.write(to: jsonFile)
-        XCTAssertNotNil(result)
-        let modelResult: ()? = try? modelData.write(to: modelFile)
-        XCTAssertNotNil(modelResult)
-    }
-
-    /// Remove test machines before every test.
-    override func tearDown() {
-        let result: ()? = try? FileManager.default.removeItem(at: machine0Path)
-        XCTAssertNotNil(result)
-    }
+final class GeneratorTests: MachineTester {
 
     // /// Test the setters set the correct values.
     // func testSetters() {
