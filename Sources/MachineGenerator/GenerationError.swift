@@ -63,4 +63,7 @@ enum GenerationError: Error, Equatable, Codable, Hashable, Sendable {
     /// An error during the Machine generation process.
     case invalidGeneration(message: String)
 
+    /// An invalid layout for new machine.
+    case invalidLayout(message: String)
+
 }

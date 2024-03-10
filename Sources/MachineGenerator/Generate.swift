@@ -121,6 +121,24 @@ struct Generate: ParsableCommand {
         let oldModel = try decoder.decode(MachineModel.self, from: model)
         let stateLayouts = oldModel.states.map(\.layout)
         let transitionLayouts = oldModel.transitions.map(\.layout)
+        guard stateLayouts.count == machine.states.count else {
+            throw GenerationError.invalidLayout(
+                message: """
+                Found incorrect number of state layouts.
+                Machine: \(machine.states.count)
+                Model: \(stateLayouts.count)
+                """
+            )
+        }
+        guard transitionLayouts.count == machine.transitions.count else {
+            throw GenerationError.invalidLayout(
+                message: """
+                Found incorrect number of transition layouts.
+                Machine: \(machine.transitions.count)
+                Model: \(transitionLayouts.count)
+                """
+            )
+        }
         guard let newModel = MachineModel(
             machine: machine, stateLayouts: stateLayouts, transitionLayouts: transitionLayouts
         ) else {
