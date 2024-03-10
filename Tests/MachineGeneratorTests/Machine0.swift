@@ -59,8 +59,14 @@ import JavascriptModel
 import VHDLMachines
 import VHDLParsing
 
+// swiftlint:disable force_unwrapping
+
+/// Create `Machine0`.
 extension Machine {
 
+    // swiftlint:disable function_body_length
+
+    /// Create Machine0 in the given folder.
     init?(machine0LocatedInFolder path: URL) {
         let machine0Path = path.appendingPathComponent("Machine0.machine", isDirectory: true)
         guard var machine = Machine.initial(path: machine0Path) else {
@@ -130,10 +136,14 @@ extension Machine {
         self = machine
     }
 
+    // swiftlint:enable function_body_length
+
 }
 
+/// Create Machine0 in the given folder.
 extension MachineModel {
 
+    /// Machine0 definition.
     static let machine0 = MachineModel(
         states: [
             StateModel(
@@ -177,30 +187,45 @@ extension MachineModel {
 
 }
 
+/// Add common variable names.
 extension VariableName {
 
+    /// A clk variable.
     static let clk = VariableName(rawValue: "clk")!
 
+    /// An ieee variable.
     static let ieee = VariableName(rawValue: "IEEE")!
 
+    /// A finished variable.
     static let finished = VariableName(rawValue: "Finished")!
 
+    /// An initial variable.
     static let initial = VariableName(rawValue: "Initial")!
 
+    /// An initialX variable.
     static let initialX = VariableName(rawValue: "InitialX")!
 
+    /// An internal variable.
     static let `internal` = VariableName(rawValue: "Internal")!
 
+    /// A machine0 variable.
     static let machine0 = VariableName(rawValue: "Machine0")!
 
+    /// A machineX variable.
     static let machineX = VariableName(rawValue: "machineX")!
 
+    /// An onEntry variable.
     static let onEntry = VariableName(rawValue: "OnEntry")!
 
+    /// An onExit variable.
     static let onExit = VariableName(rawValue: "OnExit")!
 
+    /// An x variable.
     static let x = VariableName(rawValue: "x")!
 
+    /// A y variable.
     static let y = VariableName(rawValue: "y")!
 
 }
+
+// swiftlint:enable force_unwrapping
