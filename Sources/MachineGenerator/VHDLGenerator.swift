@@ -57,6 +57,7 @@
 import ArgumentParser
 import Foundation
 import VHDLMachines
+import VHDLParsing
 
 struct VHDLGenerator: ParsableCommand {
 
@@ -72,12 +73,15 @@ struct VHDLGenerator: ParsableCommand {
             .appendingPathComponent("machine.json", isDirectory: false)
         let data = try Data(contentsOf: path)
         let machine = try JSONDecoder().decode(Machine.self, from: data)
-        let compiler = VHDLCompiler()
-        guard compiler.compile(machine) else {
+        guard let representation = MachineRepresentation(machine: machine) else {
             throw GenerationError.invalidGeneration(
                 message: "Failed to generate VHDL for \(machine.name.rawValue)."
             )
         }
+        let file = VHDLFile(representation: representation)
+        let vhdlPath = URL(fileURLWithPath: options.path, isDirectory: true)
+            .appendingPathComponent("\(machine.name.rawValue).vhd", isDirectory: false)
+        try (file.rawValue + "\n").write(to: vhdlPath, atomically: true, encoding: .utf8)
     }
 
 }
