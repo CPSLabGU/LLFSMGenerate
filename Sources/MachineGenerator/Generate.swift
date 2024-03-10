@@ -138,8 +138,10 @@ struct Generate: ParsableCommand {
     }
 
     /// Create a model from the machine.
-    /// - Throws: `GenerationError.invalidLayout` if the number of layouts do not match the
-    ///          number of states or transitions.
+    /// - Throws: 
+    ///   - `GenerationError.invalidLayout` if the number of layouts do not match the
+    ///      number of states or transitions.
+    ///   - `GenerationError.invalidExportation` if the model cannot be created from the machine.
     @inlinable
     func createModel() throws {
         let machine = try decoder.decode(Machine.self, from: machine)
