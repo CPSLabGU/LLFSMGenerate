@@ -199,6 +199,60 @@ final class GeneratorTests: XCTestCase {
         XCTAssertEqual(newModel, oldModel)
     }
 
+    /// Test that the `createModel` method throws the correct error for an invalid state layout.
+    func testCreateModelDetectsInvalidStateLayouts() throws {
+        let oldData = try Data(contentsOf: modelFile)
+        let oldModel = try decoder.decode(MachineModel.self, from: oldData)
+        var invalidModel = oldModel
+        invalidModel.states = [oldModel.states[0]]
+        let invalidData = try encoder.encode(invalidModel)
+        try invalidData.write(to: modelFile)
+        let generator = Generate(exportModel: true, path: pathRaw)
+        XCTAssertThrowsError(try generator.createModel()) {
+            guard let error = $0 as? GenerationError else {
+                XCTFail("Error is not of type GenerationError.")
+                return
+            }
+            XCTAssertEqual(
+                error,
+                .invalidLayout(
+                    message: """
+                    Found incorrect number of state layouts.
+                    Machine: 2
+                    Model: 1
+                    """
+                )
+            )
+        }
+    }
+
+    /// Test that `createModel` detects an invalid number of transition layouts.
+    func testCreateModelDetectsInvalidTransitionLayouts() throws {
+        let oldData = try Data(contentsOf: modelFile)
+        let oldModel = try decoder.decode(MachineModel.self, from: oldData)
+        var invalidModel = oldModel
+        invalidModel.transitions = []
+        let invalidData = try encoder.encode(invalidModel)
+        try invalidData.write(to: modelFile)
+        let generator = Generate(exportModel: true, path: pathRaw)
+        XCTAssertThrowsError(try generator.createModel()) {
+            guard let error = $0 as? GenerationError else {
+                XCTFail("Error is not of type GenerationError.")
+                return
+            }
+            XCTAssertEqual(
+                error,
+                .invalidLayout(
+                    message: """
+                    Found incorrect number of transition layouts.
+                    Machine: 1
+                    Model: 0
+                    """
+                )
+            )
+        }
+    }
+
 }
 
 /// Add initialiser for testing `Generate`.
