@@ -56,6 +56,7 @@
 
 import ArgumentParser
 
+/// A struct defining the shared arguments for the machine generator.
 struct PathArgument: ParsableArguments {
 
     /// The path to the machine folder.
