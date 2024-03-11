@@ -74,4 +74,13 @@ final class LLFSMGenerateTests: MachineTester {
         XCTAssertEqual(oldMachine, newMachine)
     }
 
+    /// Test the `run` method calls the vhdl subcommand.
+    func testRunCallsVHDL() throws {
+        LLFSMGenerate.main(["vhdl", self.pathRaw])
+        let manager = FileManager.default
+        let path = pathRaw + "/Machine0.vhd"
+        defer { _ = try? manager.removeItem(at: URL(fileURLWithPath: path, isDirectory: false)) }
+        XCTAssertTrue(manager.fileExists(atPath: path))
+    }
+
 }
