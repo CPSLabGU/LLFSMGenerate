@@ -35,7 +35,9 @@ let package = Package(
             dependencies: [
                 .target(name: "JavascriptModel"),
                 .target(name: "VHDLMachineTransformations"),
-                .product(name: "ArgumentParser", package: "swift-argument-parser")
+                .product(name: "ArgumentParser", package: "swift-argument-parser"),
+                .product(name: "VHDLMachines", package: "VHDLMachines"),
+                .product(name: "VHDLParsing", package: "VHDLParsing")
             ]
         ),
         .target(
