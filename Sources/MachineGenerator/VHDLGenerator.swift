@@ -59,15 +59,20 @@ import Foundation
 import VHDLMachines
 import VHDLParsing
 
+/// A sub-command that generates VHDL source files from LLFSM definitions.
 struct VHDLGenerator: ParsableCommand {
 
+    /// The configuration for the command.
     static var configuration = CommandConfiguration(
         commandName: "vhdl",
         abstract: "A utility for generating VHDL source files from LLFSM definitions."
     )
 
+    /// The shared options between other subcommands.
     @OptionGroup var options: PathArgument
 
+    /// Runs the command.
+    @inlinable
     mutating func run() throws {
         let path = URL(fileURLWithPath: options.path, isDirectory: true)
             .appendingPathComponent("machine.json", isDirectory: false)
