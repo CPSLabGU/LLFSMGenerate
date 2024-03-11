@@ -80,4 +80,26 @@ final class VHDLGeneratorTests: MachineTester {
         XCTAssertEqual(vhdlFile.rawValue + "\n", try String(contentsOf: vhdlPath))
     }
 
+    /// Test that the main method throws the correct error for an invalid machine.
+    func testRunThrowsErrorForInvalidMachine() throws {
+        guard
+            var machine = Machine(machine0LocatedInFolder: self.machine0Path),
+            let onEntry = VariableName(rawValue: "OnEntry")
+        else {
+            XCTFail("Failed to create machine.")
+            return
+        }
+        machine.machineSignals += [LocalSignal(type: .stdLogic, name: onEntry)]
+        let data = try encoder.encode(machine)
+        try data.write(to: jsonFile)
+        var generator = try VHDLGenerator.parseAsRoot([pathRaw])
+        XCTAssertThrowsError(try generator.run()) {
+            guard let error = $0 as? GenerationError else {
+                XCTFail("Thrown incorrect error.")
+                return
+            }
+            XCTAssertEqual(error, .invalidGeneration(message: "Failed to generate VHDL for Machine0."))
+        }
+    }
+
 }
