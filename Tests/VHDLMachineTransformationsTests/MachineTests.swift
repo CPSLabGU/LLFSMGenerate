@@ -121,7 +121,11 @@ final class MachineTests: XCTestCase {
 
     /// The expected machine.
     var expected = Machine(
-        actions: [VariableName(rawValue: "OnEntry")!, VariableName(rawValue: "OnExit")!],
+        actions: [
+            VariableName(rawValue: "Internal")!,
+            VariableName(rawValue: "OnEntry")!,
+            VariableName(rawValue: "OnExit")!
+        ],
         name: VariableName(rawValue: "Machine0")!,
         path: URL(fileURLWithPath: "/tmp/Machine0.machine", isDirectory: true),
         includes: [
@@ -184,7 +188,11 @@ final class MachineTests: XCTestCase {
             clocks: clocks
         )
         expected = Machine(
-            actions: [VariableName(rawValue: "OnEntry")!, VariableName(rawValue: "OnExit")!],
+            actions: [
+                VariableName(rawValue: "Internal")!,
+                VariableName(rawValue: "OnEntry")!,
+                VariableName(rawValue: "OnExit")!
+            ],
             name: VariableName(rawValue: "Machine0")!,
             path: URL(fileURLWithPath: "/tmp/Machine0.machine", isDirectory: true),
             includes: [

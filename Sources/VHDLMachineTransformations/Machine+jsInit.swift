@@ -71,11 +71,13 @@ extension Machine {
     ///   - path: The path where the machine is located.
     @inlinable
     public init?(model: MachineModel, path: URL? = nil) {
-        let actionNames = Set(model.states.flatMap { $0.actions.map(\.name) })
-        let actionVariableNames = actionNames.sorted().compactMap(VariableName.init(rawValue:))
-        guard actionVariableNames.count == actionNames.count else {
+        let actionNames = Set(["OnEntry", "OnExit", "Internal"])
+            .union(model.states.flatMap { $0.actions.map(\.name) })
+        let variableNames = actionNames.compactMap(VariableName.init(rawValue:))
+        guard variableNames.count == actionNames.count else {
             return nil
         }
+        let actionVariableNames = Set(variableNames).sorted()
         let getStatements: (String) -> [String] = {
             $0.components(separatedBy: ";")
                 .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
