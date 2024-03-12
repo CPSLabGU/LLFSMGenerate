@@ -56,12 +56,16 @@
 
 import Foundation
 @testable import MachineGenerator
+import VHDLKripkeStructureGenerator
 import VHDLMachines
 import VHDLParsing
 import XCTest
 
 /// Test class for ``VHDLGenerator``.
 final class VHDLGeneratorTests: MachineTester {
+
+    /// A Kripke structure generator.
+    let generator = VHDLKripkeStructureGenerator()
 
     /// Test the main method generates the `VHDL` file correctly.
     func testRunGeneratesVHDL() throws {
@@ -71,7 +75,6 @@ final class VHDLGeneratorTests: MachineTester {
         }
         VHDLGenerator.main([pathRaw])
         let vhdlPath = machine0Path.appendingPathComponent("Machine0.vhd", isDirectory: false)
-        defer { _ = try? FileManager.default.removeItem(at: vhdlPath) }
         guard let representation = MachineRepresentation(machine: machine) else {
             XCTFail("Failed to create VHDL for machine.")
             return
@@ -99,6 +102,35 @@ final class VHDLGeneratorTests: MachineTester {
                 return
             }
             XCTAssertEqual(error, .invalidGeneration(message: "Failed to generate VHDL for Machine0."))
+        }
+    }
+
+    /// Test the VHDL generator creates the correct Kripke structure.
+    func testRunGeneratesKripkeStructure() throws {
+        guard let machine = Machine(machine0LocatedInFolder: self.machine0Path) else {
+            XCTFail("Failed to create machine.")
+            return
+        }
+        VHDLGenerator.main(["--include-kripke-structure", pathRaw])
+        guard let representation = MachineRepresentation(machine: machine) else {
+            XCTFail("Failed to create VHDL for machine.")
+            return
+        }
+        let files = generator.generate(representation: representation)
+        try files.forEach {
+            let name: String
+            if let entity = $0.entities.first {
+                name = entity.name.rawValue
+            } else if let package = $0.packages.first {
+                name = package.name.rawValue
+            } else {
+                XCTFail("Invalid file in Kripke structure generation.")
+                return
+            }
+            XCTAssertEqual(
+                $0.rawValue + "\n",
+                try String(contentsOf: machine0Path.appendingPathComponent("\(name).vhd", isDirectory: false))
+            )
         }
     }
 
