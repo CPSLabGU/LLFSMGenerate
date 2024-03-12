@@ -92,7 +92,11 @@ struct Generate: ParsableCommand {
     @inlinable var decoder: JSONDecoder { JSONDecoder() }
 
     /// A JSON encoder.
-    @inlinable var encoder: JSONEncoder { JSONEncoder() }
+    @inlinable var encoder: JSONEncoder {
+        let encoder = JSONEncoder()
+        encoder.outputFormatting = .sortedKeys
+        return encoder
+    }
 
     /// A URL to the machine folder.
     @inlinable var pathURL: URL {
