@@ -69,6 +69,7 @@ struct VHDLGenerator: ParsableCommand {
         abstract: "A utility for generating VHDL source files from LLFSM definitions."
     )
 
+    /// Whether to include the Kripke Structure generator program with the machine.
     @Flag(help: "Create the Kripke Structure generator program with the machine.")
     var includeKripkeStructure = false
 
@@ -98,7 +99,12 @@ struct VHDLGenerator: ParsableCommand {
         }
         let files = VHDLKripkeStructureGenerator().generate(representation: representation)
         try files.forEach {
-            guard let name = $0.entities.first?.name.rawValue else {
+            let name: String
+            if let entity = $0.entities.first {
+                name = entity.name.rawValue
+            } else if let package = $0.packages.first {
+                name = package.name.rawValue
+            } else {
                 throw GenerationError.invalidGeneration(message: "Invalid Kripke structure.")
             }
             let filePath = machinePath.appendingPathComponent("\(name).vhd", isDirectory: false)
