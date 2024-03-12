@@ -59,7 +59,8 @@ let package = Package(
                 .target(name: "VHDLMachineTransformations"),
                 .product(name: "VHDLMachines", package: "VHDLMachines"),
                 .product(name: "VHDLParsing", package: "VHDLParsing"),
-                .product(name: "ArgumentParser", package: "swift-argument-parser")
+                .product(name: "ArgumentParser", package: "swift-argument-parser"),
+                .product(name: "VHDLKripkeStructureGenerator", package: "VHDLKripkeStructureGenerator")
             ]
         ),
         .testTarget(
