@@ -22,7 +22,8 @@ let package = Package(
         .package(url: "https://github.com/apple/swift-docc-plugin", from: "1.1.0"),
         .package(url: "https://github.com/mipalgu/VHDLMachines", from: "1.2.4"),
         .package(url: "https://github.com/mipalgu/VHDLParsing", from: "2.4.0"),
-        .package(url: "https://github.com/apple/swift-argument-parser", from: "1.3.0")
+        .package(url: "https://github.com/apple/swift-argument-parser", from: "1.3.0"),
+        .package(url: "https://github.com/mipalgu/VHDLKripkeStructureGenerator.git", from: "0.1.0")
     ],
     targets: [
         // Targets are the basic building blocks of a package, defining a module or a test suite.
@@ -37,7 +38,8 @@ let package = Package(
                 .target(name: "VHDLMachineTransformations"),
                 .product(name: "ArgumentParser", package: "swift-argument-parser"),
                 .product(name: "VHDLMachines", package: "VHDLMachines"),
-                .product(name: "VHDLParsing", package: "VHDLParsing")
+                .product(name: "VHDLParsing", package: "VHDLParsing"),
+                .product(name: "VHDLKripkeStructureGenerator", package: "VHDLKripkeStructureGenerator")
             ]
         ),
         .target(
@@ -57,7 +59,8 @@ let package = Package(
                 .target(name: "VHDLMachineTransformations"),
                 .product(name: "VHDLMachines", package: "VHDLMachines"),
                 .product(name: "VHDLParsing", package: "VHDLParsing"),
-                .product(name: "ArgumentParser", package: "swift-argument-parser")
+                .product(name: "ArgumentParser", package: "swift-argument-parser"),
+                .product(name: "VHDLKripkeStructureGenerator", package: "VHDLKripkeStructureGenerator")
             ]
         ),
         .testTarget(
