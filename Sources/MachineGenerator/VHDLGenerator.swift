@@ -56,6 +56,7 @@
 
 import ArgumentParser
 import Foundation
+import VHDLKripkeStructureGenerator
 import VHDLMachines
 import VHDLParsing
 
@@ -67,6 +68,9 @@ struct VHDLGenerator: ParsableCommand {
         commandName: "vhdl",
         abstract: "A utility for generating VHDL source files from LLFSM definitions."
     )
+
+    @Flag(help: "Create the Kripke Structure generator program with the machine.")
+    var includeKripkeStructure = false
 
     /// The shared options between other subcommands.
     @OptionGroup var options: PathArgument
@@ -83,10 +87,23 @@ struct VHDLGenerator: ParsableCommand {
                 message: "Failed to generate VHDL for \(machine.name.rawValue)."
             )
         }
-        let file = VHDLFile(representation: representation)
-        let vhdlPath = URL(fileURLWithPath: options.path, isDirectory: true)
-            .appendingPathComponent("\(machine.name.rawValue).vhd", isDirectory: false)
-        try (file.rawValue + "\n").write(to: vhdlPath, atomically: true, encoding: .utf8)
+        let machinePath = URL(fileURLWithPath: options.path, isDirectory: true)
+        guard includeKripkeStructure else {
+            let file = VHDLFile(representation: representation)
+            let vhdlPath = machinePath.appendingPathComponent(
+                "\(machine.name.rawValue).vhd", isDirectory: false
+            )
+            try (file.rawValue + "\n").write(to: vhdlPath, atomically: true, encoding: .utf8)
+            return
+        }
+        let files = VHDLKripkeStructureGenerator().generate(representation: representation)
+        try files.forEach {
+            guard let name = $0.entities.first?.name.rawValue else {
+                throw GenerationError.invalidGeneration(message: "Invalid Kripke structure.")
+            }
+            let filePath = machinePath.appendingPathComponent("\(name).vhd", isDirectory: false)
+            try ($0.rawValue + "\n").write(to: filePath, atomically: true, encoding: .utf8)
+        }
     }
 
 }
