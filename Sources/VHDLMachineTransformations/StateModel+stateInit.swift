@@ -67,11 +67,27 @@ extension StateModel {
     ///   - layout: The layout of the state.
     @inlinable
     public init(state: State, layout: StateLayout) {
+        let actionNames = Set(state.actions.map(\.key))
+        // swiftlint:disable force_unwrapping
+        let actions = state.actions.map {
+            ActionModel(name: $0, code: $1)
+        } + [
+            ActionName(rawValue: "Internal")!,
+            ActionName(rawValue: "OnEntry")!,
+            ActionName(rawValue: "OnExit")!
+        ]
+        .compactMap {
+            guard !actionNames.contains($0) else {
+                return nil
+            }
+            return ActionModel(name: $0.rawValue, code: "")
+        }
+        // swiftlint:enable force_unwrapping
         self.init(
             name: state.name.rawValue,
             variables: state.signals.map(\.rawValue).joined(separator: "\n"),
             externalVariables: state.externalVariables.map(\.rawValue).joined(separator: "\n"),
-            actions: state.actions.sorted { $0.0 < $1.0 }.map { ActionModel(name: $0, code: $1) },
+            actions: actions.sorted { $0.name < $1.name },
             layout: layout
         )
     }

@@ -153,7 +153,11 @@ final class MachineModelTests: XCTestCase {
                 name: "state1",
                 variables: "signal s1_x: std_logic;",
                 externalVariables: "y",
-                actions: [ActionModel(name: "OnExit", code: "y <= s1_x;")],
+                actions: [
+                    ActionModel(name: "Internal", code: ""),
+                    ActionModel(name: "OnEntry", code: ""),
+                    ActionModel(name: "OnExit", code: "y <= s1_x;")
+                ],
                 layout: stateLayouts[0]
             ),
             StateModel(
@@ -215,14 +219,22 @@ final class MachineModelTests: XCTestCase {
                     name: "state1",
                     variables: "signal s1_x: std_logic;",
                     externalVariables: "y",
-                    actions: [ActionModel(name: "OnExit", code: "y <= s1_x;")],
+                    actions: [
+                        ActionModel(name: "Internal", code: ""),
+                        ActionModel(name: "OnEntry", code: ""),
+                        ActionModel(name: "OnExit", code: "y <= s1_x;")
+                    ],
                     layout: stateLayouts[0]
                 ),
                 StateModel(
                     name: "state2",
                     variables: "signal s2_x: std_logic;",
                     externalVariables: "",
-                    actions: [ActionModel(name: "OnEntry", code: "s2_x <= '0';")],
+                    actions: [
+                        ActionModel(name: "Internal", code: ""),
+                        ActionModel(name: "OnEntry", code: "s2_x <= '0';"),
+                        ActionModel(name: "OnExit", code: "")
+                    ],
                     layout: stateLayouts[1]
                 )
             ],
