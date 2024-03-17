@@ -1,4 +1,4 @@
-// GenerationError.swift
+// CleanCommand.swift
 // VHDLMachineTransformations
 // 
 // Created by Morgan McColl.
@@ -54,19 +54,46 @@
 // Fifth Floor, Boston, MA  02110-1301, USA.
 // 
 
-/// Errors thrown by the generator.
-enum GenerationError: Error, Equatable, Codable, Hashable, Sendable {
+import ArgumentParser
+import Foundation
 
-    /// An error during the model generation process.
-    case invalidExportation(message: String)
+struct CleanCommand: ParsableCommand {
 
-    /// An error with the current generated format.
-    case invalidFormat(message: String)
+    static var configuration = CommandConfiguration(
+        commandName: "clean",
+        abstract: "Clean the generated source files from the machine."
+    )
 
-    /// An error during the Machine generation process.
-    case invalidGeneration(message: String)
+    @OptionGroup var options: PathArgument
 
-    /// An invalid layout for new machine.
-    case invalidLayout(message: String)
+    mutating func run() throws {
+        let manager = FileManager.default
+        try cleanBuildFolder(manager: manager)
+        try cleanMachine(manager: manager)
+    }
+
+    func cleanBuildFolder(manager: FileManager) throws {
+        var isDirectory: ObjCBool = true
+        guard manager.fileExists(atPath: options.buildFolder.path, isDirectory: &isDirectory) else {
+            return
+        }
+        guard isDirectory.boolValue else {
+            throw GenerationError.invalidExportation(message: "Found a file at the build folders location.")
+        }
+        try manager.removeItem(at: options.buildFolder)
+    }
+
+    func cleanMachine(manager: FileManager) throws {
+        var isDirectory: ObjCBool = false
+        guard manager.fileExists(atPath: options.machine.path, isDirectory: &isDirectory) else {
+            return
+        }
+        guard !isDirectory.boolValue else {
+            throw GenerationError.invalidExportation(
+                message: "Found a directory at the machine files location."
+            )
+        }
+        try manager.removeItem(at: options.machine)
+    }
 
 }
