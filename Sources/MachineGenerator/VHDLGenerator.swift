@@ -60,6 +60,10 @@ import VHDLKripkeStructureGenerator
 import VHDLMachines
 import VHDLParsing
 
+#if os(Linux)
+import IO
+#endif
+
 /// A sub-command that generates VHDL source files from LLFSM definitions.
 struct VHDLGenerator: ParsableCommand {
 
@@ -89,27 +93,34 @@ struct VHDLGenerator: ParsableCommand {
             )
         }
         let machinePath = URL(fileURLWithPath: options.path, isDirectory: true)
+        let buildFolder = machinePath.appendingPathComponent("build", isDirectory: true)
         guard includeKripkeStructure else {
             let file = VHDLFile(representation: representation)
-            let vhdlPath = machinePath.appendingPathComponent(
+            let vhdlPath = buildFolder.appendingPathComponent(
                 "\(machine.name.rawValue).vhd", isDirectory: false
             )
+            try FileManager.default.createDirectory(at: buildFolder, withIntermediateDirectories: true)
             try (file.rawValue + "\n").write(to: vhdlPath, atomically: true, encoding: .utf8)
             return
         }
-        let files = VHDLKripkeStructureGenerator().generate(representation: representation)
-        try files.forEach {
-            let name: String
-            if let entity = $0.entities.first {
-                name = entity.name.rawValue
-            } else if let package = $0.packages.first {
-                name = package.name.rawValue
-            } else {
-                throw GenerationError.invalidGeneration(message: "Invalid Kripke structure.")
-            }
-            let filePath = machinePath.appendingPathComponent("\(name).vhd", isDirectory: false)
-            try ($0.rawValue + "\n").write(to: filePath, atomically: true, encoding: .utf8)
+        guard let files = VHDLKripkeStructureGenerator().generateAll(representation: representation) else {
+            throw GenerationError.invalidGeneration(
+                message: "Failed to generate Kripke Structure for \(machine.name.rawValue)."
+            )
         }
+        try files.write(to: buildFolder, options: .atomic, originalContentsURL: nil)
+        // try files.forEach {
+        //     let name: String
+        //     if let entity = $0.entities.first {
+        //         name = entity.name.rawValue
+        //     } else if let package = $0.packages.first {
+        //         name = package.name.rawValue
+        //     } else {
+        //         throw GenerationError.invalidGeneration(message: "Invalid Kripke structure.")
+        //     }
+        //     let filePath = buildFolder.appendingPathComponent("\(name).vhd", isDirectory: false)
+        //     try ($0.rawValue + "\n").write(to: filePath, atomically: true, encoding: .utf8)
+        // }
     }
 
 }

@@ -61,6 +61,10 @@ import VHDLMachines
 import VHDLParsing
 import XCTest
 
+#if os(Linux)
+import IO
+#endif
+
 /// Test class for ``VHDLGenerator``.
 final class VHDLGeneratorTests: MachineTester {
 
@@ -74,7 +78,7 @@ final class VHDLGeneratorTests: MachineTester {
             return
         }
         VHDLGenerator.main([pathRaw])
-        let vhdlPath = machine0Path.appendingPathComponent("Machine0.vhd", isDirectory: false)
+        let vhdlPath = machine0Path.appendingPathComponent("build/Machine0.vhd", isDirectory: false)
         guard let representation = MachineRepresentation(machine: machine) else {
             XCTFail("Failed to create VHDL for machine.")
             return
@@ -112,26 +116,45 @@ final class VHDLGeneratorTests: MachineTester {
             return
         }
         VHDLGenerator.main(["--include-kripke-structure", pathRaw])
-        guard let representation = MachineRepresentation(machine: machine) else {
+        guard
+            let representation = MachineRepresentation(machine: machine),
+            let files = generator.generateAll(representation: representation)
+        else {
             XCTFail("Failed to create VHDL for machine.")
             return
         }
-        let files = generator.generate(representation: representation)
-        try files.forEach {
-            let name: String
-            if let entity = $0.entities.first {
-                name = entity.name.rawValue
-            } else if let package = $0.packages.first {
-                name = package.name.rawValue
-            } else {
-                XCTFail("Invalid file in Kripke structure generation.")
-                return
-            }
-            XCTAssertEqual(
-                $0.rawValue + "\n",
-                try String(contentsOf: machine0Path.appendingPathComponent("\(name).vhd", isDirectory: false))
-            )
+        files.preferredFilename = "build"
+        assertContents(wrapper: files, parentFolder: machine0Path)
+    }
+
+    /// Assert a file wrapper contents recursively against the file system.
+    func assertContents(wrapper: FileWrapper, parentFolder: URL) {
+        guard wrapper.isDirectory, let files = wrapper.fileWrappers, let name = wrapper.filename else {
+            XCTFail("Failed to read file contents in \(wrapper.filename ?? "<unknown file>").")
+            return
         }
+        let path = parentFolder.appendingPathComponent(name, isDirectory: true)
+        files.forEach { assertContents(name: $0.0, wrapper: $0.1, parentFolder: path) }
+    }
+
+    /// Accumulator function for `assertContents`.
+    func assertContents(name: String, wrapper: FileWrapper, parentFolder: URL) {
+        guard !wrapper.isDirectory else {
+            assertContents(wrapper: wrapper, parentFolder: parentFolder)
+            return
+        }
+        guard
+            let data = wrapper.regularFileContents, let contents = String(data: data, encoding: .utf8)
+        else {
+            XCTFail("Failed to read file contents in \(name).")
+            return
+        }
+        XCTAssertEqual(
+            contents,
+            try String(
+                contentsOf: parentFolder.appendingPathComponent("\(name)", isDirectory: false)
+            )
+        )
     }
 
 }
