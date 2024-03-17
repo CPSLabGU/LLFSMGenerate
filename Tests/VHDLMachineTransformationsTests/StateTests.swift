@@ -196,4 +196,16 @@ final class StateTests: XCTestCase {
         XCTAssertNil(State(model: model))
     }
 
+    /// Check init removes empty actions.
+    func testInvalidAction() {
+        // swiftlint:disable:next force_unwrapping
+        let internalName = VariableName(rawValue: "Internal")!
+        model.actions = model.actions.dropLast() + [
+            ActionModel(name: "Internal", code: "")
+        ]
+        expected.actions[internalName] = nil
+        let state = State(model: model)
+        XCTAssertEqual(state, expected)
+    }
+
 }
