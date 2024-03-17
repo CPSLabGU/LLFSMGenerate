@@ -151,6 +151,7 @@ extension MachineModel {
                 variables: "signal InitialX: std_logic;",
                 externalVariables: "x\ny",
                 actions: [
+                    ActionModel(name: "Internal", code: ""),
                     ActionModel(name: "OnEntry", code: "InitialX <= x and machineX;"),
                     ActionModel(name: "OnExit", code: "y <= InitialX;")
                 ],
@@ -160,7 +161,15 @@ extension MachineModel {
                 )
             ),
             StateModel(
-                name: "Finished", variables: "", externalVariables: "", actions: [], layout: StateLayout(
+                name: "Finished",
+                variables: "",
+                externalVariables: "",
+                actions: [
+                    ActionModel(name: "Internal", code: ""),
+                    ActionModel(name: "OnEntry", code: ""),
+                    ActionModel(name: "OnExit", code: "")
+                ],
+                layout: StateLayout(
                     position: Point2D(x: 0.0, y: 300.0), dimensions: Point2D(x: 200.0, y: 100.0)
                 )
             )

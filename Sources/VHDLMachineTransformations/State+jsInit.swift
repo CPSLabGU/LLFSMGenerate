@@ -70,12 +70,15 @@ extension State {
         guard let name = VariableName(rawValue: model.name) else {
             return nil
         }
-        let actionNames = model.actions.map(\.name)
+        let validActions = model.actions.filter {
+            !$0.code.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+        }
+        let actionNames = validActions.map(\.name)
         let actionNamesParsed = actionNames.compactMap(VariableName.init(rawValue:))
         guard actionNames.count == actionNamesParsed.count else {
             return nil
         }
-        let actionCode = model.actions.map(\.code)
+        let actionCode = validActions.map(\.code)
         let actionCodeParsed = actionCode.compactMap(SynchronousBlock.init(rawValue:))
         guard
             actionCode.count == actionCodeParsed.count,
