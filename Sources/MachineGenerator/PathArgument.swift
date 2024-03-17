@@ -55,6 +55,7 @@
 // 
 
 import ArgumentParser
+import Foundation
 
 /// A struct defining the shared arguments for the machine generator.
 struct PathArgument: ParsableArguments {
@@ -62,5 +63,17 @@ struct PathArgument: ParsableArguments {
     /// The path to the machine folder.
     @Argument(help: "The path to the machine folder.", completion: .directory)
     var path: String
+
+    var machine: URL {
+        pathURL.appendingPathComponent("machine.json", isDirectory: false)
+    }
+
+    var pathURL: URL {
+        URL(fileURLWithPath: path, isDirectory: true)
+    }
+
+    var buildFolder: URL {
+        pathURL.appendingPathComponent("build", isDirectory: true)
+    }
 
 }
