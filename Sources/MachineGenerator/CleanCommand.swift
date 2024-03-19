@@ -57,18 +57,25 @@
 import ArgumentParser
 import Foundation
 
+/// A command that cleans all generated files.
 struct CleanCommand: ParsableCommand {
 
+    /// The command configuration.
     static var configuration = CommandConfiguration(
         commandName: "clean",
         abstract: "Clean the generated source files from the machine."
     )
 
+    /// A flag that specifies that only the build folder must be removed.
     @Flag(help: "Only clean the build folder.")
     var cleanBuildFolder = false
 
+    /// A path to the machine to clean.
     @OptionGroup var options: PathArgument
 
+    /// Clean the generated files from the machine.
+    /// - Throws: ``GenerationError``.
+    @inlinable
     mutating func run() throws {
         let manager = FileManager.default
         guard !cleanBuildFolder else {
@@ -79,6 +86,10 @@ struct CleanCommand: ParsableCommand {
         try cleanMachine(manager: manager)
     }
 
+    /// Clean the build folder.
+    /// - Parameter manager: A manager to use.
+    /// - Throws: ``GenerationError.invalidExportation`` if the build folder is a file.
+    @inlinable
     func cleanBuildFolder(manager: FileManager) throws {
         var isDirectory: ObjCBool = false
         guard manager.fileExists(atPath: options.buildFolder.path, isDirectory: &isDirectory) else {
@@ -90,6 +101,10 @@ struct CleanCommand: ParsableCommand {
         try manager.removeItem(at: options.buildFolder)
     }
 
+    /// Cleans the machine file.
+    /// - Parameter manager: A manager to use.
+    /// - Throws: ``GenerationError.invalidExportation`` if the machine file is a directory.
+    @inlinable
     func cleanMachine(manager: FileManager) throws {
         var isDirectory: ObjCBool = true
         guard manager.fileExists(atPath: options.machine.path, isDirectory: &isDirectory) else {
