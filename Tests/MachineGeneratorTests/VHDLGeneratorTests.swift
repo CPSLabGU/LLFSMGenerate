@@ -124,6 +124,7 @@ final class VHDLGeneratorTests: MachineTester {
             return
         }
         files.preferredFilename = "build"
+        files.filename = "build"
         assertContents(wrapper: files, parentFolder: machine0Path)
     }
 
