@@ -109,18 +109,6 @@ struct VHDLGenerator: ParsableCommand {
             )
         }
         try files.write(to: buildFolder, options: .atomic, originalContentsURL: nil)
-        // try files.forEach {
-        //     let name: String
-        //     if let entity = $0.entities.first {
-        //         name = entity.name.rawValue
-        //     } else if let package = $0.packages.first {
-        //         name = package.name.rawValue
-        //     } else {
-        //         throw GenerationError.invalidGeneration(message: "Invalid Kripke structure.")
-        //     }
-        //     let filePath = buildFolder.appendingPathComponent("\(name).vhd", isDirectory: false)
-        //     try ($0.rawValue + "\n").write(to: filePath, atomically: true, encoding: .utf8)
-        // }
     }
 
 }
