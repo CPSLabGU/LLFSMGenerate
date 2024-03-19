@@ -64,16 +64,23 @@ struct CleanCommand: ParsableCommand {
         abstract: "Clean the generated source files from the machine."
     )
 
+    @Flag(help: "Only clean the build folder.")
+    var cleanBuildFolder = false
+
     @OptionGroup var options: PathArgument
 
     mutating func run() throws {
         let manager = FileManager.default
+        guard !cleanBuildFolder else {
+            try cleanBuildFolder(manager: manager)
+            return
+        }
         try cleanBuildFolder(manager: manager)
         try cleanMachine(manager: manager)
     }
 
     func cleanBuildFolder(manager: FileManager) throws {
-        var isDirectory: ObjCBool = true
+        var isDirectory: ObjCBool = false
         guard manager.fileExists(atPath: options.buildFolder.path, isDirectory: &isDirectory) else {
             return
         }
@@ -84,7 +91,7 @@ struct CleanCommand: ParsableCommand {
     }
 
     func cleanMachine(manager: FileManager) throws {
-        var isDirectory: ObjCBool = false
+        var isDirectory: ObjCBool = true
         guard manager.fileExists(atPath: options.machine.path, isDirectory: &isDirectory) else {
             return
         }
