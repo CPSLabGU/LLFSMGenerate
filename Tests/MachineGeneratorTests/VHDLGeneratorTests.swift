@@ -124,14 +124,15 @@ final class VHDLGeneratorTests: MachineTester {
             return
         }
         files.preferredFilename = "build"
-        files.filename = "build"
         assertContents(wrapper: files, parentFolder: machine0Path)
     }
 
     /// Assert a file wrapper contents recursively against the file system.
     func assertContents(wrapper: FileWrapper, parentFolder: URL) {
-        guard wrapper.isDirectory, let files = wrapper.fileWrappers, let name = wrapper.filename else {
-            XCTFail("Failed to read file contents in \(wrapper.filename ?? "<unknown file>").")
+        guard
+            wrapper.isDirectory, let files = wrapper.fileWrappers, let name = wrapper.preferredFilename
+        else {
+            XCTFail("Failed to read file contents in \(wrapper.preferredFilename ?? "<unknown file>").")
             return
         }
         let path = parentFolder.appendingPathComponent(name, isDirectory: true)
