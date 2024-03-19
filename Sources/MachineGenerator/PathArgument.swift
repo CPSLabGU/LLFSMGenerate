@@ -64,15 +64,18 @@ struct PathArgument: ParsableArguments {
     @Argument(help: "The path to the machine folder.", completion: .directory)
     var path: String
 
-    var machine: URL {
+    /// The path to the machine file.
+    @inlinable var machine: URL {
         pathURL.appendingPathComponent("machine.json", isDirectory: false)
     }
 
-    var pathURL: URL {
+    /// The path to the users input (the machine folder).
+    @inlinable var pathURL: URL {
         URL(fileURLWithPath: path, isDirectory: true)
     }
 
-    var buildFolder: URL {
+    /// The path to the build folder.
+    @inlinable var buildFolder: URL {
         pathURL.appendingPathComponent("build", isDirectory: true)
     }
 
