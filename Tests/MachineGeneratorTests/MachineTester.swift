@@ -103,6 +103,11 @@ class MachineTester: XCTestCase {
         machine0Path.appendingPathComponent("model.json", isDirectory: false)
     }
 
+    /// The path to the build folder.
+    var buildFolder: URL {
+        machine0Path.appendingPathComponent("build", isDirectory: true)
+    }
+
     /// Create test machines before every test.
     override func setUp() {
         let createDir: ()? = try? FileManager.default
