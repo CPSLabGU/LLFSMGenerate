@@ -54,7 +54,6 @@
 // Fifth Floor, Boston, MA  02110-1301, USA.
 
 @testable import MachineGenerator
-import VHDLMachines
 import XCTest
 
 /// Test class for ``CleanCommand``.
