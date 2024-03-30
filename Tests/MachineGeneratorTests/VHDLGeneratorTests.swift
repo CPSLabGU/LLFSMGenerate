@@ -124,11 +124,11 @@ final class VHDLGeneratorTests: MachineTester {
             return
         }
         files.preferredFilename = "build"
-        assertContents(wrapper: files, parentFolder: machine0Path)
+        try assertContents(wrapper: files, parentFolder: machine0Path)
     }
 
     /// Assert a file wrapper contents recursively against the file system.
-    func assertContents(wrapper: FileWrapper, parentFolder: URL) {
+    func assertContents(wrapper: FileWrapper, parentFolder: URL) throws {
         guard
             wrapper.isDirectory, let files = wrapper.fileWrappers, let name = wrapper.preferredFilename
         else {
@@ -136,13 +136,13 @@ final class VHDLGeneratorTests: MachineTester {
             return
         }
         let path = parentFolder.appendingPathComponent(name, isDirectory: true)
-        files.forEach { assertContents(name: $0.0, wrapper: $0.1, parentFolder: path) }
+        try files.forEach { try assertContents(name: $0.0, wrapper: $0.1, parentFolder: path) }
     }
 
     /// Accumulator function for `assertContents`.
-    func assertContents(name: String, wrapper: FileWrapper, parentFolder: URL) {
+    func assertContents(name: String, wrapper: FileWrapper, parentFolder: URL) throws {
         guard !wrapper.isDirectory else {
-            assertContents(wrapper: wrapper, parentFolder: parentFolder)
+            try assertContents(wrapper: wrapper, parentFolder: parentFolder)
             return
         }
         guard
@@ -151,12 +151,17 @@ final class VHDLGeneratorTests: MachineTester {
             XCTFail("Failed to read file contents in \(name).")
             return
         }
-        XCTAssertEqual(
-            contents,
-            try String(
+        #if os(macOS)
+            let result = try String(
+                    contentsOf: parentFolder.appendingPathComponent("\(name)", isDirectory: false)
+                )
+                .replacingOccurrences(of: "\r", with: "\n")
+        #else
+            let result = try String(
                 contentsOf: parentFolder.appendingPathComponent("\(name)", isDirectory: false)
             )
-        )
+        #endif
+        XCTAssertEqual(contents, result)
     }
 
 }
