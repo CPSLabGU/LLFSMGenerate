@@ -71,7 +71,8 @@ We prefer that you use [swiftenv](https://github.com/kylef/swiftenv) to install 
 git clone https://github.com/kylef/swiftenv.git ~/.swiftenv
 ```
 
-Then place the following in your `.bash_profile` (or equivalent if using a different shell).
+Then place the following in your `.bash_profile` (or equivalent if using a different shell). Please note,
+some systems will require modifying your `.bashrc` instead of `.bash_profile`.
 
 ```shell
 echo 'export SWIFTENV_ROOT="$HOME/.swiftenv"' >> ~/.bash_profile
