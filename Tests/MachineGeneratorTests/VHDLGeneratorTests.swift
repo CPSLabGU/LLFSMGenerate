@@ -155,6 +155,7 @@ final class VHDLGeneratorTests: MachineTester {
             let result = try String(
                     contentsOf: parentFolder.appendingPathComponent("\(name)", isDirectory: false)
                 )
+                .replacingOccurrences(of: "\r\n", with: "\n")
                 .replacingOccurrences(of: "\r", with: "\n")
         #else
             let result = try String(
