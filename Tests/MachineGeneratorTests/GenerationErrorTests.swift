@@ -1,5 +1,5 @@
-// GenerationError.swift
-// VHDLMachineTransformations
+// GenerationErrorTests.swift
+// LLFSMGenerate
 // 
 // Created by Morgan McColl.
 // Copyright © 2024 Morgan McColl. All rights reserved.
@@ -52,36 +52,21 @@
 // along with this program; if not, see http://www.gnu.org/licenses/
 // or write to the Free Software Foundation, Inc., 51 Franklin Street,
 // Fifth Floor, Boston, MA  02110-1301, USA.
-// 
 
-/// Errors thrown by the generator.
-enum GenerationError: Error, Equatable, Codable, Hashable, Sendable, CustomStringConvertible {
+@testable import MachineGenerator
+import XCTest
 
-    /// An error with the current machine.
-    case invalidMachine(message: String)
+/// Test class for ``GenerationError``.
+final class GenerationErrorTests: XCTestCase {
 
-    /// An error during the model generation process.
-    case invalidExportation(message: String)
-
-    /// An error with the current generated format.
-    case invalidFormat(message: String)
-
-    /// An error during the Machine generation process.
-    case invalidGeneration(message: String)
-
-    /// An error with user input.
-    case invalidInput(message: String)
-
-    /// An invalid layout for new machine.
-    case invalidLayout(message: String)
-
-    /// The message contained within the error.
-    @inlinable var description: String {
-        switch self {
-        case let .invalidMachine(message), let .invalidExportation(message), let .invalidFormat(message),
-        let .invalidGeneration(message), let .invalidInput(message), let .invalidLayout(message):
-            return "\(message)"
-        }
+    /// Test that the description gets the message correctly.
+    func testDescription() {
+        XCTAssertEqual(GenerationError.invalidExportation(message: "A").description, "A")
+        XCTAssertEqual(GenerationError.invalidFormat(message: "B").description, "B")
+        XCTAssertEqual(GenerationError.invalidGeneration(message: "C").description, "C")
+        XCTAssertEqual(GenerationError.invalidInput(message: "D").description, "D")
+        XCTAssertEqual(GenerationError.invalidLayout(message: "E").description, "E")
+        XCTAssertEqual(GenerationError.invalidMachine(message: "F").description, "F")
     }
 
 }
