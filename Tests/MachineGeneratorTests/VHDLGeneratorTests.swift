@@ -153,16 +153,22 @@ final class VHDLGeneratorTests: MachineTester {
         }
         #if os(macOS)
             let result = try String(
-                    contentsOf: parentFolder.appendingPathComponent("\(name)", isDirectory: false)
-                )
+                contentsOf: parentFolder.appendingPathComponent("\(name)", isDirectory: false)
+            )
                 // .replacingOccurrences(of: "\r\n", with: "\n")
                 // .replacingOccurrences(of: "\r", with: "\n")
+            XCTAssertEqual(
+                result.count, contents.count, "Number of characters is not the same \(result) to \(contents)."
+            )
+            zip(result, contents).forEach {
+                XCTAssertEqual($0, $1, "Failed to match \($0) to \($1).")
+            }
         #else
             let result = try String(
                 contentsOf: parentFolder.appendingPathComponent("\(name)", isDirectory: false)
             )
+            XCTAssertEqual(contents, result)
         #endif
-        XCTAssertEqual(contents, result)
     }
 
 }
