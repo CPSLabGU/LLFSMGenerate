@@ -57,6 +57,9 @@
 /// Errors thrown by the generator.
 enum GenerationError: Error, Equatable, Codable, Hashable, Sendable {
 
+    /// An error with the current machine.
+    case invalidMachine(message: String)
+
     /// An error during the model generation process.
     case invalidExportation(message: String)
 
@@ -65,6 +68,9 @@ enum GenerationError: Error, Equatable, Codable, Hashable, Sendable {
 
     /// An error during the Machine generation process.
     case invalidGeneration(message: String)
+
+    /// An error with user input.
+    case invalidInput(message: String)
 
     /// An invalid layout for new machine.
     case invalidLayout(message: String)
