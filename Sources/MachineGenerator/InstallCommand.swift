@@ -76,6 +76,7 @@ struct InstallCommand: ParsableCommand {
     @Flag(help: "Specifies that the install path is a vivado project directory.")
     var vivado = false
 
+    /// A `URL` of the `installPath`.
     var installURL: URL {
         URL(fileURLWithPath: installPath, isDirectory: true)
     }
@@ -135,7 +136,7 @@ struct InstallCommand: ParsableCommand {
         let installURL = self.installURL
         let projectFiles = try manager.contentsOfDirectory(at: installURL, includingPropertiesForKeys: nil)
         guard let projectNameURL = projectFiles.first(
-            where: { $0.lastPathComponent.hasSuffix(".xpr") }
+            where: { !$0.hasDirectoryPath && $0.lastPathComponent.hasSuffix(".xpr") }
         ) else {
             throw GenerationError.invalidInput(
                 message: "The install directory is not a valid vivado project."
