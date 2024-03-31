@@ -157,11 +157,12 @@ final class VHDLGeneratorTests: MachineTester {
             )
                 // .replacingOccurrences(of: "\r\n", with: "\n")
                 // .replacingOccurrences(of: "\r", with: "\n")
+            XCTAssertEqual(result, contents)
             XCTAssertEqual(
                 result.count, contents.count, "Number of characters is not the same \(result) to \(contents)."
             )
             zip(result, contents).forEach {
-                XCTAssertEqual($0, $1, "Failed to match \($0) to \($1).")
+                XCTAssertEqual($0, $1)
             }
         #else
             let result = try String(
