@@ -1,4 +1,4 @@
-// VHDLGenerator.swift
+// CleanCommand.swift
 // VHDLMachineTransformations
 // 
 // Created by Morgan McColl.
@@ -56,59 +56,66 @@
 
 import ArgumentParser
 import Foundation
-import VHDLKripkeStructureGenerator
-import VHDLMachines
-import VHDLParsing
 
-#if os(Linux)
-import IO
-#endif
+/// A command that cleans all generated files.
+struct CleanCommand: ParsableCommand {
 
-/// A sub-command that generates VHDL source files from LLFSM definitions.
-struct VHDLGenerator: ParsableCommand {
-
-    /// The configuration for the command.
+    /// The command configuration.
     static var configuration = CommandConfiguration(
-        commandName: "vhdl",
-        abstract: "A utility for generating VHDL source files from LLFSM definitions."
+        commandName: "clean",
+        abstract: "Clean the generated source files from the machine."
     )
 
-    /// Whether to include the Kripke Structure generator program with the machine.
-    @Flag(help: "Create the Kripke Structure generator program with the machine.")
-    var includeKripkeStructure = false
+    /// A flag that specifies that only the build folder must be removed.
+    @Flag(help: "Only clean the build folder.")
+    var cleanBuildFolder = false
 
-    /// The shared options between other subcommands.
+    /// A path to the machine to clean.
     @OptionGroup var options: PathArgument
 
-    /// Runs the command.
+    /// Clean the generated files from the machine.
+    /// - Throws: ``GenerationError``.
     @inlinable
     mutating func run() throws {
-        let path = URL(fileURLWithPath: options.path, isDirectory: true)
-            .appendingPathComponent("machine.json", isDirectory: false)
-        let data = try Data(contentsOf: path)
-        let machine = try JSONDecoder().decode(Machine.self, from: data)
-        guard let representation = MachineRepresentation(machine: machine) else {
-            throw GenerationError.invalidGeneration(
-                message: "Failed to generate VHDL for \(machine.name.rawValue)."
-            )
-        }
-        let machinePath = URL(fileURLWithPath: options.path, isDirectory: true)
-        let buildFolder = machinePath.appendingPathComponent("build", isDirectory: true)
-        guard includeKripkeStructure else {
-            let file = VHDLFile(representation: representation)
-            let vhdlPath = buildFolder.appendingPathComponent(
-                "\(machine.name.rawValue).vhd", isDirectory: false
-            )
-            try FileManager.default.createDirectory(at: buildFolder, withIntermediateDirectories: true)
-            try (file.rawValue + "\n").write(to: vhdlPath, atomically: true, encoding: .utf8)
+        let manager = FileManager.default
+        guard !cleanBuildFolder else {
+            try cleanBuildFolder(manager: manager)
             return
         }
-        guard let files = VHDLKripkeStructureGenerator().generateAll(representation: representation) else {
-            throw GenerationError.invalidGeneration(
-                message: "Failed to generate Kripke Structure for \(machine.name.rawValue)."
+        try cleanBuildFolder(manager: manager)
+        try cleanMachine(manager: manager)
+    }
+
+    /// Clean the build folder.
+    /// - Parameter manager: A manager to use.
+    /// - Throws: ``GenerationError.invalidExportation`` if the build folder is a file.
+    @inlinable
+    func cleanBuildFolder(manager: FileManager) throws {
+        var isDirectory: ObjCBool = false
+        guard manager.fileExists(atPath: options.buildFolder.path, isDirectory: &isDirectory) else {
+            return
+        }
+        guard isDirectory.boolValue else {
+            throw GenerationError.invalidExportation(message: "Found a file at the build folders location.")
+        }
+        try manager.removeItem(at: options.buildFolder)
+    }
+
+    /// Cleans the machine file.
+    /// - Parameter manager: A manager to use.
+    /// - Throws: ``GenerationError.invalidExportation`` if the machine file is a directory.
+    @inlinable
+    func cleanMachine(manager: FileManager) throws {
+        var isDirectory: ObjCBool = true
+        guard manager.fileExists(atPath: options.machine.path, isDirectory: &isDirectory) else {
+            return
+        }
+        guard !isDirectory.boolValue else {
+            throw GenerationError.invalidExportation(
+                message: "Found a directory at the machine files location."
             )
         }
-        try files.write(to: buildFolder, options: .atomic, originalContentsURL: nil)
+        try manager.removeItem(at: options.machine)
     }
 
 }

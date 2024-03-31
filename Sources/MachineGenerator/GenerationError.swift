@@ -60,6 +60,9 @@ enum GenerationError: Error, Equatable, Codable, Hashable, Sendable {
     /// An error during the model generation process.
     case invalidExportation(message: String)
 
+    /// An error with the current generated format.
+    case invalidFormat(message: String)
+
     /// An error during the Machine generation process.
     case invalidGeneration(message: String)
 

@@ -7,9 +7,9 @@
                 "swift"
             ],
             "args": [],
-            "cwd": "${workspaceFolder:VHDLMachineTransformations}",
+            "cwd": "${workspaceFolder:LLFSMGenerate}",
             "name": "Debug llfsmgenerate",
-            "program": "${workspaceFolder:VHDLMachineTransformations}/.build/debug/llfsmgenerate",
+            "program": "${workspaceFolder:LLFSMGenerate}/.build/debug/llfsmgenerate",
             "preLaunchTask": "swift: Build Debug llfsmgenerate"
         },
         {
@@ -19,9 +19,9 @@
                 "swift"
             ],
             "args": [],
-            "cwd": "${workspaceFolder:VHDLMachineTransformations}",
+            "cwd": "${workspaceFolder:LLFSMGenerate}",
             "name": "Release llfsmgenerate",
-            "program": "${workspaceFolder:VHDLMachineTransformations}/.build/release/llfsmgenerate",
+            "program": "${workspaceFolder:LLFSMGenerate}/.build/release/llfsmgenerate",
             "preLaunchTask": "swift: Build Release llfsmgenerate"
         }
     ]
