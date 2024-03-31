@@ -151,25 +151,10 @@ final class VHDLGeneratorTests: MachineTester {
             XCTFail("Failed to read file contents in \(name).")
             return
         }
-        #if os(macOS)
-            let result = try String(
-                contentsOf: parentFolder.appendingPathComponent("\(name)", isDirectory: false)
-            )
-                // .replacingOccurrences(of: "\r\n", with: "\n")
-                // .replacingOccurrences(of: "\r", with: "\n")
-            XCTAssertEqual(result, contents)
-            XCTAssertEqual(
-                result.count, contents.count, "Number of characters is not the same \(result) to \(contents)."
-            )
-            zip(result, contents).forEach {
-                XCTAssertEqual($0, $1)
-            }
-        #else
-            let result = try String(
-                contentsOf: parentFolder.appendingPathComponent("\(name)", isDirectory: false)
-            )
-            XCTAssertEqual(contents, result)
-        #endif
+        let result = try String(
+            contentsOf: parentFolder.appendingPathComponent("\(name)", isDirectory: false)
+        )
+        XCTAssertEqual(contents, result)
     }
 
 }
