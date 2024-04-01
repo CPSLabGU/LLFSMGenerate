@@ -68,6 +68,9 @@ class MachineTester: XCTestCase {
     /// A JSON decoder.
     let decoder = JSONDecoder()
 
+    /// A `FileManager`.
+    let manager = FileManager.default
+
     /// A path to Machine0.
     var pathRaw: String {
         String(packagePath) + "/Tests/MachineGeneratorTests/machines/Machine0.machine"
@@ -110,7 +113,7 @@ class MachineTester: XCTestCase {
 
     /// Create test machines before every test.
     override func setUp() {
-        let createDir: ()? = try? FileManager.default
+        let createDir: ()? = try? manager
             .createDirectory(at: machine0Path, withIntermediateDirectories: true)
         guard
             createDir != nil,
