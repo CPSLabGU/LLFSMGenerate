@@ -189,8 +189,6 @@ final class GeneratorTests: MachineTester {
 
     /// Test that `run` correctly generates model.
     func testRunGeneratesModel() throws {
-        print("In test!")
-        fflush(stdout)
         let oldData = try Data(contentsOf: modelFile)
         let oldModel = try decoder.decode(MachineModel.self, from: oldData)
         var invalidModel = oldModel
