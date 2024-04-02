@@ -102,6 +102,10 @@ final class InstallCommandTests: MachineTester {
 
     /// Test files are copied correctly.
     func testInstallCommandWorksLocally() throws {
+        try manager.removeItem(
+            at: self.vivadoPath.appendingPathComponent("\(vivadoName).srcs", isDirectory: true)
+        )
+        let previousProjectContents = try String(contentsOf: self.projectFilePath, encoding: .utf8)
         InstallCommand.main([self.machine0Path.path, self.vivadoPath.path])
         let vhdlFilePath = self.buildFolder.appendingPathComponent("vhdl/Machine0.vhd", isDirectory: false)
         let contents = try String(contentsOf: vhdlFilePath, encoding: .utf8)
@@ -109,14 +113,18 @@ final class InstallCommandTests: MachineTester {
         let vivadoContents = try String(contentsOf: vivadoVHDLFile, encoding: .utf8)
         XCTAssertEqual(contents, vivadoContents)
         let files = try self.manager.contentsOfDirectory(at: self.vivadoPath, includingPropertiesForKeys: nil)
-        XCTAssertEqual(files.count, 3)
-        let expected: Set<URL> = [
-            self.projectFilePath,
-            vivadoVHDLFile,
-            self.vivadoPath.appendingPathComponent("\(vivadoName).xpr", isDirectory: false)
-        ]
+        XCTAssertEqual(files.count, 2)
+        let expected: Set<URL> = [self.projectFilePath, vivadoVHDLFile]
         XCTAssertTrue(files.allSatisfy { expected.contains($0) })
-        XCTAssertEqual(Set(files).count, 3)
+        XCTAssertEqual(Set(files).count, 2)
+        XCTAssertEqual(
+            try String(
+                contentsOf: self.buildFolder.appendingPathComponent("vhdl/Machine0.vhd", isDirectory: false),
+                encoding: .utf8
+            ),
+            try String(contentsOf: vivadoVHDLFile, encoding: .utf8)
+        )
+        XCTAssertEqual(previousProjectContents, try String(contentsOf: self.projectFilePath, encoding: .utf8))
     }
 
 }
