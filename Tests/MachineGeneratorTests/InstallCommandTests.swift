@@ -97,12 +97,11 @@ final class InstallCommandTests: MachineTester {
     /// Remove install locations.
     override func tearDown() {
         super.tearDown()
-        try? self.manager.removeItem(at: vivadoPath)
+        XCTAssertNotNil(try? self.manager.removeItem(at: vivadoPath))
     }
 
     /// Test files are copied correctly.
     func testInstallCommandWorksLocally() throws {
-        print(self.machine0Path.path)
         InstallCommand.main([self.machine0Path.path, self.vivadoPath.path])
         let vhdlFilePath = self.buildFolder.appendingPathComponent("vhdl/Machine0.vhd", isDirectory: false)
         let contents = try String(contentsOf: vhdlFilePath, encoding: .utf8)

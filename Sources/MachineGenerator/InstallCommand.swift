@@ -65,16 +65,16 @@ struct InstallCommand: ParsableCommand {
         abstract: "Install the VHDL files into a specified directory."
     )
 
-    /// That path to the install location.
-    @Argument(help: "The directory to install the generated files into.", completion: .directory)
-    var installPath: String
-
     /// The path to the machine to install.
     @OptionGroup var path: PathArgument
 
     /// Whether `installPath` is a vivado project directory.
     @Flag(help: "Specifies that the install path is a vivado project directory.")
     var vivado = false
+
+    /// That path to the install location.
+    @Argument(help: "The directory to install the generated files into.", completion: .directory)
+    var installPath: String
 
     /// A `URL` of the `installPath`.
     var installURL: URL {
@@ -84,7 +84,7 @@ struct InstallCommand: ParsableCommand {
     /// The main entry point for this command.
     /// - Throws: ``GenerationError``.
     func run() throws {
-        guard self.path.path.hasSuffix(".machine") else {
+        guard self.path.path.trimmingCharacters(in: .whitespacesAndNewlines).hasSuffix(".machine") else {
             throw GenerationError.invalidMachine(message: "The path provided is not a machine.")
         }
         let manager = FileManager.default
@@ -98,10 +98,10 @@ struct InstallCommand: ParsableCommand {
         guard manager.fileExists(atPath: installPath, isDirectory: &isDirectory), isDirectory.boolValue else {
             throw GenerationError.invalidInput(message: "The install directory is incorrect.")
         }
-        let buildFolder = self.path.buildFolder
         isDirectory = false
         guard
-            manager.fileExists(atPath: buildFolder.path, isDirectory: &isDirectory), isDirectory.boolValue
+            manager.fileExists(atPath: self.path.buildFolder.path, isDirectory: &isDirectory),
+            isDirectory.boolValue
         else {
             throw GenerationError.invalidGeneration(
                 message: "The build folder does not exist. Have you generated the VHDL files?"
@@ -115,11 +115,11 @@ struct InstallCommand: ParsableCommand {
                 message: "The build folder is corrupted! Please regenerate the VHDL files."
             )
         }
-        guard vivado else {
-            try self.installLocal(files: vhdlFiles, manager: manager, installLocation: self.installURL)
+        guard !vivado else {
+            try self.installVivado(files: vhdlFiles, manager: manager)
             return
         }
-        try self.installVivado(files: vhdlFiles, manager: manager)
+        try self.installLocal(files: vhdlFiles, manager: manager, installLocation: self.installURL)
     }
 
     func installLocal(files: [URL], manager: FileManager, installLocation: URL) throws {
