@@ -56,7 +56,7 @@
 import ArgumentParser
 import Foundation
 
-/// A command that install generated files into a specified directory.
+/// A command that installs generated files into a specified directory.
 struct InstallCommand: ParsableCommand {
 
     /// The configuration of this command.
@@ -77,12 +77,13 @@ struct InstallCommand: ParsableCommand {
     var installPath: String
 
     /// A `URL` of the `installPath`.
-    var installURL: URL {
+    @inlinable var installURL: URL {
         URL(fileURLWithPath: installPath, isDirectory: true)
     }
 
     /// The main entry point for this command.
     /// - Throws: ``GenerationError``.
+    @inlinable
     func run() throws {
         guard self.path.path.trimmingCharacters(in: .whitespacesAndNewlines).hasSuffix(".machine") else {
             throw GenerationError.invalidMachine(message: "The path provided is not a machine.")
@@ -122,6 +123,13 @@ struct InstallCommand: ParsableCommand {
         try self.installLocal(files: vhdlFiles, manager: manager, installLocation: self.installURL)
     }
 
+    /// Install files into a local location on the file system.
+    /// - Parameters:
+    ///   - files: The files to copy into the new location.
+    ///   - manager: The manager to perform the copy operation.
+    ///   - installLocation: The new location of the files.
+    /// - Throws: ``GenerationError``.
+    @inlinable
     func installLocal(files: [URL], manager: FileManager, installLocation: URL) throws {
         try files.forEach {
             try manager.copyItem(
@@ -132,6 +140,14 @@ struct InstallCommand: ParsableCommand {
         }
     }
 
+    /// Install files into a vivado project. This function assumed the files are VHDL files with the `.vhd`
+    /// extension. The files will be copied into `<vivado_project>.srcs/sources_1/new`. This function assumes
+    /// that the `installURL` property contains the location of the vivado project.
+    /// - Parameters:
+    ///   - files: The files to copy into the vivado project.
+    ///   - manager: The manager to perform the copy.
+    /// - Throws: ``GenerationError``.
+    @inlinable
     func installVivado(files: [URL], manager: FileManager) throws {
         let installURL = self.installURL
         let projectFiles = try manager.contentsOfDirectory(at: installURL, includingPropertiesForKeys: nil)
