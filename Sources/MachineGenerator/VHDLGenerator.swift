@@ -96,10 +96,11 @@ struct VHDLGenerator: ParsableCommand {
         let buildFolder = machinePath.appendingPathComponent("build", isDirectory: true)
         guard includeKripkeStructure else {
             let file = VHDLFile(representation: representation)
-            let vhdlPath = buildFolder.appendingPathComponent(
+            let vhdlFolder = buildFolder.appendingPathComponent("vhdl", isDirectory: true)
+            let vhdlPath = vhdlFolder.appendingPathComponent(
                 "\(machine.name.rawValue).vhd", isDirectory: false
             )
-            try FileManager.default.createDirectory(at: buildFolder, withIntermediateDirectories: true)
+            try FileManager.default.createDirectory(at: vhdlFolder, withIntermediateDirectories: true)
             try (file.rawValue + "\n").write(to: vhdlPath, atomically: true, encoding: .utf8)
             return
         }
