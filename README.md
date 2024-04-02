@@ -7,8 +7,7 @@
 `llfsmgenerate` is a command-line utility for transforming and compiling LLFSM formats that use the `VHDL`
 Hardware Description Language.
 This program allows the transformation between [VHDL LLFSMs](https://github.com/mipalgu/VHDLMachines) and
-other standard Javascript models, such as the [VHDL LLFSM editor](https://github.com/Morgan2010/editor)
-(to be released soon) that utilises *React*.
+other standard Javascript models, such as the VHDL LLFSM editor (to be released soon) that utilises *React*.
 In addition to this support, the program can generate the relative `vhd` files for standard execution and
 formal verification via Kripke structure generation.
 
