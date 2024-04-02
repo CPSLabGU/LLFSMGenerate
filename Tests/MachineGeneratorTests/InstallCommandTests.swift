@@ -71,7 +71,17 @@ final class InstallCommandTests: MachineTester {
 
     /// The path to the destination of the VHDL sources.
     var vhdlSourcesPath: URL {
-        self.vivadoPath.appendingPathComponent("\(vivadoName).srcs/sources_1/new", isDirectory: true)
+        self.vivadoPath.appendingPathComponent("\(vivadoName).srcs", isDirectory: true)
+    }
+
+    /// The path to the `sources_1` folder.
+    var sources1Path: URL {
+        self.vhdlSourcesPath.appendingPathComponent("sources_1", isDirectory: true)
+    }
+
+    /// The path to the `new` folder.
+    var newPath: URL {
+        self.sources1Path.appendingPathComponent("new", isDirectory: true)
     }
 
     /// The path to the project file.
@@ -85,7 +95,7 @@ final class InstallCommandTests: MachineTester {
         guard
             (try? self.manager.createDirectory(at: vivadoPath, withIntermediateDirectories: true)) != nil,
             manager.createFile(atPath: self.projectFilePath.path, contents: nil),
-            (try? self.manager.createDirectory(at: vhdlSourcesPath, withIntermediateDirectories: true)) != nil
+            (try? self.manager.createDirectory(at: newPath, withIntermediateDirectories: true)) != nil
         else {
             XCTFail("Failed to create vivado project.")
             return
@@ -125,6 +135,33 @@ final class InstallCommandTests: MachineTester {
             try String(contentsOf: vivadoVHDLFile, encoding: .utf8)
         )
         XCTAssertEqual(previousProjectContents, try String(contentsOf: self.projectFilePath, encoding: .utf8))
+    }
+
+    /// Test files are copied for vivado installation.
+    func testInstallCommandWorksForVivado() throws {
+        let previousProjectContents = try String(contentsOf: self.projectFilePath, encoding: .utf8)
+        InstallCommand.main([self.machine0Path.path, "--vivado", self.vivadoPath.path])
+        XCTAssertEqual(try String(contentsOf: self.projectFilePath, encoding: .utf8), previousProjectContents)
+        let projectFiles = try manager.contentsOfDirectory(
+            at: self.vivadoPath, includingPropertiesForKeys: nil
+        )
+        XCTAssertEqual(projectFiles.count, 2)
+        XCTAssertEqual(Set(projectFiles).count, 2)
+        let expected: Set<URL> = [self.projectFilePath, self.vhdlSourcesPath]
+        XCTAssertTrue(projectFiles.allSatisfy(expected.contains))
+        XCTAssertEqual(
+            try manager.contentsOfDirectory(at: self.vhdlSourcesPath, includingPropertiesForKeys: nil),
+            [self.sources1Path]
+        )
+        XCTAssertEqual(
+            try manager.contentsOfDirectory(at: self.sources1Path, includingPropertiesForKeys: nil),
+            [self.newPath]
+        )
+        let vhdlFiles = try manager.contentsOfDirectory(at: self.newPath, includingPropertiesForKeys: nil)
+        XCTAssertEqual(vhdlFiles, [self.newPath.appendingPathComponent("Machine0.vhd", isDirectory: false)])
+        let vhdlFilePath = self.buildFolder.appendingPathComponent("vhdl/Machine0.vhd", isDirectory: false)
+        let contents = try String(contentsOf: vhdlFilePath, encoding: .utf8)
+        XCTAssertEqual(contents, try String(contentsOf: vhdlFilePath, encoding: .utf8))
     }
 
 }

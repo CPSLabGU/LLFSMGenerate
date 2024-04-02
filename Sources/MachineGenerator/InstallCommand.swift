@@ -142,7 +142,7 @@ struct InstallCommand: ParsableCommand {
                 message: "The install directory is not a valid vivado project."
             )
         }
-        let projectName = String(projectNameURL.path.dropLast(4))
+        let projectName = String(projectNameURL.lastPathComponent.dropLast(4))
         let installLocation = installURL.appendingPathComponent(
             "\(projectName).srcs/sources_1/new", isDirectory: true
         )
