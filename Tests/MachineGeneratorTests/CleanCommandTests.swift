@@ -59,9 +59,6 @@ import XCTest
 /// Test class for ``CleanCommand``.
 final class CleanCommandTests: MachineTester {
 
-    /// A file manager.
-    let manager = FileManager.default
-
     /// Build the machine before every test.
     override func setUp() {
         super.setUp()

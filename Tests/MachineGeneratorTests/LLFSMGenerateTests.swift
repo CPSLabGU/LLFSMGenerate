@@ -78,7 +78,7 @@ final class LLFSMGenerateTests: MachineTester {
     func testRunCallsVHDL() throws {
         LLFSMGenerate.main(["vhdl", self.pathRaw])
         let manager = FileManager.default
-        let path = pathRaw + "/build/Machine0.vhd"
+        let path = pathRaw + "/build/vhdl/Machine0.vhd"
         defer { _ = try? manager.removeItem(at: URL(fileURLWithPath: path, isDirectory: false)) }
         XCTAssertTrue(manager.fileExists(atPath: path))
     }

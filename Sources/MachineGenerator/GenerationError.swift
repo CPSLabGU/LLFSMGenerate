@@ -55,7 +55,10 @@
 // 
 
 /// Errors thrown by the generator.
-enum GenerationError: Error, Equatable, Codable, Hashable, Sendable {
+enum GenerationError: Error, Equatable, Codable, Hashable, Sendable, CustomStringConvertible {
+
+    /// An error with the current machine.
+    case invalidMachine(message: String)
 
     /// An error during the model generation process.
     case invalidExportation(message: String)
@@ -66,7 +69,19 @@ enum GenerationError: Error, Equatable, Codable, Hashable, Sendable {
     /// An error during the Machine generation process.
     case invalidGeneration(message: String)
 
+    /// An error with user input.
+    case invalidInput(message: String)
+
     /// An invalid layout for new machine.
     case invalidLayout(message: String)
+
+    /// The message contained within the error.
+    @inlinable var description: String {
+        switch self {
+        case let .invalidMachine(message), let .invalidExportation(message), let .invalidFormat(message),
+        let .invalidGeneration(message), let .invalidInput(message), let .invalidLayout(message):
+            return "\(message)"
+        }
+    }
 
 }

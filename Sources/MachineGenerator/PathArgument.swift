@@ -79,4 +79,9 @@ struct PathArgument: ParsableArguments {
         pathURL.appendingPathComponent("build", isDirectory: true)
     }
 
+    /// The path to the vhdl folder.
+    @inlinable var vhdlFolder: URL {
+        buildFolder.appendingPathComponent("vhdl", isDirectory: true)
+    }
+
 }

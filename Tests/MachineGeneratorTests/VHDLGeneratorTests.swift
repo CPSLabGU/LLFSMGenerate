@@ -78,7 +78,7 @@ final class VHDLGeneratorTests: MachineTester {
             return
         }
         VHDLGenerator.main([pathRaw])
-        let vhdlPath = machine0Path.appendingPathComponent("build/Machine0.vhd", isDirectory: false)
+        let vhdlPath = machine0Path.appendingPathComponent("build/vhdl/Machine0.vhd", isDirectory: false)
         guard let representation = MachineRepresentation(machine: machine) else {
             XCTFail("Failed to create VHDL for machine.")
             return
