@@ -73,9 +73,10 @@ jobs:
 
     steps:
       - name: Setup Swift
-        uses: swift-actions/setup-swift@v2
+        uses: compnerd/gha-setup-swift@v0.2.1
         with:
-          swift-version: ${{ matrix.swift }}
+          branch: swift-${{ matrix.swift }}-release
+          tag: ${{ matrix.swift }}-RELEASE
 
       - name: Checkout repo
         uses: actions/checkout@v2
