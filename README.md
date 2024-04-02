@@ -32,6 +32,49 @@ program within `/usr/local/`:
 install -m 0755 .build/release/llfsmgenerate /usr/local/bin
 ```
 
+The `llfsmgenerate` binary allows the transformation of LLFSM models that contain VHDL code within their
+state actions. Most LLFSMs are created using an editor that places an easily parsable format within the
+LLFSM directory. This format is very easy to parse using Javascript, however, it does not provide type
+information that is extremely useful in formal verification and code generation. To generate VHDL code for a
+given LLFSM, we need to first convert it from the Javascript-like format into the format that our
+[code generator](https://github.com/mipalgu/VHDLMachines) understands. This is done by using the command:
+
+```shell
+llfsmgenerate model <path_to_LLFSM_folder>
+```
+
+> [!IMPORTANT]
+> Please make sure the LLFSM path contains a `.machine` extension.
+
+This command creates the type-aware model that our
+[code generator](https://github.com/mipalgu/VHDLMachines) interprets.
+
+Once this model is generated, we can then create the VHDL source files by using:
+
+```shell
+llfsmgenerate vhdl <path_to_LLFSM_folder>
+```
+
+This command creates the `.vhd` files located in `<path_to_LLFSM_folder>/build/vhdl`. We can also create
+the Kripke structure generator that creates graph structures for formal verification.
+
+```shell
+llfsmgenerate vhdl --include-kripke-structure <path_to_LLFSM_folder>
+```
+
+We may now copy our vhdl files into a directory that we can utilise for HDL projects. We have provided
+a command called `install` to make this simpler.
+
+```shell
+llfsmgenerate install <path_to_LLFSM_folder> <path_to_install_location>
+```
+
+You may also specify a vivado project location by passing the `--vivado` flag.
+
+```shell
+llfsmgenerate install <path_to_LLFSM_folder> --vivado <path_to_vivado_project_directory>
+```
+
 Please see the *help* section of the binary for a complete list of parameters and sub-commands.
 ```shell
 llfsmgenerate --help
@@ -47,6 +90,7 @@ SUBCOMMANDS:
   model                   A utility for converting LLFSM formats.
   vhdl                    A utility for generating VHDL source files from LLFSM definitions.
   clean                   Clean the generated source files from the machine.
+  install                 Install the VHDL files into a specified directory.
 
   See 'llfsmgenerate help <subcommand>' for detailed help.
 ```
