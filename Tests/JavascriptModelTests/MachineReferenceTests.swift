@@ -1,4 +1,4 @@
-// MachineReference.swift
+// MachineReferenceTests.swift
 // LLFSMGenerate
 // 
 // Created by Morgan McColl.
@@ -53,35 +53,56 @@
 // or write to the Free Software Foundation, Inc., 51 Franklin Street,
 // Fifth Floor, Boston, MA  02110-1301, USA.
 
-/// This struct represents an instance of a machine within the Arrangement context.
-/// 
-/// A `MachineReference` acts as an instance of a particular machine within an `Arrangement`. The reference
-/// consists of a `name` that identifies it as a unique instance of a machine, a `path` that points to the
-/// machine that it references, and a list of `mappings` that map variables from the arrangement into the
-/// machine's external variable and clock definitions.
-public struct MachineReference: Equatable, Hashable, Codable, Sendable {
+@testable import JavascriptModel
+import XCTest
 
-    /// The name of the reference.
-    public var name: String
+/// Test class for ``MachineReference``.
+final class MachineReferenceTests: XCTestCase {
 
-    /// The path to the machine that this reference points to.
-    public var path: String
+    /// The variable mappings.
+    let mappings = [
+        VariableMapping(source: "source0", destination: "destination0"),
+        VariableMapping(source: "source1", destination: "destination1")
+    ]
 
-    /// The mappings from variables within the arrangement to the external variables and clocks within the
-    /// machines context.
-    public var mappings: [VariableMapping]
+    /// The name of the machine.
+    let machineName = "machine0"
 
-    /// Create a new `MachineReference` from it's stored properties.
-    /// - Parameters:
-    ///   - name: The name of the reference.
-    ///   - path: The path to the machine that this reference points to.
-    ///   - mappings: The variable mappings from the external context into the machine's external and clock
-    /// variables.
-    @inlinable
-    public init(name: String, path: String, mappings: [VariableMapping]) {
-        self.name = name
-        self.path = path
-        self.mappings = mappings
+    /// The path to the machine.
+    let path = "path/to/machine0"
+
+    /// The reference under test.
+    lazy var reference = MachineReference(name: "machine0", path: "path/to/machine0", mappings: mappings)
+
+    override func setUp() {
+        reference = MachineReference(name: "machine0", path: "path/to/machine0", mappings: mappings)
+    }
+
+    /// Test stored properties are set correctly.
+    func testInit() {
+        XCTAssertEqual(reference.name, machineName)
+        XCTAssertEqual(reference.path, path)
+        XCTAssertEqual(reference.mappings, mappings)
+    }
+
+    /// Test the setters work correctly.
+    func testSetters() {
+        reference.name = "machine1"
+        XCTAssertEqual(reference.name, "machine1")
+        XCTAssertEqual(reference.path, path)
+        XCTAssertEqual(reference.mappings, mappings)
+        reference.path = "path/to/machine1"
+        XCTAssertEqual(reference.name, "machine1")
+        XCTAssertEqual(reference.path, "path/to/machine1")
+        XCTAssertEqual(reference.mappings, mappings)
+        let newMappings = [
+            VariableMapping(source: "source2", destination: "destination2"),
+            VariableMapping(source: "source3", destination: "destination3")
+        ]
+        reference.mappings = newMappings
+        XCTAssertEqual(reference.name, "machine1")
+        XCTAssertEqual(reference.path, "path/to/machine1")
+        XCTAssertEqual(reference.mappings, newMappings)
     }
 
 }
