@@ -53,6 +53,7 @@
 // or write to the Free Software Foundation, Inc., 51 Franklin Street,
 // Fifth Floor, Boston, MA  02110-1301, USA.
 
+import Foundation
 @testable import JavascriptModel
 import XCTest
 
@@ -150,5 +151,25 @@ final class ArrangementModelTests: XCTestCase {
         XCTAssertEqual(arrangement.machines, newMachines)
         XCTAssertEqual(arrangement.globalVariables, newGlobalVariables)
     }
+
+    // func testPrintModel() throws {
+    //     let arrangement = ArrangementModel(
+    //         clocks: [ClockModel(name: "clk", frequency: "125 MHz")],
+    //         externalVariables: "",
+    //         machines: [
+    //             MachineReference(
+    //                 name: "ExampleMachine",
+    //                 path: "ExampleMachine.machine",
+    //                 mappings: [VariableMapping(source: "clk", destination: "clk")]
+    //             )
+    //         ],
+    //         globalVariables: ""
+    //     )
+    //     let encoder = JSONEncoder()
+    //     let jsonData = try encoder.encode(arrangement)
+    //     let jsonString = String(data: jsonData, encoding: .utf8)!
+    //     print(jsonString)
+    //     fflush(stdout)
+    // }
 
 }
