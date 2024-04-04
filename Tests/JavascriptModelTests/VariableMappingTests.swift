@@ -1,4 +1,4 @@
-// VariableMapping.swift
+// VariableMappingTests.swift
 // LLFSMGenerate
 // 
 // Created by Morgan McColl.
@@ -53,26 +53,32 @@
 // or write to the Free Software Foundation, Inc., 51 Franklin Street,
 // Fifth Floor, Boston, MA  02110-1301, USA.
 
-/// A mapping of a variables value in one domain into a variables in another domain.
-///
-/// This struct represents data flow from a `source` to a `destination`. The `source` and `destination`
-/// properties represent the respective variable names for the data flow.
-public struct VariableMapping: Equatable, Hashable, Codable, Sendable {
+@testable import JavascriptModel
+import XCTest
 
-    /// The name of the source variable.
-    public var source: String
+/// Test class for ``VariableMapping``.
+final class VariableMappingTests: XCTestCase {
 
-    /// The name of the destination variable.
-    public var destination: String
+    /// The unit under test.
+    var mapping = VariableMapping(source: "source", destination: "destination")
 
-    /// Initialise the variable mapping with a source and destination.
-    /// - Parameters:
-    ///   - source: The name of the source variable.
-    ///   - destination: The name of the destination variable.
-    @inlinable
-    public init(source: String, destination: String) {
-        self.source = source
-        self.destination = destination
+    /// Initialise the test data before every test.
+    override func setUp() {
+        mapping = VariableMapping(source: "source", destination: "destination")
+    }
+
+    /// Test that the init sets the stored properties correctly.
+    func testInit() {
+        XCTAssertEqual(mapping.source, "source")
+        XCTAssertEqual(mapping.destination, "destination")
+    }
+
+    /// Test that the setters work correctly.
+    func testSetters() {
+        mapping.source = "new source"
+        mapping.destination = "new destination"
+        XCTAssertEqual(mapping.source, "new source")
+        XCTAssertEqual(mapping.destination, "new destination")
     }
 
 }
