@@ -68,10 +68,10 @@ extension Arrangement {
             let url = URL(fileURLWithPath: $0.path, isDirectory: true)
             return (name, url)
         }
-        let machines = Dictionary(uniqueKeysWithValues: machineTuples)
-        guard machines.count == model.machines.count else {
+        guard machineTuples.count == Set(machineTuples.map { $0.0 }).count else {
             return nil
         }
+        let machines = Dictionary(uniqueKeysWithValues: machineTuples)
         let externalsRaw = model.externalVariables.components(separatedBy: ";")
             .filter { !$0.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }
         let externalSignals = externalsRaw.compactMap { PortSignal(rawValue: $0 + ";") }
@@ -86,6 +86,13 @@ extension Arrangement {
         }
         let clocks = model.clocks.compactMap { Clock(model: $0) }
         guard clocks.count == model.clocks.count else {
+            return nil
+        }
+        let clockNames = clocks.map(\.name)
+        let signalNames = localSignals.map(\.name) + externalSignals.map(\.name)
+        let machineNames: [VariableName] = Array(machines.keys)
+        let allNames = clockNames + signalNames + machineNames
+        guard Set(allNames).count == allNames.count else {
             return nil
         }
         self.init(
