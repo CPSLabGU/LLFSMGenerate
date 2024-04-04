@@ -126,8 +126,6 @@ final class MachineTests: XCTestCase {
             VariableName(rawValue: "OnEntry")!,
             VariableName(rawValue: "OnExit")!
         ],
-        name: VariableName(rawValue: "Machine0")!,
-        path: URL(fileURLWithPath: "/tmp/Machine0.machine", isDirectory: true),
         includes: [
             .library(value: VariableName(rawValue: "IEEE")!),
             .include(statement: UseStatement(rawValue: "use std_logic_1164.all;")!)
@@ -135,7 +133,6 @@ final class MachineTests: XCTestCase {
         externalSignals: [PortSignal(type: .stdLogic, name: VariableName(rawValue: "y")!, mode: .output)],
         clocks: [Clock(name: VariableName(rawValue: "clk")!, frequency: 100, unit: .MHz)],
         drivingClock: 0,
-        dependentMachines: [:],
         machineSignals: [LocalSignal(type: .stdLogic, name: VariableName(rawValue: "x")!)],
         isParameterised: false,
         parameterSignals: [],
@@ -193,8 +190,6 @@ final class MachineTests: XCTestCase {
                 VariableName(rawValue: "OnEntry")!,
                 VariableName(rawValue: "OnExit")!
             ],
-            name: VariableName(rawValue: "Machine0")!,
-            path: URL(fileURLWithPath: "/tmp/Machine0.machine", isDirectory: true),
             includes: [
                 .library(value: VariableName(rawValue: "IEEE")!),
                 .include(statement: UseStatement(rawValue: "use std_logic_1164.all;")!)
@@ -202,7 +197,6 @@ final class MachineTests: XCTestCase {
             externalSignals: [PortSignal(type: .stdLogic, name: VariableName(rawValue: "y")!, mode: .output)],
             clocks: [Clock(name: VariableName(rawValue: "clk")!, frequency: 100, unit: .MHz)],
             drivingClock: 0,
-            dependentMachines: [:],
             machineSignals: [LocalSignal(type: .stdLogic, name: VariableName(rawValue: "x")!)],
             isParameterised: false,
             parameterSignals: [],
@@ -248,11 +242,6 @@ final class MachineTests: XCTestCase {
     /// Test the model is converted correctly.
     func testConversionInit() {
         XCTAssertEqual(Machine(model: model), expected)
-        let path = URL(fileURLWithPath: "/tmp/subdir/NewMachine.machine", isDirectory: true)
-        // swiftlint:disable:next force_unwrapping
-        expected.name = VariableName(rawValue: "NewMachine")!
-        expected.path = path
-        XCTAssertEqual(Machine(model: model, path: path), expected)
     }
 
     /// Test for incorrect actions.
@@ -283,13 +272,6 @@ final class MachineTests: XCTestCase {
         model.machineVariables = ""
         expected.machineSignals = []
         XCTAssertEqual(Machine(model: model), expected)
-    }
-
-    /// Test invalid path.
-    func testInvalidPath() {
-        XCTAssertNil(
-            Machine(model: model, path: URL(fileURLWithPath: "/tmp/invalid path", isDirectory: true))
-        )
     }
 
     /// Test invalid external variables are detected.

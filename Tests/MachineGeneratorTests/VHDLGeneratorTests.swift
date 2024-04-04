@@ -56,14 +56,11 @@
 
 import Foundation
 @testable import MachineGenerator
+import SwiftUtils
 import VHDLKripkeStructureGenerator
 import VHDLMachines
 import VHDLParsing
 import XCTest
-
-#if os(Linux)
-import IO
-#endif
 
 /// Test class for ``VHDLGenerator``.
 final class VHDLGeneratorTests: MachineTester {
@@ -73,13 +70,10 @@ final class VHDLGeneratorTests: MachineTester {
 
     /// Test the main method generates the `VHDL` file correctly.
     func testRunGeneratesVHDL() throws {
-        guard let machine = Machine(machine0LocatedInFolder: self.machine0Path) else {
-            XCTFail("Failed to create machine.")
-            return
-        }
+        let machine = Machine.machine0
         VHDLGenerator.main([pathRaw])
         let vhdlPath = machine0Path.appendingPathComponent("build/vhdl/Machine0.vhd", isDirectory: false)
-        guard let representation = MachineRepresentation(machine: machine) else {
+        guard let representation = MachineRepresentation(machine: machine, name: .machine0) else {
             XCTFail("Failed to create VHDL for machine.")
             return
         }
@@ -89,10 +83,8 @@ final class VHDLGeneratorTests: MachineTester {
 
     /// Test that the main method throws the correct error for an invalid machine.
     func testRunThrowsErrorForInvalidMachine() throws {
-        guard
-            var machine = Machine(machine0LocatedInFolder: self.machine0Path),
-            let onEntry = VariableName(rawValue: "OnEntry")
-        else {
+        var machine = Machine.machine0
+        guard let onEntry = VariableName(rawValue: "OnEntry") else {
             XCTFail("Failed to create machine.")
             return
         }
@@ -111,13 +103,10 @@ final class VHDLGeneratorTests: MachineTester {
 
     /// Test the VHDL generator creates the correct Kripke structure.
     func testRunGeneratesKripkeStructure() throws {
-        guard let machine = Machine(machine0LocatedInFolder: self.machine0Path) else {
-            XCTFail("Failed to create machine.")
-            return
-        }
+        let machine = Machine.machine0
         VHDLGenerator.main(["--include-kripke-structure", pathRaw])
         guard
-            let representation = MachineRepresentation(machine: machine),
+            let representation = MachineRepresentation(machine: machine, name: .machine0),
             let files = generator.generateAll(representation: representation)
         else {
             XCTFail("Failed to create VHDL for machine.")

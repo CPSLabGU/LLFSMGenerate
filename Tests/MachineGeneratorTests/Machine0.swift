@@ -64,16 +64,12 @@ import VHDLParsing
 /// Create `Machine0`.
 extension Machine {
 
-    // swiftlint:disable function_body_length
+    // swiftlint:disable closure_body_length
 
     /// Create Machine0 in the given folder.
-    init?(machine0LocatedInFolder path: URL) {
-        let machine0Path = path.appendingPathComponent("Machine0.machine", isDirectory: true)
-        guard var machine = Machine.initial(path: machine0Path) else {
-            return nil
-        }
+    static let machine0 = {
+        var machine = Machine.initialSuspensible
         machine.actions = [.internal, .onEntry, .onExit]
-        machine.name = .machine0
         machine.externalSignals = [
             PortSignal(type: .stdLogic, name: .x, mode: .input),
             PortSignal(type: .stdLogic, name: .y, mode: .output)
@@ -132,11 +128,10 @@ extension Machine {
                 .all
             ])!)
         ]
-        machine.path = machine0Path
-        self = machine
-    }
+        return machine
+    }()
 
-    // swiftlint:enable function_body_length
+    // swiftlint:enable closure_body_length
 
 }
 
