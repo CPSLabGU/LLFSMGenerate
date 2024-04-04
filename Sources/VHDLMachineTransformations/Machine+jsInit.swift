@@ -70,7 +70,7 @@ extension Machine {
     ///   - model: The model representing this machine.
     ///   - path: The path where the machine is located.
     @inlinable
-    public init?(model: MachineModel, path: URL? = nil) {
+    public init?(model: MachineModel) {
         let actionNames = Set(["OnEntry", "OnExit", "Internal"])
             .union(model.states.flatMap { $0.actions.map(\.name) })
         let variableNames = actionNames.compactMap(VariableName.init(rawValue:))
@@ -92,11 +92,6 @@ extension Machine {
         let machineSignalsRaw = getStatements(model.machineVariables)
         let machineSignals = machineSignalsRaw.compactMap { LocalSignal(rawValue: $0) }
         guard machineSignalsRaw.count == machineSignals.count else {
-            return nil
-        }
-        let name = path?.deletingPathExtension().lastPathComponent ?? "Machine0"
-        let machinePath = path ?? URL(fileURLWithPath: "/tmp/Machine0.machine", isDirectory: true)
-        guard let machineName = VariableName(rawValue: name) else {
             return nil
         }
         let externalsRaw = getStatements(model.externalVariables)
@@ -134,20 +129,17 @@ extension Machine {
             + actionVariableNames
         let signalNames: [VariableName] = externalSignals.map(\.name) + machineSignals.map(\.name)
             + clocks.map(\.name)
-        let allNames: [VariableName] = stateNames + signalNames + [machineName]
+        let allNames: [VariableName] = stateNames + signalNames
         // Check for duplicate names.
         guard Set(allNames).count == allNames.count else {
             return nil
         }
         self.init(
             actions: actionVariableNames,
-            name: machineName,
-            path: machinePath,
             includes: parsedIncludes,
             externalSignals: externalSignals,
             clocks: clocks,
             drivingClock: 0,
-            dependentMachines: [:],
             machineSignals: machineSignals,
             isParameterised: false,
             parameterSignals: [],

@@ -143,7 +143,7 @@ struct Generate: ParsableCommand {
     @inlinable
     func createMachine() throws {
         let model = try decoder.decode(MachineModel.self, from: model)
-        guard let machine = Machine(model: model, path: pathURL) else {
+        guard let machine = Machine(model: model) else {
             throw GenerationError.invalidGeneration(message: "Cannot create valid machine from model.")
         }
         let data = try encoder.encode(machine)
