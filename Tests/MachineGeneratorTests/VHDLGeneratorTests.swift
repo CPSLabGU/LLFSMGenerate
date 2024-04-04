@@ -101,6 +101,71 @@ final class VHDLGeneratorTests: MachineTester {
         }
     }
 
+    /// Test the correct error is thrown for paths without the correct extension.
+    func testPathWithoutExtension() throws {
+        let invalidPath = self.machinesFolder.appendingPathComponent("invalid", isDirectory: true)
+        try self.manager.copyItem(at: self.machine0Path, to: invalidPath)
+        defer { _ = try? self.manager.removeItem(at: invalidPath) }
+        var command = try VHDLGenerator.parse([invalidPath.path])
+        XCTAssertThrowsError(try command.run()) {
+            guard let error = $0 as? GenerationError else {
+                XCTFail("Thrown incorrect error.")
+                return
+            }
+            XCTAssertEqual(
+                error,
+                .invalidFormat(
+                    message: "The machine specified is invalid. " +
+                        "Please make sure you specify a machine with the .machine extension and valid name."
+                )
+            )
+        }
+    }
+
+    /// Test correct errors are thrown for paths with only the machine extension.
+    func testEmptyMachinePath() throws {
+        let path = self.machinesFolder.appendingPathComponent(".machine", isDirectory: true)
+        try self.manager.copyItem(at: self.machine0Path, to: path)
+        defer { _ = try? self.manager.removeItem(at: path) }
+        var command = try VHDLGenerator.parse([path.path])
+        XCTAssertThrowsError(try command.run()) {
+            print($0.localizedDescription)
+            fflush(stdout)
+            guard let error = $0 as? GenerationError else {
+                XCTFail("Thrown incorrect error.")
+                return
+            }
+            XCTAssertEqual(
+                error,
+                .invalidFormat(
+                    message: "The machine specified is invalid. " +
+                        "Please make sure you specify a machine with the .machine extension and valid name."
+                )
+            )
+        }
+    }
+
+    /// Test that VHDL keyword in machine name throw an error.
+    func testVHDLNameInPath() throws {
+        let path = self.machinesFolder.appendingPathComponent("signal.machine", isDirectory: true)
+        try self.manager.copyItem(at: self.machine0Path, to: path)
+        defer { _ = try? self.manager.removeItem(at: path) }
+        var command = try VHDLGenerator.parse([path.path])
+        XCTAssertThrowsError(try command.run()) {
+            guard let error = $0 as? GenerationError else {
+                XCTFail("Thrown incorrect error.")
+                return
+            }
+            XCTAssertEqual(
+                error,
+                .invalidFormat(
+                    message: "The machine specified is invalid. " +
+                        "Please make sure you specify a machine with the .machine extension and valid name."
+                )
+            )
+        }
+    }
+
     /// Test the VHDL generator creates the correct Kripke structure.
     func testRunGeneratesKripkeStructure() throws {
         let machine = Machine.machine0
