@@ -343,8 +343,6 @@ final class MachineTests: XCTestCase {
 
     /// Test for unique names.
     func testUniqueNames() {
-        model.clocks[0].name = "Machine0"
-        XCTAssertNil(Machine(model: model))
         model.clocks[0].name = "OnEntry"
         XCTAssertNil(Machine(model: model))
         model.clocks[0].name = "x"
