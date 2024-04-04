@@ -19,12 +19,12 @@ let package = Package(
         )
     ],
     dependencies: [
-        .package(url: "https://github.com/apple/swift-docc-plugin", from: "1.1.0"),
-        .package(url: "https://github.com/mipalgu/VHDLMachines", from: "1.2.4"),
+        .package(url: "https://github.com/apple/swift-docc-plugin", from: "1.3.0"),
+        .package(url: "https://github.com/mipalgu/VHDLMachines", from: "2.0.0"),
         .package(url: "https://github.com/mipalgu/VHDLParsing", from: "2.4.0"),
         .package(url: "https://github.com/apple/swift-argument-parser", from: "1.3.0"),
-        .package(url: "https://github.com/mipalgu/VHDLKripkeStructureGenerator.git", from: "0.1.2"),
-        .package(url: "https://github.com/mipalgu/swift_helpers.git", from: "2.0.0")
+        .package(url: "https://github.com/mipalgu/VHDLKripkeStructureGenerator.git", from: "0.2.0"),
+        .package(url: "https://github.com/CPSLabGU/SwiftUtils.git", from: "0.1.0")
     ],
     targets: [
         // Targets are the basic building blocks of a package, defining a module or a test suite.
@@ -41,7 +41,7 @@ let package = Package(
                 .product(name: "VHDLMachines", package: "VHDLMachines"),
                 .product(name: "VHDLParsing", package: "VHDLParsing"),
                 .product(name: "VHDLKripkeStructureGenerator", package: "VHDLKripkeStructureGenerator"),
-                .product(name: "IO", package: "swift_helpers")
+                .product(name: "SwiftUtils", package: "SwiftUtils")
             ]
         ),
         .target(
@@ -63,7 +63,7 @@ let package = Package(
                 .product(name: "VHDLParsing", package: "VHDLParsing"),
                 .product(name: "ArgumentParser", package: "swift-argument-parser"),
                 .product(name: "VHDLKripkeStructureGenerator", package: "VHDLKripkeStructureGenerator"),
-                .product(name: "IO", package: "swift_helpers")
+                .product(name: "SwiftUtils", package: "SwiftUtils")
             ]
         ),
         .testTarget(
