@@ -74,24 +74,18 @@ extension Arrangement {
                 else {
                     return nil
                 }
-                let mappings: [[VHDLMachines.VariableMapping]] = model.machines.compactMap {
-                    let mappings: [VHDLMachines.VariableMapping] = $0.mappings.compactMap {
-                        guard
-                            let source = VariableName(rawValue: $0.source),
-                            let destination = VariableName(rawValue: $0.destination)
-                        else {
-                            return nil
-                        }
-                        return VHDLMachines.VariableMapping(source: source, destination: destination)
-                    }
-                    guard mappings.count == $0.mappings.count else {
+                let mappings: [VHDLMachines.VariableMapping] = reference.mappings.compactMap {
+                    guard
+                        let source = VariableName(rawValue: $0.source),
+                        let destination = VariableName(rawValue: $0.destination)
+                    else {
                         return nil
                     }
-                    return mappings
+                    return VHDLMachines.VariableMapping(source: source, destination: destination)
                 }
                 guard
-                    mappings.count == model.machines.count,
-                    let mapping = MachineMapping(machine: machine, with: mappings.flatMap { $0 })
+                    mappings.count == reference.mappings.count,
+                    let mapping = MachineMapping(machine: machine, with: mappings)
                 else {
                     return nil
                 }
