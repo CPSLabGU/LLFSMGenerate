@@ -115,14 +115,32 @@ struct VHDLGenerator: ParsableCommand {
             throw GenerationError.invalidFormat(message: "The arrangement contains invalid data!")
         }
         let buildFolder = options.pathURL.appendingPathComponent("build", isDirectory: true)
-        let destination = buildFolder.appendingPathComponent(
-            "vhdl/\(name.rawValue).vhd", isDirectory: false
+        let vhdlFolder = buildFolder.appendingPathComponent("vhdl", isDirectory: true)
+        let destination = vhdlFolder.appendingPathComponent(
+            "\(name.rawValue).vhd", isDirectory: false
         )
         try vhdlFile.write(to: destination, options: .atomic)
+        let manager = FileManager.default
         try model.machines.forEach {
-            try self.createMachine(
-                sourcePath: URL(fileURLWithPath: $0.path, isDirectory: true), destinationPath: buildFolder
+            let path = URL(fileURLWithPath: $0.path, isDirectory: true)
+            var generateCommand = try Generate.parse([path.path])
+            try generateCommand.run()
+            var vhdlCommand = try VHDLGenerator.parse([path.path])
+            try vhdlCommand.run()
+            let machineVHDLFolder = path.appendingPathComponent("build/vhdl", isDirectory: true)
+            let files = try manager.contentsOfDirectory(
+                at: machineVHDLFolder, includingPropertiesForKeys: nil
             )
+            guard files.allSatisfy({ $0.lastPathComponent.lowercased().hasSuffix(".vhd") }) else {
+                throw GenerationError.invalidGeneration(
+                    message: "Failed to generate VHDL for machine \(path.lastPathComponent)"
+                )
+            }
+            try files.forEach {
+                try manager.copyItem(
+                    at: $0, to: vhdlFolder.appendingPathComponent($0.lastPathComponent, isDirectory: false)
+                )
+            }
         }
     }
 
