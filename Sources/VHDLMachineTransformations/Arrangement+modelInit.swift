@@ -61,13 +61,42 @@ import VHDLParsing
 extension Arrangement {
 
     public init?(model: ArrangementModel) {
-        let machineTuples: [(VariableName, URL)] = model.machines.compactMap {
-            guard let name = VariableName(rawValue: $0.name) else {
-                return nil
+        let decoder = JSONDecoder()
+        let machineTuples: [(VariableName, MachineMapping)] = model.machines
+            .compactMap { (reference: MachineReference) -> (VariableName, MachineMapping)? in
+                guard
+                    let name = VariableName(rawValue: reference.name),
+                    let data = try? Data(
+                        contentsOf: URL(fileURLWithPath: reference.path, isDirectory: true)
+                            .appendingPathComponent("model.json", isDirectory: false)
+                    ),
+                    let machine = try? decoder.decode(Machine.self, from: data)
+                else {
+                    return nil
+                }
+                let mappings: [[VHDLMachines.VariableMapping]] = model.machines.compactMap {
+                    let mappings: [VHDLMachines.VariableMapping] = $0.mappings.compactMap {
+                        guard
+                            let source = VariableName(rawValue: $0.source),
+                            let destination = VariableName(rawValue: $0.destination)
+                        else {
+                            return nil
+                        }
+                        return VHDLMachines.VariableMapping(source: source, destination: destination)
+                    }
+                    guard mappings.count == $0.mappings.count else {
+                        return nil
+                    }
+                    return mappings
+                }
+                guard
+                    mappings.count == model.machines.count,
+                    let mapping = MachineMapping(machine: machine, with: mappings.flatMap { $0 })
+                else {
+                    return nil
+                }
+                return (name, mapping)
             }
-            let url = URL(fileURLWithPath: $0.path, isDirectory: true)
-            return (name, url)
-        }
         guard machineTuples.count == Set(machineTuples.map { $0.0 }).count else {
             return nil
         }
