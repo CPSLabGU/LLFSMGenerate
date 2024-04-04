@@ -1,5 +1,5 @@
-// LLFSMGenerate.swift
-// VHDLMachineTransformations
+// MachineReference.swift
+// LLFSMGenerate
 // 
 // Created by Morgan McColl.
 // Copyright © 2024 Morgan McColl. All rights reserved.
@@ -52,20 +52,36 @@
 // along with this program; if not, see http://www.gnu.org/licenses/
 // or write to the Free Software Foundation, Inc., 51 Franklin Street,
 // Fifth Floor, Boston, MA  02110-1301, USA.
-// 
 
-import ArgumentParser
+/// This struct represents an instance of a machine within the Arrangement context.
+/// 
+/// A `MachineReference` acts as an instance of a particular machine within an `Arrangement`. The reference
+/// consists of a `name` that identifies it as a unique instance of a machine, a `path` that points to the
+/// machine that it references, and a list of `mappings` that map variables from the arrangement into the
+/// machine's external variable and clock definitions.
+public struct MachineReference: Equatable, Hashable, Codable, Sendable {
 
-/// Main program for `llfsmgenerate`.
-@main
-struct LLFSMGenerate: ParsableCommand {
+    /// The name of the reference.
+    public var name: String
 
-    /// This struct acts as an umbrella struct to multiple `ParsableCommand` subcommands.
-    static var configuration = CommandConfiguration(
-        commandName: "llfsmgenerate",
-        abstract: "A utility for performing operations on LLFSM formats.",
-        version: "1.3.0",
-        subcommands: [Generate.self, VHDLGenerator.self, CleanCommand.self, InstallCommand.self]
-    )
+    /// The path to the machine that this reference points to.
+    public var path: String
+
+    /// The mappings from variables within the arrangement to the external variables and clocks within the
+    /// machines context.
+    public var mappings: [VariableMapping]
+
+    /// Create a new `MachineReference` from it's stored properties.
+    /// - Parameters:
+    ///   - name: The name of the reference.
+    ///   - path: The path to the machine that this reference points to.
+    ///   - mappings: The variable mappings from the external context into the machine's external and clock
+    /// variables.
+    @inlinable
+    public init(name: String, path: String, mappings: [VariableMapping]) {
+        self.name = name
+        self.path = path
+        self.mappings = mappings
+    }
 
 }

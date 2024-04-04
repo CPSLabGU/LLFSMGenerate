@@ -1,5 +1,5 @@
-// LLFSMGenerate.swift
-// VHDLMachineTransformations
+// VariableMappingTests.swift
+// LLFSMGenerate
 // 
 // Created by Morgan McColl.
 // Copyright © 2024 Morgan McColl. All rights reserved.
@@ -52,20 +52,35 @@
 // along with this program; if not, see http://www.gnu.org/licenses/
 // or write to the Free Software Foundation, Inc., 51 Franklin Street,
 // Fifth Floor, Boston, MA  02110-1301, USA.
-// 
 
-import ArgumentParser
+@testable import JavascriptModel
+import XCTest
 
-/// Main program for `llfsmgenerate`.
-@main
-struct LLFSMGenerate: ParsableCommand {
+/// Test class for ``VariableMapping``.
+final class VariableMappingTests: XCTestCase {
 
-    /// This struct acts as an umbrella struct to multiple `ParsableCommand` subcommands.
-    static var configuration = CommandConfiguration(
-        commandName: "llfsmgenerate",
-        abstract: "A utility for performing operations on LLFSM formats.",
-        version: "1.3.0",
-        subcommands: [Generate.self, VHDLGenerator.self, CleanCommand.self, InstallCommand.self]
-    )
+    /// The unit under test.
+    var mapping = VariableMapping(source: "source", destination: "destination")
+
+    /// Initialise the test data before every test.
+    override func setUp() {
+        mapping = VariableMapping(source: "source", destination: "destination")
+    }
+
+    /// Test that the init sets the stored properties correctly.
+    func testInit() {
+        XCTAssertEqual(mapping.source, "source")
+        XCTAssertEqual(mapping.destination, "destination")
+    }
+
+    /// Test that the setters work correctly.
+    func testSetters() {
+        mapping.source = "new source"
+        XCTAssertEqual(mapping.source, "new source")
+        XCTAssertEqual(mapping.destination, "destination")
+        mapping.destination = "new destination"
+        XCTAssertEqual(mapping.source, "new source")
+        XCTAssertEqual(mapping.destination, "new destination")
+    }
 
 }

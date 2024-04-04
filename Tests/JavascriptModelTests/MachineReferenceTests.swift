@@ -1,5 +1,5 @@
-// LLFSMGenerate.swift
-// VHDLMachineTransformations
+// MachineReferenceTests.swift
+// LLFSMGenerate
 // 
 // Created by Morgan McColl.
 // Copyright © 2024 Morgan McColl. All rights reserved.
@@ -52,20 +52,57 @@
 // along with this program; if not, see http://www.gnu.org/licenses/
 // or write to the Free Software Foundation, Inc., 51 Franklin Street,
 // Fifth Floor, Boston, MA  02110-1301, USA.
-// 
 
-import ArgumentParser
+@testable import JavascriptModel
+import XCTest
 
-/// Main program for `llfsmgenerate`.
-@main
-struct LLFSMGenerate: ParsableCommand {
+/// Test class for ``MachineReference``.
+final class MachineReferenceTests: XCTestCase {
 
-    /// This struct acts as an umbrella struct to multiple `ParsableCommand` subcommands.
-    static var configuration = CommandConfiguration(
-        commandName: "llfsmgenerate",
-        abstract: "A utility for performing operations on LLFSM formats.",
-        version: "1.3.0",
-        subcommands: [Generate.self, VHDLGenerator.self, CleanCommand.self, InstallCommand.self]
-    )
+    /// The variable mappings.
+    let mappings = [
+        VariableMapping(source: "source0", destination: "destination0"),
+        VariableMapping(source: "source1", destination: "destination1")
+    ]
+
+    /// The name of the machine.
+    let machineName = "machine0"
+
+    /// The path to the machine.
+    let path = "path/to/machine0"
+
+    /// The reference under test.
+    lazy var reference = MachineReference(name: "machine0", path: "path/to/machine0", mappings: mappings)
+
+    override func setUp() {
+        reference = MachineReference(name: "machine0", path: "path/to/machine0", mappings: mappings)
+    }
+
+    /// Test stored properties are set correctly.
+    func testInit() {
+        XCTAssertEqual(reference.name, machineName)
+        XCTAssertEqual(reference.path, path)
+        XCTAssertEqual(reference.mappings, mappings)
+    }
+
+    /// Test the setters work correctly.
+    func testSetters() {
+        reference.name = "machine1"
+        XCTAssertEqual(reference.name, "machine1")
+        XCTAssertEqual(reference.path, path)
+        XCTAssertEqual(reference.mappings, mappings)
+        reference.path = "path/to/machine1"
+        XCTAssertEqual(reference.name, "machine1")
+        XCTAssertEqual(reference.path, "path/to/machine1")
+        XCTAssertEqual(reference.mappings, mappings)
+        let newMappings = [
+            VariableMapping(source: "source2", destination: "destination2"),
+            VariableMapping(source: "source3", destination: "destination3")
+        ]
+        reference.mappings = newMappings
+        XCTAssertEqual(reference.name, "machine1")
+        XCTAssertEqual(reference.path, "path/to/machine1")
+        XCTAssertEqual(reference.mappings, newMappings)
+    }
 
 }

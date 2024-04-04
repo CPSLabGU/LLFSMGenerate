@@ -56,6 +56,7 @@
 
 import ArgumentParser
 import Foundation
+import JavascriptModel
 import SwiftUtils
 import VHDLKripkeStructureGenerator
 import VHDLMachines
@@ -80,11 +81,75 @@ struct VHDLGenerator: ParsableCommand {
     /// Runs the command.
     @inlinable
     mutating func run() throws {
-        let path = URL(fileURLWithPath: options.path, isDirectory: true)
-            .appendingPathComponent("machine.json", isDirectory: false)
+        guard !options.pathURL.lastPathComponent.lowercased().hasSuffix(".arrangement") else {
+            try createArrangement()
+            return
+        }
+        let buildFolder = options.pathURL.appendingPathComponent("build", isDirectory: true)
+        try self.createMachine(sourcePath: options.pathURL, destinationPath: buildFolder)
+    }
+
+    func createArrangement() throws {
+        let decoder = JSONDecoder()
+        let modelData = try Data(
+            contentsOf: options.pathURL.appendingPathComponent("model.json", isDirectory: false)
+        )
+        let model = try decoder.decode(ArrangementModel.self, from: modelData)
+        let nameRaw = options.pathURL.lastPathComponent.dropLast(".arrangement".count)
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !nameRaw.isEmpty, let name = VariableName(rawValue: nameRaw) else {
+            throw GenerationError.invalidFormat(message: "The arrangement is not named correctly!")
+        }
+        let arrangementFile = options.pathURL.appendingPathComponent("arrangement.json", isDirectory: false)
+        let data = try Data(contentsOf: arrangementFile)
+        let arrangement = try decoder.decode(Arrangement.self, from: data)
+        let f: (Machine, VariableName) -> MachineRepresentation? = {
+            MachineRepresentation(machine: $0, name: $1)
+        }
+        guard
+            let representation = ArrangementRepresentation(
+                arrangement: arrangement, name: name, createMachine: f
+            ),
+            let vhdlFile = representation.file.rawValue.data(using: .utf8)
+        else {
+            throw GenerationError.invalidFormat(message: "The arrangement contains invalid data!")
+        }
+        let buildFolder = options.pathURL.appendingPathComponent("build", isDirectory: true)
+        let vhdlFolder = buildFolder.appendingPathComponent("vhdl", isDirectory: true)
+        let destination = vhdlFolder.appendingPathComponent(
+            "\(name.rawValue).vhd", isDirectory: false
+        )
+        let manager = FileManager.default
+        try manager.createDirectory(at: vhdlFolder, withIntermediateDirectories: true)
+        try model.machines.forEach {
+            let path = URL(fileURLWithPath: $0.path, isDirectory: true)
+            var generateCommand = try Generate.parse([path.path])
+            try generateCommand.run()
+            var vhdlCommand = try VHDLGenerator.parse([path.path])
+            try vhdlCommand.run()
+            let machineVHDLFolder = path.appendingPathComponent("build/vhdl", isDirectory: true)
+            let files = try manager.contentsOfDirectory(
+                at: machineVHDLFolder, includingPropertiesForKeys: nil
+            )
+            guard files.allSatisfy({ $0.lastPathComponent.lowercased().hasSuffix(".vhd") }) else {
+                throw GenerationError.invalidGeneration(
+                    message: "Failed to generate VHDL for machine \(path.lastPathComponent)"
+                )
+            }
+            try files.forEach {
+                try manager.copyItem(
+                    at: $0, to: vhdlFolder.appendingPathComponent($0.lastPathComponent, isDirectory: false)
+                )
+            }
+        }
+        try vhdlFile.write(to: destination, options: .atomic)
+    }
+
+    func createMachine(sourcePath: URL, destinationPath: URL) throws {
+        let path = sourcePath.appendingPathComponent("machine.json", isDirectory: false)
         let data = try Data(contentsOf: path)
         let machine = try JSONDecoder().decode(Machine.self, from: data)
-        let nameRaw = self.options.pathURL.lastPathComponent
+        let nameRaw = sourcePath.lastPathComponent
         guard
             nameRaw.hasSuffix(".machine"),
             nameRaw != ".machine",
@@ -100,8 +165,7 @@ struct VHDLGenerator: ParsableCommand {
                 message: "Failed to generate VHDL for \(name.rawValue)."
             )
         }
-        let machinePath = URL(fileURLWithPath: options.path, isDirectory: true)
-        let buildFolder = machinePath.appendingPathComponent("build", isDirectory: true)
+        let buildFolder = destinationPath
         guard includeKripkeStructure else {
             let file = VHDLFile(representation: representation)
             let vhdlFolder = buildFolder.appendingPathComponent("vhdl", isDirectory: true)

@@ -1,5 +1,5 @@
-// LLFSMGenerate.swift
-// VHDLMachineTransformations
+// VariableMapping.swift
+// LLFSMGenerate
 // 
 // Created by Morgan McColl.
 // Copyright © 2024 Morgan McColl. All rights reserved.
@@ -52,20 +52,27 @@
 // along with this program; if not, see http://www.gnu.org/licenses/
 // or write to the Free Software Foundation, Inc., 51 Franklin Street,
 // Fifth Floor, Boston, MA  02110-1301, USA.
-// 
 
-import ArgumentParser
+/// A mapping of a variables value in one domain into a variables in another domain.
+///
+/// This struct represents data flow from a `source` to a `destination`. The `source` and `destination`
+/// properties represent the respective variable names for the data flow.
+public struct VariableMapping: Equatable, Hashable, Codable, Sendable {
 
-/// Main program for `llfsmgenerate`.
-@main
-struct LLFSMGenerate: ParsableCommand {
+    /// The name of the source variable.
+    public var source: String
 
-    /// This struct acts as an umbrella struct to multiple `ParsableCommand` subcommands.
-    static var configuration = CommandConfiguration(
-        commandName: "llfsmgenerate",
-        abstract: "A utility for performing operations on LLFSM formats.",
-        version: "1.3.0",
-        subcommands: [Generate.self, VHDLGenerator.self, CleanCommand.self, InstallCommand.self]
-    )
+    /// The name of the destination variable.
+    public var destination: String
+
+    /// Initialise the variable mapping with a source and destination.
+    /// - Parameters:
+    ///   - source: The name of the source variable.
+    ///   - destination: The name of the destination variable.
+    @inlinable
+    public init(source: String, destination: String) {
+        self.source = source
+        self.destination = destination
+    }
 
 }

@@ -1,5 +1,5 @@
-// LLFSMGenerate.swift
-// VHDLMachineTransformations
+// ArrangementModel.swift
+// LLFSMGenerate
 // 
 // Created by Morgan McColl.
 // Copyright © 2024 Morgan McColl. All rights reserved.
@@ -52,20 +52,46 @@
 // along with this program; if not, see http://www.gnu.org/licenses/
 // or write to the Free Software Foundation, Inc., 51 Franklin Street,
 // Fifth Floor, Boston, MA  02110-1301, USA.
-// 
 
-import ArgumentParser
+/// This struct represents an `Arrangement`.
+/// 
+/// An arrangement is the top-level structure of a group of Logic-Labelled Finite-State Machines. The
+/// arrangement defines which variables are sensors/actuators/clocks and which variables are local to the
+/// arrangement. It also contains a list of machines that are executing in the arrangement.
+public struct ArrangementModel: Equatable, Hashable, Codable, Sendable {
 
-/// Main program for `llfsmgenerate`.
-@main
-struct LLFSMGenerate: ParsableCommand {
+    /// The clocks used in this arrangement. Clocks exist outside the scope of the arrangement.
+    public var clocks: [ClockModel]
 
-    /// This struct acts as an umbrella struct to multiple `ParsableCommand` subcommands.
-    static var configuration = CommandConfiguration(
-        commandName: "llfsmgenerate",
-        abstract: "A utility for performing operations on LLFSM formats.",
-        version: "1.3.0",
-        subcommands: [Generate.self, VHDLGenerator.self, CleanCommand.self, InstallCommand.self]
-    )
+    /// The external variables used in this arrangement. External variables represent external
+    /// actuators/sensors and may affect the environment.
+    public var externalVariables: String
+
+    /// The machines executing within the arrangement, and the relavent variable mapping to each machine.
+    public var machines: [MachineReference]
+
+    /// The variables that are local to the arrangement. These variables may be shared amongst many machines
+    /// but cannot affect the outside world.
+    public var globalVariables: String
+
+    /// Initialise the arrangement from it's stored properties.
+    /// - Parameters:
+    ///   - clocks: The clocks used in this arrangement.
+    ///   - externalVariables: The external variables used in this arrangement.
+    ///   - machines: The machines executing within the arrangement.
+    ///   - globalVariables: The variables accessible to all machines within the arrangement but local to the
+    /// arrangement.
+    @inlinable
+    public init(
+        clocks: [ClockModel],
+        externalVariables: String,
+        machines: [MachineReference],
+        globalVariables: String
+    ) {
+        self.clocks = clocks
+        self.externalVariables = externalVariables
+        self.machines = machines
+        self.globalVariables = globalVariables
+    }
 
 }

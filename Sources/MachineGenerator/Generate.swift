@@ -74,7 +74,7 @@ struct Generate: ParsableCommand {
     /// Whether to perform a model generation. If this flag is specified, the program will
     /// generate the javascript model from the existing machine on the file system.
     @Flag(
-        help: "Regenerate the Javascript model. If this flag is specified, the program will generate the javascript model from the existing machine on the file system."
+        help: "Regenerate the Javascript model. If this flag is specified, the program will generate the javascript model from the existing LLFSM format on the file system."
     )
     var exportModel = false
 
@@ -132,10 +132,23 @@ struct Generate: ParsableCommand {
     @inlinable
     mutating func run() throws {
         guard exportModel else {
+            guard !pathURL.lastPathComponent.lowercased().hasSuffix(".arrangement") else {
+                try createArrangement()
+                return
+            }
             try createMachine()
             return
         }
         try createModel()
+    }
+
+    func createArrangement() throws {
+        let model = try decoder.decode(ArrangementModel.self, from: model)
+        guard let arrangement = Arrangement(model: model) else {
+            throw GenerationError.invalidGeneration(message: "Cannot create valid arrangement from model.")
+        }
+        let data = try encoder.encode(arrangement)
+        try data.write(to: pathURL.appendingPathComponent("arrangement.json", isDirectory: false))
     }
 
     /// Create a machine from the model.
