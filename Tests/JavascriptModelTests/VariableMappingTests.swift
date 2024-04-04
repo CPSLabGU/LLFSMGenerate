@@ -76,6 +76,8 @@ final class VariableMappingTests: XCTestCase {
     /// Test that the setters work correctly.
     func testSetters() {
         mapping.source = "new source"
+        XCTAssertEqual(mapping.source, "new source")
+        XCTAssertEqual(mapping.destination, "destination")
         mapping.destination = "new destination"
         XCTAssertEqual(mapping.source, "new source")
         XCTAssertEqual(mapping.destination, "new destination")
