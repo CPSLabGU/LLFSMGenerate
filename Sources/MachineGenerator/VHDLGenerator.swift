@@ -120,9 +120,14 @@ struct VHDLGenerator: ParsableCommand {
             "\(name.rawValue).vhd", isDirectory: false
         )
         let manager = FileManager.default
+        if manager.fileExists(atPath: vhdlFolder.path) {
+            try manager.removeItem(at: vhdlFolder)
+        }
         try manager.createDirectory(at: vhdlFolder, withIntermediateDirectories: true)
         try model.machines.forEach {
             let path = URL(fileURLWithPath: $0.path, isDirectory: true)
+            var cleanCommand = try CleanCommand.parse([path.path])
+            try cleanCommand.run()
             var generateCommand = try Generate.parse([path.path])
             try generateCommand.run()
             var vhdlCommand = try VHDLGenerator.parse([path.path])
@@ -137,10 +142,15 @@ struct VHDLGenerator: ParsableCommand {
                 )
             }
             try files.forEach {
-                try manager.copyItem(
-                    at: $0, to: vhdlFolder.appendingPathComponent($0.lastPathComponent, isDirectory: false)
-                )
+                let target = vhdlFolder.appendingPathComponent($0.lastPathComponent, isDirectory: false)
+                if manager.fileExists(atPath: target.path) {
+                    try manager.removeItem(at: target)
+                }
+                try manager.copyItem(at: $0, to: target)
             }
+        }
+        if manager.fileExists(atPath: destination.path) {
+            try manager.removeItem(at: destination)
         }
         try vhdlFile.write(to: destination, options: .atomic)
     }
