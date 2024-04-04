@@ -64,13 +64,14 @@ extension Arrangement {
         let decoder = JSONDecoder()
         let machineTuples: [(VariableName, MachineMapping)] = model.machines
             .compactMap { (reference: MachineReference) -> (VariableName, MachineMapping)? in
+                let url = URL(fileURLWithPath: reference.path, isDirectory: true)
                 guard
                     let name = VariableName(rawValue: reference.name),
                     let data = try? Data(
-                        contentsOf: URL(fileURLWithPath: reference.path, isDirectory: true)
-                            .appendingPathComponent("model.json", isDirectory: false)
+                        contentsOf: url.appendingPathComponent("model.json", isDirectory: false)
                     ),
-                    let machine = try? decoder.decode(Machine.self, from: data)
+                    let machineModel = try? decoder.decode(MachineModel.self, from: data),
+                    let machine = Machine(model: machineModel)
                 else {
                     return nil
                 }
@@ -91,7 +92,10 @@ extension Arrangement {
                 }
                 return (name, mapping)
             }
-        guard machineTuples.count == Set(machineTuples.map { $0.0 }).count else {
+        guard
+            machineTuples.count == model.machines.count,
+            machineTuples.count == Set(machineTuples.map { $0.0 }).count
+        else {
             return nil
         }
         let machines = Dictionary(uniqueKeysWithValues: machineTuples)

@@ -119,8 +119,8 @@ struct VHDLGenerator: ParsableCommand {
         let destination = vhdlFolder.appendingPathComponent(
             "\(name.rawValue).vhd", isDirectory: false
         )
-        try vhdlFile.write(to: destination, options: .atomic)
         let manager = FileManager.default
+        try manager.createDirectory(at: vhdlFolder, withIntermediateDirectories: true)
         try model.machines.forEach {
             let path = URL(fileURLWithPath: $0.path, isDirectory: true)
             var generateCommand = try Generate.parse([path.path])
@@ -142,6 +142,7 @@ struct VHDLGenerator: ParsableCommand {
                 )
             }
         }
+        try vhdlFile.write(to: destination, options: .atomic)
     }
 
     func createMachine(sourcePath: URL, destinationPath: URL) throws {
