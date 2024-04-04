@@ -74,27 +74,12 @@ final class Machine0Tests: XCTestCase {
 
     /// Test generation is correct.
     func testGeneration() {
-        let path = URL(fileURLWithPath: pathRaw, isDirectory: true)
-        guard
-            let machine = Machine(machine0LocatedInFolder: path),
-            let result = Machine(
-                model: .machine0, path: path.appendingPathComponent("Machine0.machine", isDirectory: true)
-            )
-        else {
-            XCTFail("Failed to create machine and model.")
-            return
-        }
-        XCTAssertEqual(result, machine)
+        XCTAssertEqual(Machine(model: .machine0), Machine.machine0)
     }
 
     /// Test the model generation is correct.
     func testModelGeneration() {
-        guard
-            let machine = Machine(machine0LocatedInFolder: URL(fileURLWithPath: pathRaw, isDirectory: true))
-        else {
-            XCTFail("Failed to create machine.")
-            return
-        }
+        let machine = Machine.machine0
         let model = MachineModel.machine0
         let result = MachineModel(
             machine: machine,

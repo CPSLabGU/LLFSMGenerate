@@ -56,13 +56,10 @@
 
 import ArgumentParser
 import Foundation
+import SwiftUtils
 import VHDLKripkeStructureGenerator
 import VHDLMachines
 import VHDLParsing
-
-#if os(Linux)
-import IO
-#endif
 
 /// A sub-command that generates VHDL source files from LLFSM definitions.
 struct VHDLGenerator: ParsableCommand {
@@ -87,9 +84,20 @@ struct VHDLGenerator: ParsableCommand {
             .appendingPathComponent("machine.json", isDirectory: false)
         let data = try Data(contentsOf: path)
         let machine = try JSONDecoder().decode(Machine.self, from: data)
-        guard let representation = MachineRepresentation(machine: machine) else {
+        let nameRaw = self.options.pathURL.lastPathComponent
+        guard
+            nameRaw.hasSuffix(".machine"),
+            nameRaw != ".machine",
+            let name = VariableName(rawValue: String(nameRaw.dropLast(8)))
+        else {
+            throw GenerationError.invalidFormat(
+                message: "The machine specified is invalid. " +
+                    "Please make sure you specify a machine with the .machine extension and valid name."
+            )
+        }
+        guard let representation = MachineRepresentation(machine: machine, name: name) else {
             throw GenerationError.invalidGeneration(
-                message: "Failed to generate VHDL for \(machine.name.rawValue)."
+                message: "Failed to generate VHDL for \(name.rawValue)."
             )
         }
         let machinePath = URL(fileURLWithPath: options.path, isDirectory: true)
@@ -98,7 +106,7 @@ struct VHDLGenerator: ParsableCommand {
             let file = VHDLFile(representation: representation)
             let vhdlFolder = buildFolder.appendingPathComponent("vhdl", isDirectory: true)
             let vhdlPath = vhdlFolder.appendingPathComponent(
-                "\(machine.name.rawValue).vhd", isDirectory: false
+                "\(representation.entity.name.rawValue).vhd", isDirectory: false
             )
             try FileManager.default.createDirectory(at: vhdlFolder, withIntermediateDirectories: true)
             try (file.rawValue + "\n").write(to: vhdlPath, atomically: true, encoding: .utf8)
@@ -106,7 +114,7 @@ struct VHDLGenerator: ParsableCommand {
         }
         guard let files = VHDLKripkeStructureGenerator().generateAll(representation: representation) else {
             throw GenerationError.invalidGeneration(
-                message: "Failed to generate Kripke Structure for \(machine.name.rawValue)."
+                message: "Failed to generate Kripke Structure for \(name.rawValue)."
             )
         }
         try files.write(to: buildFolder, options: .atomic, originalContentsURL: nil)

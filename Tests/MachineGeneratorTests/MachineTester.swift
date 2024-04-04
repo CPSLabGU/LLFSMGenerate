@@ -115,9 +115,9 @@ class MachineTester: XCTestCase {
     override func setUp() {
         let createDir: ()? = try? manager
             .createDirectory(at: machine0Path, withIntermediateDirectories: true)
+        let machine = Machine.machine0
         guard
             createDir != nil,
-            let machine = Machine(machine0LocatedInFolder: machinesFolder),
             let data = try? encoder.encode(machine),
             let modelData = try? encoder.encode(MachineModel.machine0)
         else {

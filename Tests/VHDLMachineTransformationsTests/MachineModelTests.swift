@@ -122,8 +122,6 @@ final class MachineModelTests: XCTestCase {
     /// The expected machine.
     lazy var machine = Machine(
         actions: [VariableName(rawValue: "OnEntry")!, VariableName(rawValue: "OnExit")!],
-        name: VariableName(rawValue: "Machine0")!,
-        path: URL(fileURLWithPath: "/tmp/Machine0.machine", isDirectory: true),
         includes: [
             .library(value: VariableName(rawValue: "IEEE")!),
             .include(
@@ -135,7 +133,6 @@ final class MachineModelTests: XCTestCase {
         externalSignals: [PortSignal(type: .stdLogic, name: VariableName(rawValue: "y")!, mode: .output)],
         clocks: clocks,
         drivingClock: 0,
-        dependentMachines: [:],
         machineSignals: [LocalSignal(type: .stdLogic, name: VariableName(rawValue: "x")!)],
         isParameterised: false,
         parameterSignals: [],
@@ -190,8 +187,6 @@ final class MachineModelTests: XCTestCase {
     override func setUp() {
         machine = Machine(
             actions: [VariableName(rawValue: "OnEntry")!, VariableName(rawValue: "OnExit")!],
-            name: VariableName(rawValue: "Machine0")!,
-            path: URL(fileURLWithPath: "/tmp/Machine0.machine", isDirectory: true),
             includes: [
                 .library(value: VariableName(rawValue: "IEEE")!),
                 .include(
@@ -203,7 +198,6 @@ final class MachineModelTests: XCTestCase {
             externalSignals: [PortSignal(type: .stdLogic, name: VariableName(rawValue: "y")!, mode: .output)],
             clocks: clocks,
             drivingClock: 0,
-            dependentMachines: [:],
             machineSignals: [LocalSignal(type: .stdLogic, name: VariableName(rawValue: "x")!)],
             isParameterised: false,
             parameterSignals: [],
