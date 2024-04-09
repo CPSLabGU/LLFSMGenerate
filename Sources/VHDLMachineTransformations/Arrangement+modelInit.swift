@@ -65,39 +65,15 @@ extension Arrangement {
         guard keyNames.count == Set(keyNames).count else {
             return nil
         }
-        let decoder = JSONDecoder()
         let machineTuples: [(MachineInstance, MachineMapping)] = model.machines
             .compactMap { (reference: MachineReference) -> (MachineInstance, MachineMapping)? in
-                let url = URL(fileURLWithPath: reference.path, isDirectory: true)
-                let nameRaw = url.lastPathComponent
                 guard
-                    nameRaw.hasSuffix(".machine"),
-                    let name = VariableName(rawValue: reference.name),
-                    let type = VariableName(rawValue: String(nameRaw.dropLast(8))),
-                    let data = try? Data(
-                        contentsOf: url.appendingPathComponent("model.json", isDirectory: false)
-                    ),
-                    let machineModel = try? decoder.decode(MachineModel.self, from: data),
-                    let machine = Machine(model: machineModel)
+                    let instance = MachineInstance(reference: reference),
+                    let mapping = MachineMapping(reference: reference)
                 else {
                     return nil
                 }
-                let mappings: [VHDLMachines.VariableMapping] = reference.mappings.compactMap {
-                    guard
-                        let source = VariableName(rawValue: $0.source),
-                        let destination = VariableName(rawValue: $0.destination)
-                    else {
-                        return nil
-                    }
-                    return VHDLMachines.VariableMapping(source: source, destination: destination)
-                }
-                guard
-                    mappings.count == reference.mappings.count,
-                    let mapping = MachineMapping(machine: machine, with: mappings)
-                else {
-                    return nil
-                }
-                return (MachineInstance(name: name, type: type), mapping)
+                return (instance, mapping)
             }
         guard
             machineTuples.count == model.machines.count,
@@ -134,6 +110,53 @@ extension Arrangement {
             signals: localSignals,
             clocks: clocks
         )
+    }
+
+}
+
+extension MachineInstance {
+
+    init?(reference: MachineReference) {
+        let url = URL(fileURLWithPath: reference.path, isDirectory: true)
+        let nameRaw = url.lastPathComponent
+        guard
+            nameRaw.hasSuffix(".machine"),
+            let name = VariableName(rawValue: reference.name),
+            let type = VariableName(rawValue: String(nameRaw.dropLast(8)))
+        else {
+            return nil
+        }
+        self.init(name: name, type: type)
+    }
+
+}
+
+extension MachineMapping {
+
+    init?(reference: MachineReference) {
+        let url = URL(fileURLWithPath: reference.path, isDirectory: true)
+        guard
+            let data = try? Data(
+                contentsOf: url.appendingPathComponent("model.json", isDirectory: false)
+            ),
+            let machineModel = try? JSONDecoder().decode(MachineModel.self, from: data),
+            let machine = Machine(model: machineModel)
+        else {
+            return nil
+        }
+        let mappings: [VHDLMachines.VariableMapping] = reference.mappings.compactMap {
+            guard
+                let source = VariableName(rawValue: $0.source),
+                let destination = VariableName(rawValue: $0.destination)
+            else {
+                return nil
+            }
+            return VHDLMachines.VariableMapping(source: source, destination: destination)
+        }
+        guard mappings.count == reference.mappings.count else {
+            return nil
+        }
+        self.init(machine: machine, with: mappings)
     }
 
 }
