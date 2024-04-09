@@ -61,12 +61,19 @@ import VHDLParsing
 extension Arrangement {
 
     public init?(model: ArrangementModel) {
+        let keyNames = model.machines.map(\.name)
+        guard keyNames.count == Set(keyNames).count else {
+            return nil
+        }
         let decoder = JSONDecoder()
-        let machineTuples: [(VariableName, MachineMapping)] = model.machines
-            .compactMap { (reference: MachineReference) -> (VariableName, MachineMapping)? in
+        let machineTuples: [(MachineInstance, MachineMapping)] = model.machines
+            .compactMap { (reference: MachineReference) -> (MachineInstance, MachineMapping)? in
                 let url = URL(fileURLWithPath: reference.path, isDirectory: true)
+                let nameRaw = url.lastPathComponent
                 guard
+                    nameRaw.hasSuffix(".machine"),
                     let name = VariableName(rawValue: reference.name),
+                    let type = VariableName(rawValue: String(nameRaw.dropLast(8))),
                     let data = try? Data(
                         contentsOf: url.appendingPathComponent("model.json", isDirectory: false)
                     ),
@@ -90,7 +97,7 @@ extension Arrangement {
                 else {
                     return nil
                 }
-                return (name, mapping)
+                return (MachineInstance(name: name, type: type), mapping)
             }
         guard
             machineTuples.count == model.machines.count,
@@ -117,13 +124,12 @@ extension Arrangement {
         }
         let clockNames = clocks.map(\.name)
         let signalNames = localSignals.map(\.name) + externalSignals.map(\.name)
-        let machineNames: [VariableName] = Array(machines.keys)
-        let allNames = clockNames + signalNames + machineNames
+        let allNames = clockNames + signalNames
         guard Set(allNames).count == allNames.count else {
             return nil
         }
         self.init(
-            machines: machines,
+            mappings: machines,
             externalSignals: externalSignals,
             signals: localSignals,
             clocks: clocks
