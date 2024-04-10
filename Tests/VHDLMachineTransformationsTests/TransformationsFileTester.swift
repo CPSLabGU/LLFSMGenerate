@@ -54,6 +54,7 @@
 // Fifth Floor, Boston, MA  02110-1301, USA.
 
 import Foundation
+import JavascriptModel
 import TestHelpers
 
 /// Helper class for testing in the `VHDLMachinesTransformations` target.
@@ -64,9 +65,36 @@ class TransformationsFileTester: FileTester {
         transformationsDirectory.appendingPathComponent("machines", isDirectory: true)
     }
 
+    /// The directory to the `PingMachine`.
+    var pingMachineDirectory: URL {
+        machinesDirectory.appendingPathComponent("PingMachine.machine", isDirectory: true)
+    }
+
     /// Create the machines directory before each test.
     override func setUp() {
         super.setUp()
+        if !manager.fileExists(atPath: machinesDirectory.path) {
+            try? manager.createDirectory(
+                at: machinesDirectory, withIntermediateDirectories: true, attributes: nil
+            )
+            _ = manager.createFile(
+                atPath: machinesDirectory.appendingPathComponent(".gitignore", isDirectory: false).path,
+                contents: "*".data(using: .utf8)
+            )
+        }
+        try? manager.createDirectory(at: pingMachineDirectory, withIntermediateDirectories: true)
+        let model = MachineModel.pingMachine
+        let modelDir = pingMachineDirectory.appendingPathComponent("model.json", isDirectory: false)
+        guard let data = try? JSONEncoder().encode(model) else {
+            return
+        }
+        try? data.write(to: modelDir)
+    }
+
+    /// Remove the machines directory before each test.
+    override func tearDown() {
+        super.tearDown()
+        try? manager.removeItem(at: machinesDirectory)
         try? manager.createDirectory(
             at: machinesDirectory, withIntermediateDirectories: true, attributes: nil
         )
@@ -74,12 +102,6 @@ class TransformationsFileTester: FileTester {
             atPath: machinesDirectory.appendingPathComponent(".gitignore", isDirectory: false).path,
             contents: "*".data(using: .utf8)
         )
-    }
-
-    /// Remove the machines directory before each test.
-    override func tearDown() {
-        super.tearDown()
-        try? manager.removeItem(at: machinesDirectory)
     }
 
 }
