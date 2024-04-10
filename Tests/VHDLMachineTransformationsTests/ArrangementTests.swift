@@ -55,6 +55,7 @@
 
 import Foundation
 import JavascriptModel
+import TestHelpers
 import VHDLMachines
 @testable import VHDLMachineTransformations
 import VHDLParsing
@@ -80,5 +81,25 @@ final class ArrangementTests: FileTester {
         ],
         globalVariables: "signal beginExecution: std_logic := '1';"
     )
+
+    // let pingMachine = Machine(
+    //     actions: [],
+    //     includes: [Include],
+    //     externalSignals: [PortSignal],
+    //     clocks: [Clock],
+    //     drivingClock: Int,
+    //     machineSignals: [LocalSignal],
+    //     isParameterised: Bool,
+    //     parameterSignals: [Parameter],
+    //     returnableSignals: [ReturnableVariable],
+    //     states: [State],
+    //     transitions: [Transition],
+    //     initialState: Int,
+    //     suspendedState: Int?
+    // )
+
+    // override func setUp() {
+        
+    // }
 
 }

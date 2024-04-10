@@ -67,8 +67,14 @@ let package = Package(
             ]
         ),
         .testTarget(
-            name: "VHDLMachineTransformationsTests",
+            name: "TestHelpers",
             dependencies: ["VHDLMachineTransformations", "VHDLParsing", "VHDLMachines", "JavascriptModel"]
+        ),
+        .testTarget(
+            name: "VHDLMachineTransformationsTests",
+            dependencies: [
+                "VHDLMachineTransformations", "VHDLParsing", "VHDLMachines", "JavascriptModel", "TestHelpers"
+            ]
         )
     ]
 )

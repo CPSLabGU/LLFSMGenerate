@@ -57,33 +57,33 @@ import Foundation
 import XCTest
 
 /// Add helper methods for testing files.
-class FileTester: XCTestCase {
+open class FileTester: XCTestCase {
 
     /// A file manager.
-    let manager = FileManager.default
+    public let manager = FileManager.default
 
     /// The path to the root directory of the package.
-    var currentDirectory: URL {
+    public var currentDirectory: URL {
         URL(fileURLWithPath: manager.currentDirectoryPath, isDirectory: true)
     }
 
     /// The path to the `Tests` directory.
-    var testsDirectory: URL {
+    public var testsDirectory: URL {
         currentDirectory.appendingPathComponent("Tests", isDirectory: true)
     }
 
     /// The path to the `VHDLMachinesTransformationsTests` target.
-    var transformationsDirectory: URL {
+    public var transformationsDirectory: URL {
         testsDirectory.appendingPathComponent("VHDLMachineTransformationsTests", isDirectory: true)
     }
 
     /// The path to the `machines` folder within the `VHDLMachinesTransformationsTests` target.
-    var machinesDirectory: URL {
+    public var machinesDirectory: URL {
         transformationsDirectory.appendingPathComponent("machines", isDirectory: true)
     }
 
     /// Create the machines directory before each test.
-    override func setUp() {
+    override public func setUp() {
         super.setUp()
         try? manager.createDirectory(
             at: machinesDirectory, withIntermediateDirectories: true, attributes: nil
@@ -95,7 +95,7 @@ class FileTester: XCTestCase {
     }
 
     /// Remove the machines directory before each test.
-    override func tearDown() {
+    override public func tearDown() {
         super.tearDown()
         try? manager.removeItem(at: machinesDirectory)
     }
