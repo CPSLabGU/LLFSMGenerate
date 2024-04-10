@@ -65,13 +65,13 @@ import XCTest
 final class ArrangementTests: TransformationsFileTester {
 
     /// A model of the arrangement.
-    let model = ArrangementModel(
+    lazy var model = ArrangementModel(
         clocks: [ClockModel(name: "clk", frequency: "125 MHz")],
-        externalVariables: "ping: out std_logic; pong: in std_logic;",
+        externalVariables: "externalPing: out std_logic; externalPong: out std_logic;",
         machines: [
             MachineReference(
                 name: "PingMachine",
-                path: "",
+                path: self.pingMachineDirectory.path,
                 mappings: [
                     JavascriptModel.VariableMapping(source: "clk", destination: "clk"),
                     JavascriptModel.VariableMapping(source: "ping", destination: "ping"),
@@ -79,11 +79,74 @@ final class ArrangementTests: TransformationsFileTester {
                 ]
             )
         ],
-        globalVariables: "signal beginExecution: std_logic := '1';"
+        globalVariables: """
+        signal ping: std_logic;
+        signal pong: std_logic;
+        """
     )
 
-    // override func setUp() {
-    //     let pingPath = self.machinesDirectory.appendingPathComponent("PingMachine.machine", isDirectory: true)
-    // }
+    /// Initialise the model before every test.
+    override func setUp() {
+        super.setUp()
+        model = ArrangementModel(
+            clocks: [ClockModel(name: "clk", frequency: "125 MHz")],
+            externalVariables: "externalPing: out std_logic; externalPong: out std_logic;",
+            machines: [
+                MachineReference(
+                    name: "PingMachine",
+                    path: self.pingMachineDirectory.path,
+                    mappings: [
+                        JavascriptModel.VariableMapping(source: "clk", destination: "clk"),
+                        JavascriptModel.VariableMapping(source: "ping", destination: "ping"),
+                        JavascriptModel.VariableMapping(source: "pong", destination: "pong")
+                    ]
+                )
+            ],
+            globalVariables: """
+            signal ping: std_logic;
+            signal pong: std_logic;
+            """
+        )
+    }
+
+    /// Test that the arrangement is created correctly from the model.
+    func testArrangementCreation() {
+        guard
+            let arrangement = Arrangement(model: model),
+            let mapping = MachineMapping(
+                machine: .pingMachine,
+                with: [
+                    VHDLMachines.VariableMapping(source: .clk, destination: .clk),
+                    VHDLMachines.VariableMapping(source: .ping, destination: .ping),
+                    VHDLMachines.VariableMapping(source: .pong, destination: .pong)
+                ]
+            ),
+            let expected = Arrangement(
+                mappings: [MachineInstance(name: .pingMachine, type: .pingMachine): mapping],
+                externalSignals: [
+                    PortSignal(type: .stdLogic, name: .externalPing, mode: .output),
+                    PortSignal(type: .stdLogic, name: .externalPong, mode: .output)
+                ],
+                signals: [
+                    LocalSignal(type: .stdLogic, name: .ping), LocalSignal(type: .stdLogic, name: .pong)
+                ],
+                clocks: [Clock(name: .clk, frequency: 125, unit: .MHz)],
+                globalMappings: [
+                    VHDLMachines.VariableMapping(source: .externalPing, destination: .ping),
+                    VHDLMachines.VariableMapping(source: .externalPong, destination: .pong)
+                ]
+            )
+        else {
+            XCTFail("Failed to create arrangement!")
+            return
+        }
+        XCTAssertEqual(arrangement.clocks, expected.clocks)
+        XCTAssertEqual(arrangement.externalSignals, expected.externalSignals)
+        XCTAssertEqual(arrangement.signals, expected.signals)
+        XCTAssertEqual(arrangement.globalMappings, expected.globalMappings)
+        XCTAssertEqual(arrangement.machines.count, expected.machines.count)
+        XCTAssertTrue(arrangement.machines.allSatisfy { expected.machines[$0] == $1 })
+        // XCTAssertEqual(arrangement, expected)
+    }
 
 }
