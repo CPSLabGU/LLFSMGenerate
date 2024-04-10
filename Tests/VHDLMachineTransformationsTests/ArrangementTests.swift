@@ -82,7 +82,11 @@ final class ArrangementTests: TransformationsFileTester {
         globalVariables: """
         signal ping: std_logic;
         signal pong: std_logic;
-        """
+        """,
+        globalMappings: [
+            VariableMapping(source: "externalPing", destination: "ping"),
+            VariableMapping(source: "externalPong", destination: "pong")
+        ]
     )
 
     /// Initialise the model before every test.
@@ -105,7 +109,11 @@ final class ArrangementTests: TransformationsFileTester {
             globalVariables: """
             signal ping: std_logic;
             signal pong: std_logic;
-            """
+            """,
+            globalMappings: [
+                VariableMapping(source: "externalPing", destination: "ping"),
+                VariableMapping(source: "externalPong", destination: "pong")
+            ]
         )
     }
 
@@ -140,13 +148,7 @@ final class ArrangementTests: TransformationsFileTester {
             XCTFail("Failed to create arrangement!")
             return
         }
-        XCTAssertEqual(arrangement.clocks, expected.clocks)
-        XCTAssertEqual(arrangement.externalSignals, expected.externalSignals)
-        XCTAssertEqual(arrangement.signals, expected.signals)
-        XCTAssertEqual(arrangement.globalMappings, expected.globalMappings)
-        XCTAssertEqual(arrangement.machines.count, expected.machines.count)
-        XCTAssertTrue(arrangement.machines.allSatisfy { expected.machines[$0] == $1 })
-        // XCTAssertEqual(arrangement, expected)
+        XCTAssertEqual(arrangement, expected)
     }
 
 }
