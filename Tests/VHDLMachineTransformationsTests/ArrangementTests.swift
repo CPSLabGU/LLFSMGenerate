@@ -62,7 +62,7 @@ import VHDLParsing
 import XCTest
 
 /// Test class for `Arrangement` extensions.
-final class ArrangementTests: FileTester {
+final class ArrangementTests: TransformationsFileTester {
 
     /// A model of the arrangement.
     let model = ArrangementModel(
@@ -82,24 +82,8 @@ final class ArrangementTests: FileTester {
         globalVariables: "signal beginExecution: std_logic := '1';"
     )
 
-    // let pingMachine = Machine(
-    //     actions: [],
-    //     includes: [Include],
-    //     externalSignals: [PortSignal],
-    //     clocks: [Clock],
-    //     drivingClock: Int,
-    //     machineSignals: [LocalSignal],
-    //     isParameterised: Bool,
-    //     parameterSignals: [Parameter],
-    //     returnableSignals: [ReturnableVariable],
-    //     states: [State],
-    //     transitions: [Transition],
-    //     initialState: Int,
-    //     suspendedState: Int?
-    // )
-
     // override func setUp() {
-        
+    //     let pingPath = self.machinesDirectory.appendingPathComponent("PingMachine.machine", isDirectory: true)
     // }
 
 }
