@@ -80,7 +80,14 @@ final class ArrangementTests: TransformationsFileTester {
 
     /// Test the arrangement is still created using relative paths.
     func testArrangementCreationWithRelativePath() throws {
-
+        let subdir = self.machinesDirectory.appendingPathComponent("subdir", isDirectory: true)
+        let pingURL = subdir.appendingPathComponent("PingMachine.machine", isDirectory: true)
+        try self.manager.createDirectory(at: pingURL, withIntermediateDirectories: true)
+        let modelURL = pingURL.appendingPathComponent("model.json", isDirectory: false)
+        let data = try encoder.encode(Machine.pingMachine)
+        try data.write(to: modelURL)
+        model.machines[0].path = "subdir/PingMachine.machine"
+        XCTAssertEqual(Arrangement(model: model), .pingArrangement)
     }
 
     /// Test that the init returns nil for invalid machine references.
