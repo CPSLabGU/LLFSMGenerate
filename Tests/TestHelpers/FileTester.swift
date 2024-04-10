@@ -59,6 +59,12 @@ import XCTest
 /// Add helper methods for testing files.
 open class FileTester: XCTestCase {
 
+    /// A `JSON` encoder.
+    public let encoder = JSONEncoder()
+
+    /// A `JSON` decoder.
+    public let decoder = JSONDecoder()
+
     /// A file manager.
     public let manager = FileManager.default
 
