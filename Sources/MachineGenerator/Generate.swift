@@ -144,7 +144,9 @@ struct Generate: ParsableCommand {
 
     func createArrangement() throws {
         let model = try decoder.decode(ArrangementModel.self, from: model)
-        guard let arrangement = Arrangement(model: model) else {
+        guard let arrangement = Arrangement(
+            model: model, basePath: self.pathURL.deletingLastPathComponent()
+        ) else {
             throw GenerationError.invalidGeneration(message: "Cannot create valid arrangement from model.")
         }
         let data = try encoder.encode(arrangement)

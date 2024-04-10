@@ -63,8 +63,9 @@ extension Arrangement {
 
     /// Create an `Arrangement` from its javascript representation.
     /// - Parameter model: The javascript model to convert.
+    /// - Parameter basePath: The path of the directory containing the arrangement folder.
     @inlinable
-    public init?(model: ArrangementModel) {
+    public init?(model: ArrangementModel, basePath: URL) {
         let keyNames = model.machines.map(\.name)
         guard keyNames.count == Set(keyNames).count else {
             return nil
@@ -73,7 +74,7 @@ extension Arrangement {
             .compactMap { (reference: MachineReference) -> (MachineInstance, MachineMapping)? in
                 guard
                     let instance = MachineInstance(reference: reference),
-                    let mapping = MachineMapping(reference: reference)
+                    let mapping = MachineMapping(reference: reference, basePath: basePath)
                 else {
                     return nil
                 }
@@ -145,13 +146,15 @@ extension MachineMapping {
 
     /// Create a `MachineMapping` from its javascript model.
     /// - Parameter reference: The ``MachineReferece`` js model to convert.
+    /// - Parameter basePath: The path of the directory containing the arrangement folder.
     @inlinable
-    init?(reference: MachineReference) {
-        let url = URL(fileURLWithPath: reference.path, isDirectory: true)
+    init?(reference: MachineReference, basePath: URL) {
+        let url = URL(fileURLWithPath: reference.path, isDirectory: true, relativeTo: basePath)
+            .appendingPathComponent("model.json", isDirectory: false)
+        print(url.path)
+        fflush(stdout)
         guard
-            let data = try? Data(
-                contentsOf: url.appendingPathComponent("model.json", isDirectory: false)
-            ),
+            let data = try? Data(contentsOf: url),
             let machineModel = try? JSONDecoder().decode(MachineModel.self, from: data),
             let machine = Machine(model: machineModel)
         else {

@@ -75,7 +75,7 @@ final class ArrangementTests: TransformationsFileTester {
 
     /// Test that the arrangement is created correctly from the model.
     func testArrangementCreation() {
-        XCTAssertEqual(Arrangement(model: model), .pingArrangement)
+        XCTAssertEqual(Arrangement(model: model, basePath: machinesDirectory), .pingArrangement)
     }
 
     /// Test the arrangement is still created using relative paths.
@@ -84,58 +84,58 @@ final class ArrangementTests: TransformationsFileTester {
         let pingURL = subdir.appendingPathComponent("PingMachine.machine", isDirectory: true)
         try self.manager.createDirectory(at: pingURL, withIntermediateDirectories: true)
         let modelURL = pingURL.appendingPathComponent("model.json", isDirectory: false)
-        let data = try encoder.encode(Machine.pingMachine)
+        let data = try encoder.encode(MachineModel.pingMachine)
         try data.write(to: modelURL)
         model.machines[0].path = "subdir/PingMachine.machine"
-        XCTAssertEqual(Arrangement(model: model), .pingArrangement)
+        XCTAssertEqual(Arrangement(model: model, basePath: machinesDirectory), .pingArrangement)
     }
 
     /// Test that the init returns nil for invalid machine references.
     func testInvalidMachineReferences() throws {
         let oldRef = model.machines[0]
         model.machines += [model.machines[0]]
-        XCTAssertNil(Arrangement(model: model))
+        XCTAssertNil(Arrangement(model: model, basePath: machinesDirectory))
         model.machines = [oldRef]
-        XCTAssertNotNil(Arrangement(model: model))
+        XCTAssertNotNil(Arrangement(model: model, basePath: machinesDirectory))
         var ref = oldRef
         ref.path = String(ref.path.dropLast(8))
         model.machines = [ref]
-        XCTAssertNil(Arrangement(model: model))
+        XCTAssertNil(Arrangement(model: model, basePath: machinesDirectory))
         model.machines = [oldRef]
-        XCTAssertNotNil(Arrangement(model: model))
+        XCTAssertNotNil(Arrangement(model: model, basePath: machinesDirectory))
         var invalidMapping = oldRef
         invalidMapping.mappings[0] = JavascriptModel.VariableMapping(
             source: "invalid name!", destination: "clk"
         )
         model.machines = [invalidMapping]
-        XCTAssertNil(Arrangement(model: model))
+        XCTAssertNil(Arrangement(model: model, basePath: machinesDirectory))
         model.machines = [oldRef]
-        XCTAssertNotNil(Arrangement(model: model))
+        XCTAssertNotNil(Arrangement(model: model, basePath: machinesDirectory))
         try self.manager.removeItem(
             at: self.pingMachineDirectory.appendingPathComponent("model.json", isDirectory: false)
         )
-        XCTAssertNil(Arrangement(model: model))
+        XCTAssertNil(Arrangement(model: model, basePath: machinesDirectory))
     }
 
     /// Test that the init returns nil for invalid variables.
     func testInitReturnsNilForInvalidVariables() {
         let oldModel = model
         model.externalVariables += "\nsignal invalid_data!: in std_logic;"
-        XCTAssertNil(Arrangement(model: model))
+        XCTAssertNil(Arrangement(model: model, basePath: machinesDirectory))
         model = oldModel
-        XCTAssertNotNil(Arrangement(model: model))
+        XCTAssertNotNil(Arrangement(model: model, basePath: machinesDirectory))
         model.globalVariables += "\nsignal invalid_data!: in std_logic;"
-        XCTAssertNil(Arrangement(model: model))
+        XCTAssertNil(Arrangement(model: model, basePath: machinesDirectory))
         model = oldModel
-        XCTAssertNotNil(Arrangement(model: model))
+        XCTAssertNotNil(Arrangement(model: model, basePath: machinesDirectory))
         model.clocks += [ClockModel(name: "clk2", frequency: "invalid")]
-        XCTAssertNil(Arrangement(model: model))
+        XCTAssertNil(Arrangement(model: model, basePath: machinesDirectory))
         model = oldModel
-        XCTAssertNotNil(Arrangement(model: model))
+        XCTAssertNotNil(Arrangement(model: model, basePath: machinesDirectory))
         model.globalMappings += [
             JavascriptModel.VariableMapping(source: "invalid signal!", destination: "ping")
         ]
-        XCTAssertNil(Arrangement(model: model))
+        XCTAssertNil(Arrangement(model: model, basePath: machinesDirectory))
     }
 
 }
