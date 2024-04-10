@@ -67,11 +67,17 @@ public extension VariableName {
 
     static let clk = VariableName(rawValue: "clk")!
 
+    static let externalPing = VariableName(rawValue: "externalPing")!
+
+    static let externalPong = VariableName(rawValue: "externalPong")!
+
     static let ieee = VariableName(rawValue: "IEEE")!
 
     static let initial = VariableName(rawValue: "Initial")!
 
     static let `internal` = VariableName(rawValue: "Internal")!
+
+    static let mathReal = VariableName(rawValue: "math_real")!
 
     static let onEntry = VariableName(rawValue: "OnEntry")!
 

@@ -66,6 +66,11 @@ public extension UseStatement {
         nonEmptyComponents: [.module(name: .ieee), .module(name: .stdLogic1164), .all]
     )!
 
+    /// An import to the `IEEE.math_real.all` module.
+    static let mathReal = UseStatement(
+        nonEmptyComponents: [.module(name: .ieee), .module(name: .mathReal), .all]
+    )!
+
 }
 
 // swiftlint:enable missing_docs
