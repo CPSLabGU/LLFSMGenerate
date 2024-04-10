@@ -65,90 +65,22 @@ import XCTest
 final class ArrangementTests: TransformationsFileTester {
 
     /// A model of the arrangement.
-    lazy var model = ArrangementModel(
-        clocks: [ClockModel(name: "clk", frequency: "125 MHz")],
-        externalVariables: "externalPing: out std_logic; externalPong: out std_logic;",
-        machines: [
-            MachineReference(
-                name: "PingMachine",
-                path: self.pingMachineDirectory.path,
-                mappings: [
-                    JavascriptModel.VariableMapping(source: "clk", destination: "clk"),
-                    JavascriptModel.VariableMapping(source: "ping", destination: "ping"),
-                    JavascriptModel.VariableMapping(source: "pong", destination: "pong")
-                ]
-            )
-        ],
-        globalVariables: """
-        signal ping: std_logic;
-        signal pong: std_logic;
-        """,
-        globalMappings: [
-            VariableMapping(source: "externalPing", destination: "ping"),
-            VariableMapping(source: "externalPong", destination: "pong")
-        ]
-    )
+    lazy var model = ArrangementModel.pingArrangement(path: self.pingMachineDirectory)
 
     /// Initialise the model before every test.
     override func setUp() {
         super.setUp()
-        model = ArrangementModel(
-            clocks: [ClockModel(name: "clk", frequency: "125 MHz")],
-            externalVariables: "externalPing: out std_logic; externalPong: out std_logic;",
-            machines: [
-                MachineReference(
-                    name: "PingMachine",
-                    path: self.pingMachineDirectory.path,
-                    mappings: [
-                        JavascriptModel.VariableMapping(source: "clk", destination: "clk"),
-                        JavascriptModel.VariableMapping(source: "ping", destination: "ping"),
-                        JavascriptModel.VariableMapping(source: "pong", destination: "pong")
-                    ]
-                )
-            ],
-            globalVariables: """
-            signal ping: std_logic;
-            signal pong: std_logic;
-            """,
-            globalMappings: [
-                VariableMapping(source: "externalPing", destination: "ping"),
-                VariableMapping(source: "externalPong", destination: "pong")
-            ]
-        )
+        model = ArrangementModel.pingArrangement(path: self.pingMachineDirectory)
     }
 
     /// Test that the arrangement is created correctly from the model.
     func testArrangementCreation() {
-        guard
-            let arrangement = Arrangement(model: model),
-            let mapping = MachineMapping(
-                machine: .pingMachine,
-                with: [
-                    VHDLMachines.VariableMapping(source: .clk, destination: .clk),
-                    VHDLMachines.VariableMapping(source: .ping, destination: .ping),
-                    VHDLMachines.VariableMapping(source: .pong, destination: .pong)
-                ]
-            ),
-            let expected = Arrangement(
-                mappings: [MachineInstance(name: .pingMachine, type: .pingMachine): mapping],
-                externalSignals: [
-                    PortSignal(type: .stdLogic, name: .externalPing, mode: .output),
-                    PortSignal(type: .stdLogic, name: .externalPong, mode: .output)
-                ],
-                signals: [
-                    LocalSignal(type: .stdLogic, name: .ping), LocalSignal(type: .stdLogic, name: .pong)
-                ],
-                clocks: [Clock(name: .clk, frequency: 125, unit: .MHz)],
-                globalMappings: [
-                    VHDLMachines.VariableMapping(source: .externalPing, destination: .ping),
-                    VHDLMachines.VariableMapping(source: .externalPong, destination: .pong)
-                ]
-            )
-        else {
-            XCTFail("Failed to create arrangement!")
-            return
-        }
-        XCTAssertEqual(arrangement, expected)
+        XCTAssertEqual(Arrangement(model: model), .pingArrangement)
+    }
+
+    /// Test the arrangement is still created using relative paths.
+    func testArrangementCreationWithRelativePath() throws {
+
     }
 
     /// Test that the init returns nil for invalid machine references.
