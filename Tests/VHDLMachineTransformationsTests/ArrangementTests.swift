@@ -151,4 +151,52 @@ final class ArrangementTests: TransformationsFileTester {
         XCTAssertEqual(arrangement, expected)
     }
 
+    /// Test that the init returns nil for invalid machine references.
+    func testInvalidMachineReferences() throws {
+        let oldRef = model.machines[0]
+        model.machines += [model.machines[0]]
+        XCTAssertNil(Arrangement(model: model))
+        model.machines = [oldRef]
+        XCTAssertNotNil(Arrangement(model: model))
+        var ref = oldRef
+        ref.path = String(ref.path.dropLast(8))
+        model.machines = [ref]
+        XCTAssertNil(Arrangement(model: model))
+        model.machines = [oldRef]
+        XCTAssertNotNil(Arrangement(model: model))
+        var invalidMapping = oldRef
+        invalidMapping.mappings[0] = JavascriptModel.VariableMapping(
+            source: "invalid name!", destination: "clk"
+        )
+        model.machines = [invalidMapping]
+        XCTAssertNil(Arrangement(model: model))
+        model.machines = [oldRef]
+        XCTAssertNotNil(Arrangement(model: model))
+        try self.manager.removeItem(
+            at: self.pingMachineDirectory.appendingPathComponent("model.json", isDirectory: false)
+        )
+        XCTAssertNil(Arrangement(model: model))
+    }
+
+    /// Test that the init returns nil for invalid variables.
+    func testInitReturnsNilForInvalidVariables() {
+        let oldModel = model
+        model.externalVariables += "\nsignal invalid_data!: in std_logic;"
+        XCTAssertNil(Arrangement(model: model))
+        model = oldModel
+        XCTAssertNotNil(Arrangement(model: model))
+        model.globalVariables += "\nsignal invalid_data!: in std_logic;"
+        XCTAssertNil(Arrangement(model: model))
+        model = oldModel
+        XCTAssertNotNil(Arrangement(model: model))
+        model.clocks += [ClockModel(name: "clk2", frequency: "invalid")]
+        XCTAssertNil(Arrangement(model: model))
+        model = oldModel
+        XCTAssertNotNil(Arrangement(model: model))
+        model.globalMappings += [
+            JavascriptModel.VariableMapping(source: "invalid signal!", destination: "ping")
+        ]
+        XCTAssertNil(Arrangement(model: model))
+    }
+
 }

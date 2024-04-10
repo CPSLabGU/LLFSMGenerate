@@ -58,8 +58,12 @@ import JavascriptModel
 import VHDLMachines
 import VHDLParsing
 
+/// Add conversion initialiser between ``ArrangementModel`` and `Arrangement`.
 extension Arrangement {
 
+    /// Create an `Arrangement` from its javascript representation.
+    /// - Parameter model: The javascript model to convert.
+    @inlinable
     public init?(model: ArrangementModel) {
         let keyNames = model.machines.map(\.name)
         guard keyNames.count == Set(keyNames).count else {
@@ -85,26 +89,23 @@ extension Arrangement {
         let externalsRaw = model.externalVariables.components(separatedBy: ";")
             .filter { !$0.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }
         let externalSignals = externalsRaw.compactMap { PortSignal(rawValue: $0 + ";") }
-        guard externalSignals.count == externalsRaw.count else {
-            return nil
-        }
         let signalsRaw = model.globalVariables.components(separatedBy: ";")
             .filter { !$0.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }
         let localSignals = signalsRaw.compactMap { LocalSignal(rawValue: $0 + ";") }
-        guard localSignals.count == signalsRaw.count else {
-            return nil
-        }
         let clocks = model.clocks.compactMap { Clock(model: $0) }
-        guard clocks.count == model.clocks.count else {
-            return nil
-        }
         let clockNames = clocks.map(\.name)
         let signalNames = localSignals.map(\.name) + externalSignals.map(\.name)
         let allNames = clockNames + signalNames
         let globalMappings = model.globalMappings.compactMap {
             VHDLMachines.VariableMapping(mapping: $0)
         }
-        guard globalMappings.count == model.globalMappings.count, Set(allNames).count == allNames.count else {
+        guard
+            externalSignals.count == externalsRaw.count,
+            localSignals.count == signalsRaw.count,
+            clocks.count == model.clocks.count,
+            globalMappings.count == model.globalMappings.count,
+            Set(allNames).count == allNames.count
+        else {
             return nil
         }
         self.init(
@@ -118,8 +119,12 @@ extension Arrangement {
 
 }
 
+/// Add init from javascript model.
 extension MachineInstance {
 
+    /// Create a `MachineInstace` from its javascript model.
+    /// - Parameter reference: The ``MachineReferece`` js model to convert.
+    @inlinable
     init?(reference: MachineReference) {
         let url = URL(fileURLWithPath: reference.path, isDirectory: true)
         let nameRaw = url.lastPathComponent
@@ -135,8 +140,12 @@ extension MachineInstance {
 
 }
 
+/// Add init from js model.
 extension MachineMapping {
 
+    /// Create a `MachineMapping` from its javascript model.
+    /// - Parameter reference: The ``MachineReferece`` js model to convert.
+    @inlinable
     init?(reference: MachineReference) {
         let url = URL(fileURLWithPath: reference.path, isDirectory: true)
         guard
@@ -159,8 +168,12 @@ extension MachineMapping {
 
 }
 
+/// Add init from js model.
 extension VHDLMachines.VariableMapping {
 
+    /// Create a `VariableMapping` from its javascript model.
+    /// - Parameter mapping: The ``VariableMapping`` js model to convert.
+    @inlinable
     init?(mapping: JavascriptModel.VariableMapping) {
         guard
             let source = VariableName(rawValue: mapping.source),
