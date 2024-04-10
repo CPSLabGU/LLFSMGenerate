@@ -59,11 +59,6 @@ import TestHelpers
 /// Helper class for testing in the `VHDLMachinesTransformations` target.
 class TransformationsFileTester: FileTester {
 
-        /// The path to the `VHDLMachinesTransformationsTests` target.
-    var transformationsDirectory: URL {
-        testsDirectory.appendingPathComponent("VHDLMachineTransformationsTests", isDirectory: true)
-    }
-
     /// The path to the `machines` folder within the `VHDLMachinesTransformationsTests` target.
     var machinesDirectory: URL {
         transformationsDirectory.appendingPathComponent("machines", isDirectory: true)

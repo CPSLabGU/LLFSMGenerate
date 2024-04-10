@@ -72,4 +72,9 @@ open class FileTester: XCTestCase {
         currentDirectory.appendingPathComponent("Tests", isDirectory: true)
     }
 
+    /// The path to the `VHDLMachinesTransformationsTests` target.
+    public var transformationsDirectory: URL {
+        testsDirectory.appendingPathComponent("VHDLMachineTransformationsTests", isDirectory: true)
+    }
+
 }
