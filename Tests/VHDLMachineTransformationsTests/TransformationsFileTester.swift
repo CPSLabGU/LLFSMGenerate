@@ -1,4 +1,4 @@
-// FileTester.swift
+// TransformationsFileTester.swift
 // LLFSMGenerate
 // 
 // Created by Morgan McColl.
@@ -54,22 +54,37 @@
 // Fifth Floor, Boston, MA  02110-1301, USA.
 
 import Foundation
-import XCTest
+import TestHelpers
 
-/// Add helper methods for testing files.
-open class FileTester: XCTestCase {
+/// Helper class for testing in the `VHDLMachinesTransformations` target.
+class TransformationsFileTester: FileTester {
 
-    /// A file manager.
-    public let manager = FileManager.default
-
-    /// The path to the root directory of the package.
-    public var currentDirectory: URL {
-        URL(fileURLWithPath: manager.currentDirectoryPath, isDirectory: true)
+        /// The path to the `VHDLMachinesTransformationsTests` target.
+    var transformationsDirectory: URL {
+        testsDirectory.appendingPathComponent("VHDLMachineTransformationsTests", isDirectory: true)
     }
 
-    /// The path to the `Tests` directory.
-    public var testsDirectory: URL {
-        currentDirectory.appendingPathComponent("Tests", isDirectory: true)
+    /// The path to the `machines` folder within the `VHDLMachinesTransformationsTests` target.
+    var machinesDirectory: URL {
+        transformationsDirectory.appendingPathComponent("machines", isDirectory: true)
+    }
+
+    /// Create the machines directory before each test.
+    override func setUp() {
+        super.setUp()
+        try? manager.createDirectory(
+            at: machinesDirectory, withIntermediateDirectories: true, attributes: nil
+        )
+        _ = manager.createFile(
+            atPath: machinesDirectory.appendingPathComponent(".gitignore", isDirectory: false).path,
+            contents: "*".data(using: .utf8)
+        )
+    }
+
+    /// Remove the machines directory before each test.
+    override func tearDown() {
+        super.tearDown()
+        try? manager.removeItem(at: machinesDirectory)
     }
 
 }
