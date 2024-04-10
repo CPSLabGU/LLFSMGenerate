@@ -101,14 +101,18 @@ extension Arrangement {
         let clockNames = clocks.map(\.name)
         let signalNames = localSignals.map(\.name) + externalSignals.map(\.name)
         let allNames = clockNames + signalNames
-        guard Set(allNames).count == allNames.count else {
+        let globalMappings = model.globalMappings.compactMap {
+            VHDLMachines.VariableMapping(mapping: $0)
+        }
+        guard globalMappings.count == model.globalMappings.count, Set(allNames).count == allNames.count else {
             return nil
         }
         self.init(
             mappings: machines,
             externalSignals: externalSignals,
             signals: localSignals,
-            clocks: clocks
+            clocks: clocks,
+            globalMappings: globalMappings
         )
     }
 
@@ -157,6 +161,20 @@ extension MachineMapping {
             return nil
         }
         self.init(machine: machine, with: mappings)
+    }
+
+}
+
+extension VHDLMachines.VariableMapping {
+
+    init?(mapping: JavascriptModel.VariableMapping) {
+        guard
+            let source = VariableName(rawValue: mapping.source),
+            let destination = VariableName(rawValue: mapping.destination)
+        else {
+            return nil
+        }
+        self.init(source: source, destination: destination)
     }
 
 }
