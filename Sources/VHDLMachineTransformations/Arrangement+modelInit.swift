@@ -151,19 +151,15 @@ extension MachineMapping {
     init?(reference: MachineReference, basePath: URL) {
         let url = URL(fileURLWithPath: reference.path, isDirectory: true, relativeTo: basePath)
             .appendingPathComponent("model.json", isDirectory: false)
-        print(url.path)
-        fflush(stdout)
+        let mappings: [VHDLMachines.VariableMapping] = reference.mappings.compactMap {
+            VHDLMachines.VariableMapping(mapping: $0)
+        }
         guard
+            mappings.count == reference.mappings.count,
             let data = try? Data(contentsOf: url),
             let machineModel = try? JSONDecoder().decode(MachineModel.self, from: data),
             let machine = Machine(model: machineModel)
         else {
-            return nil
-        }
-        let mappings: [VHDLMachines.VariableMapping] = reference.mappings.compactMap {
-            VHDLMachines.VariableMapping(mapping: $0)
-        }
-        guard mappings.count == reference.mappings.count else {
             return nil
         }
         self.init(machine: machine, with: mappings)
