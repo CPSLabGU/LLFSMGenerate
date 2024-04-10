@@ -65,7 +65,7 @@ extension Arrangement {
     /// - Parameter model: The javascript model to convert.
     /// - Parameter basePath: The path of the directory containing the arrangement folder.
     @inlinable
-    public init?(model: ArrangementModel, basePath: URL) {
+    public init?(model: ArrangementModel, basePath: URL? = nil) {
         let keyNames = model.machines.map(\.name)
         guard keyNames.count == Set(keyNames).count else {
             return nil
@@ -148,7 +148,7 @@ extension MachineMapping {
     /// - Parameter reference: The ``MachineReferece`` js model to convert.
     /// - Parameter basePath: The path of the directory containing the arrangement folder.
     @inlinable
-    init?(reference: MachineReference, basePath: URL) {
+    init?(reference: MachineReference, basePath: URL? = nil) {
         let url = URL(fileURLWithPath: reference.path, isDirectory: true, relativeTo: basePath)
             .appendingPathComponent("model.json", isDirectory: false)
         let mappings: [VHDLMachines.VariableMapping] = reference.mappings.compactMap {
