@@ -129,8 +129,8 @@ public extension MachineModel {
                 ))
             ),
             TransitionModel(
-                source: "Initial",
-                target: "SendPing",
+                source: "SendPing",
+                target: "WaitForPong",
                 condition: "true",
                 layout: TransitionLayout(path: BezierPath(
                     source: Point2D(x: 150.0, y: 300.0),
@@ -140,7 +140,7 @@ public extension MachineModel {
                 ))
             ),
             TransitionModel(
-                source: "Initial",
+                source: "WaitForPong",
                 target: "SendPing",
                 condition: "pong = '1'",
                 layout: TransitionLayout(path: BezierPath(
