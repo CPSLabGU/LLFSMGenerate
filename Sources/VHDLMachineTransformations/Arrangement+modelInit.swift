@@ -149,13 +149,7 @@ extension MachineMapping {
             return nil
         }
         let mappings: [VHDLMachines.VariableMapping] = reference.mappings.compactMap {
-            guard
-                let source = VariableName(rawValue: $0.source),
-                let destination = VariableName(rawValue: $0.destination)
-            else {
-                return nil
-            }
-            return VHDLMachines.VariableMapping(source: source, destination: destination)
+            VHDLMachines.VariableMapping(mapping: $0)
         }
         guard mappings.count == reference.mappings.count else {
             return nil
