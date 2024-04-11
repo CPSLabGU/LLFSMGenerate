@@ -1,4 +1,4 @@
-// FileTester.swift
+// GenerationFileTester.swift
 // LLFSMGenerate
 // 
 // Created by Morgan McColl.
@@ -54,38 +54,31 @@
 // Fifth Floor, Boston, MA  02110-1301, USA.
 
 import Foundation
-import XCTest
+import TestHelpers
 
-/// Add helper methods for testing files.
-open class FileTester: XCTestCase {
+/// A `FileTester` for the `MachineGeneratorTests` target.
+class GenerationFileTester: FileTester {
 
-    /// A `JSON` encoder.
-    public let encoder = JSONEncoder()
-
-    /// A `JSON` decoder.
-    public let decoder = JSONDecoder()
-
-    /// A file manager.
-    public let manager = FileManager.default
-
-    /// The path to the root directory of the package.
-    public var currentDirectory: URL {
-        URL(fileURLWithPath: manager.currentDirectoryPath, isDirectory: true)
+    /// The machines directory.
+    var machinesDirectory: URL {
+        self.generatorDirectory.appendingPathComponent("machines", isDirectory: true)
     }
 
-    /// The path to the `MachineGeneratorTests` target.
-    public var generatorDirectory: URL {
-        testsDirectory.appendingPathComponent("MachineGeneratorTests", isDirectory: true)
+    /// Create machines before every test.
+    override func setUp() {
+        super.setUp()
+        try? self.manager.createDirectory(at: self.machinesDirectory, withIntermediateDirectories: true)
+        let data = "*\n".data(using: .utf8)
+        _ = self.manager.createFile(
+            atPath: self.machinesDirectory.appendingPathComponent(".gitignore", isDirectory: false).path,
+            contents: data
+        )
     }
 
-    /// The path to the `Tests` directory.
-    public var testsDirectory: URL {
-        currentDirectory.appendingPathComponent("Tests", isDirectory: true)
-    }
-
-    /// The path to the `VHDLMachinesTransformationsTests` target.
-    public var transformationsDirectory: URL {
-        testsDirectory.appendingPathComponent("VHDLMachineTransformationsTests", isDirectory: true)
+    /// Remove machines after every test.
+    override func tearDown() {
+        super.tearDown()
+        try? self.manager.removeItem(at: self.machinesDirectory)
     }
 
 }
