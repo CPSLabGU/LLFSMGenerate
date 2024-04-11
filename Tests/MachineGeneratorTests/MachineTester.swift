@@ -56,6 +56,7 @@
 
 import Foundation
 import JavascriptModel
+import TestHelpers
 import VHDLMachines
 import XCTest
 
@@ -111,19 +112,40 @@ class MachineTester: XCTestCase {
         machine0Path.appendingPathComponent("build", isDirectory: true)
     }
 
+    /// The path to the `Arragnement1` folder.
+    var arrangement1Folder: URL {
+        machinesFolder.appendingPathComponent("Arrangement1.arrangement", isDirectory: true)
+    }
+
+    /// The path to the `PingMachine` folder.
+    var pingMachineFolder: URL {
+        machinesFolder.appendingPathComponent("PingMachine.machine", isDirectory: true)
+    }
+
     /// Create test machines before every test.
     override func setUp() {
         let createDir: ()? = try? manager
             .createDirectory(at: machine0Path, withIntermediateDirectories: true)
         let machine = Machine.machine0
+        let pingMachine = MachineModel.pingMachine
         guard
             createDir != nil,
             let data = try? encoder.encode(machine),
+            let pingData = try? encoder.encode(pingMachine),
+            let arrangementData = try? encoder.encode(
+                ArrangementModel.pingArrangement(path: self.pingMachineFolder)
+            ),
             let modelData = try? encoder.encode(MachineModel.machine0)
         else {
             XCTFail("Failed to create machine!")
             return
         }
+        try? self.manager.createDirectory(at: self.pingMachineFolder, withIntermediateDirectories: true)
+        try? pingData.write(to: pingMachineFolder.appendingPathComponent("model.json", isDirectory: false))
+        try? self.manager.createDirectory(at: arrangement1Folder, withIntermediateDirectories: true)
+        try? arrangementData.write(
+            to: arrangement1Folder.appendingPathComponent("model.json", isDirectory: false)
+        )
         let result: ()? = try? data.write(to: jsonFile)
         XCTAssertNotNil(result)
         let modelResult: ()? = try? modelData.write(to: modelFile)
@@ -133,6 +155,8 @@ class MachineTester: XCTestCase {
     /// Remove test machines before every test.
     override func tearDown() {
         let result: ()? = try? FileManager.default.removeItem(at: machine0Path)
+        try? self.manager.removeItem(at: arrangement1Folder)
+        try? self.manager.removeItem(at: pingMachineFolder)
         XCTAssertNotNil(result)
     }
 

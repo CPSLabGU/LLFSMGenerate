@@ -212,6 +212,21 @@ final class GeneratorTests: MachineTester {
         XCTAssertEqual(newMachine, oldMachine)
     }
 
+    /// Test that the arrangement is created correctly.
+    func testArrangementCreation() throws {
+        Generate.main([self.arrangement1Folder.path])
+        guard let data = self.manager.contents(
+            atPath: self.arrangement1Folder.appendingPathComponent(
+                "arrangement.json", isDirectory: false
+            ).path
+        ) else {
+            XCTFail("Failed to read file.")
+            return
+        }
+        let arrangement = try self.decoder.decode(Arrangement.self, from: data)
+        XCTAssertEqual(arrangement, .pingArrangement)
+    }
+
 }
 
 /// Add initialiser for testing `Generate`.
