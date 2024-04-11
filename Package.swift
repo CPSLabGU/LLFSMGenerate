@@ -64,7 +64,7 @@ let package = Package(
                 .product(name: "ArgumentParser", package: "swift-argument-parser"),
                 .product(name: "VHDLKripkeStructureGenerator", package: "VHDLKripkeStructureGenerator"),
                 .product(name: "SwiftUtils", package: "SwiftUtils"),
-                .target(name: "TestHelpers")
+                "TestHelpers"
             ]
         ),
         .testTarget(
