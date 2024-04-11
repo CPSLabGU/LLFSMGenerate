@@ -150,4 +150,21 @@ final class CleanCommandTests: MachineTester {
         XCTAssertFalse(manager.fileExists(atPath: self.buildFolder.path))
     }
 
+    /// Test that arrangements are cleaned correctly.
+    func testCleanArrangement() throws {
+        Generate.main([self.arrangement1Folder.path])
+        VHDLGenerator.main([self.arrangement1Folder.path])
+        let filesBefore = try self.manager.contentsOfDirectory(
+            at: self.arrangement1Folder, includingPropertiesForKeys: []
+        )
+        XCTAssertGreaterThan(filesBefore.count, 1)
+        CleanCommand.main([self.arrangement1Folder.path])
+        let files = try self.manager.contentsOfDirectory(
+            at: self.arrangement1Folder, includingPropertiesForKeys: []
+        )
+        XCTAssertEqual(
+            files, [self.arrangement1Folder.appendingPathComponent("model.json", isDirectory: false)]
+        )
+    }
+
 }
