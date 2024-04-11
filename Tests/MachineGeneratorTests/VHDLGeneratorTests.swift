@@ -181,6 +181,25 @@ final class VHDLGeneratorTests: MachineTester {
         try assertContents(wrapper: files, parentFolder: machine0Path)
     }
 
+    /// Test that the `VHDL` file is created correctly for an arrangement.
+    func testArrangementCreation() throws {
+        Generate.main([self.arrangement1Folder.path])
+        VHDLGenerator.main([self.arrangement1Folder.path])
+        guard let contents = self.manager.contents(
+            atPath: self.machinesFolder.appendingPathComponent(
+                "Arrangement1.arrangement/build/vhdl/Arrangement1.vhd", isDirectory: false
+            ).path
+        ) else {
+            XCTFail("File doesn't exist!")
+            return
+        }
+        let expected = ArrangementRepresentation(
+            arrangement: .pingArrangement, name: .arrangement1
+        )?.file.rawValue
+        XCTAssertNotNil(expected)
+        XCTAssertEqual(String(data: contents, encoding: .utf8), expected)
+    }
+
     /// Assert a file wrapper contents recursively against the file system.
     func assertContents(wrapper: FileWrapper, parentFolder: URL) throws {
         guard
