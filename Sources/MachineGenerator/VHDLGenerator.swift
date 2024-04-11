@@ -89,6 +89,10 @@ struct VHDLGenerator: ParsableCommand {
         try self.createMachine(sourcePath: options.pathURL, destinationPath: buildFolder)
     }
 
+    // swiftlint:disable function_body_length
+
+    /// Create an arrangement.
+    @inlinable
     func createArrangement() throws {
         let nameRaw = options.pathURL.lastPathComponent.dropLast(".arrangement".count)
             .trimmingCharacters(in: .whitespacesAndNewlines)
@@ -155,6 +159,13 @@ struct VHDLGenerator: ParsableCommand {
         try vhdlFile.write(to: destination, options: .atomic)
     }
 
+    // swiftlint:enable function_body_length
+
+    /// Create the VHDL for a machine.
+    /// - Parameters:
+    ///   - sourcePath: The path to the machine to generate.
+    ///   - destinationPath: The folder to store the VHDL generated files.
+    @inlinable
     func createMachine(sourcePath: URL, destinationPath: URL) throws {
         let path = sourcePath.appendingPathComponent("machine.json", isDirectory: false)
         let data = try Data(contentsOf: path)
