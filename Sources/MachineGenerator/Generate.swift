@@ -142,6 +142,7 @@ struct Generate: ParsableCommand {
         try createModel()
     }
 
+    /// Create an `Arrangement` from the model.
     func createArrangement() throws {
         let model = try decoder.decode(ArrangementModel.self, from: model)
         guard let arrangement = Arrangement(
