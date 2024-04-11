@@ -90,16 +90,16 @@ struct VHDLGenerator: ParsableCommand {
     }
 
     func createArrangement() throws {
-        let decoder = JSONDecoder()
-        let modelData = try Data(
-            contentsOf: options.pathURL.appendingPathComponent("model.json", isDirectory: false)
-        )
-        let model = try decoder.decode(ArrangementModel.self, from: modelData)
         let nameRaw = options.pathURL.lastPathComponent.dropLast(".arrangement".count)
             .trimmingCharacters(in: .whitespacesAndNewlines)
         guard !nameRaw.isEmpty, let name = VariableName(rawValue: nameRaw) else {
             throw GenerationError.invalidFormat(message: "The arrangement is not named correctly!")
         }
+        let decoder = JSONDecoder()
+        let modelData = try Data(
+            contentsOf: options.pathURL.appendingPathComponent("model.json", isDirectory: false)
+        )
+        let model = try decoder.decode(ArrangementModel.self, from: modelData)
         let arrangementFile = options.pathURL.appendingPathComponent("arrangement.json", isDirectory: false)
         let data = try Data(contentsOf: arrangementFile)
         let arrangement = try decoder.decode(Arrangement.self, from: data)
