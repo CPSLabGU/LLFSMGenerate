@@ -97,14 +97,10 @@ extension Arrangement {
         let clockNames = clocks.map(\.name)
         let signalNames = localSignals.map(\.name) + externalSignals.map(\.name)
         let allNames = clockNames + signalNames
-        let globalMappings = model.globalMappings.compactMap {
-            VHDLMachines.VariableMapping(mapping: $0)
-        }
         guard
             externalSignals.count == externalsRaw.count,
             localSignals.count == signalsRaw.count,
             clocks.count == model.clocks.count,
-            globalMappings.count == model.globalMappings.count,
             Set(allNames).count == allNames.count
         else {
             return nil
@@ -113,8 +109,7 @@ extension Arrangement {
             mappings: machines,
             externalSignals: externalSignals,
             signals: localSignals,
-            clocks: clocks,
-            globalMappings: globalMappings
+            clocks: clocks
         )
     }
 

@@ -132,10 +132,6 @@ final class ArrangementTests: TransformationsFileTester {
         XCTAssertNil(Arrangement(model: model, basePath: machinesDirectory))
         model = oldModel
         XCTAssertNotNil(Arrangement(model: model, basePath: machinesDirectory))
-        model.globalMappings += [
-            JavascriptModel.VariableMapping(source: "invalid signal!", destination: "ping")
-        ]
-        XCTAssertNil(Arrangement(model: model, basePath: machinesDirectory))
     }
 
 }
