@@ -74,9 +74,6 @@ public struct ArrangementModel: Equatable, Hashable, Codable, Sendable {
     /// but cannot affect the outside world.
     public var globalVariables: String
 
-    /// The mappings between external and global variables.
-    public var globalMappings: [VariableMapping]
-
     /// Initialise the arrangement from it's stored properties.
     /// - Parameters:
     ///   - clocks: The clocks used in this arrangement.
@@ -89,14 +86,12 @@ public struct ArrangementModel: Equatable, Hashable, Codable, Sendable {
         clocks: [ClockModel],
         externalVariables: String,
         machines: [MachineReference],
-        globalVariables: String,
-        globalMappings: [VariableMapping] = []
+        globalVariables: String
     ) {
         self.clocks = clocks
         self.externalVariables = externalVariables
         self.machines = machines
         self.globalVariables = globalVariables
-        self.globalMappings = globalMappings
     }
 
 }

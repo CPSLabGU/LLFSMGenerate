@@ -80,11 +80,7 @@ public extension ArrangementModel {
             globalVariables: """
             signal ping: std_logic;
             signal pong: std_logic;
-            """,
-            globalMappings: [
-                VariableMapping(source: "externalPing", destination: "ping"),
-                VariableMapping(source: "externalPong", destination: "pong")
-            ]
+            """
         )
     }
 

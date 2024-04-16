@@ -95,8 +95,7 @@ final class ArrangementModelTests: XCTestCase {
         clocks: clocks,
         externalVariables: externalVariables,
         machines: machines,
-        globalVariables: globalVariables,
-        globalMappings: []
+        globalVariables: globalVariables
     )
 
     /// Initialise the arrangement before every test.
@@ -105,8 +104,7 @@ final class ArrangementModelTests: XCTestCase {
             clocks: clocks,
             externalVariables: externalVariables,
             machines: machines,
-            globalVariables: globalVariables,
-            globalMappings: []
+            globalVariables: globalVariables
         )
     }
 
