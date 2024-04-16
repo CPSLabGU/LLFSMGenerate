@@ -1,5 +1,5 @@
-// LLFSMGenerate.swift
-// VHDLMachineTransformations
+// FileTester.swift
+// LLFSMGenerate
 // 
 // Created by Morgan McColl.
 // Copyright © 2024 Morgan McColl. All rights reserved.
@@ -52,20 +52,40 @@
 // along with this program; if not, see http://www.gnu.org/licenses/
 // or write to the Free Software Foundation, Inc., 51 Franklin Street,
 // Fifth Floor, Boston, MA  02110-1301, USA.
-// 
 
-import ArgumentParser
+import Foundation
+import XCTest
 
-/// Main program for `llfsmgenerate`.
-@main
-struct LLFSMGenerate: ParsableCommand {
+/// Add helper methods for testing files.
+open class FileTester: XCTestCase {
 
-    /// This struct acts as an umbrella struct to multiple `ParsableCommand` subcommands.
-    static var configuration = CommandConfiguration(
-        commandName: "llfsmgenerate",
-        abstract: "A utility for performing operations on LLFSM formats.",
-        version: "1.4.0",
-        subcommands: [Generate.self, VHDLGenerator.self, CleanCommand.self, InstallCommand.self]
-    )
+    /// A `JSON` encoder.
+    public let encoder = JSONEncoder()
+
+    /// A `JSON` decoder.
+    public let decoder = JSONDecoder()
+
+    /// A file manager.
+    public let manager = FileManager.default
+
+    /// The path to the root directory of the package.
+    public var currentDirectory: URL {
+        URL(fileURLWithPath: manager.currentDirectoryPath, isDirectory: true)
+    }
+
+    /// The path to the `MachineGeneratorTests` target.
+    public var generatorDirectory: URL {
+        testsDirectory.appendingPathComponent("MachineGeneratorTests", isDirectory: true)
+    }
+
+    /// The path to the `Tests` directory.
+    public var testsDirectory: URL {
+        currentDirectory.appendingPathComponent("Tests", isDirectory: true)
+    }
+
+    /// The path to the `VHDLMachinesTransformationsTests` target.
+    public var transformationsDirectory: URL {
+        testsDirectory.appendingPathComponent("VHDLMachineTransformationsTests", isDirectory: true)
+    }
 
 }

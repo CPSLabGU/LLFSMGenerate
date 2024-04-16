@@ -1,5 +1,5 @@
-// LLFSMGenerate.swift
-// VHDLMachineTransformations
+// TransformationsFileTester.swift
+// LLFSMGenerate
 // 
 // Created by Morgan McColl.
 // Copyright © 2024 Morgan McColl. All rights reserved.
@@ -52,20 +52,56 @@
 // along with this program; if not, see http://www.gnu.org/licenses/
 // or write to the Free Software Foundation, Inc., 51 Franklin Street,
 // Fifth Floor, Boston, MA  02110-1301, USA.
-// 
 
-import ArgumentParser
+import Foundation
+import JavascriptModel
+import TestHelpers
 
-/// Main program for `llfsmgenerate`.
-@main
-struct LLFSMGenerate: ParsableCommand {
+/// Helper class for testing in the `VHDLMachinesTransformations` target.
+class TransformationsFileTester: FileTester {
 
-    /// This struct acts as an umbrella struct to multiple `ParsableCommand` subcommands.
-    static var configuration = CommandConfiguration(
-        commandName: "llfsmgenerate",
-        abstract: "A utility for performing operations on LLFSM formats.",
-        version: "1.4.0",
-        subcommands: [Generate.self, VHDLGenerator.self, CleanCommand.self, InstallCommand.self]
-    )
+    /// The path to the `machines` folder within the `VHDLMachinesTransformationsTests` target.
+    var machinesDirectory: URL {
+        transformationsDirectory.appendingPathComponent("machines", isDirectory: true)
+    }
+
+    /// The directory to the `PingMachine`.
+    var pingMachineDirectory: URL {
+        machinesDirectory.appendingPathComponent("PingMachine.machine", isDirectory: true)
+    }
+
+    /// Create the machines directory before each test.
+    override func setUp() {
+        super.setUp()
+        if !manager.fileExists(atPath: machinesDirectory.path) {
+            try? manager.createDirectory(
+                at: machinesDirectory, withIntermediateDirectories: true, attributes: nil
+            )
+            _ = manager.createFile(
+                atPath: machinesDirectory.appendingPathComponent(".gitignore", isDirectory: false).path,
+                contents: "*".data(using: .utf8)
+            )
+        }
+        try? manager.createDirectory(at: pingMachineDirectory, withIntermediateDirectories: true)
+        let model = MachineModel.pingMachine
+        let modelDir = pingMachineDirectory.appendingPathComponent("model.json", isDirectory: false)
+        guard let data = try? JSONEncoder().encode(model) else {
+            return
+        }
+        try? data.write(to: modelDir)
+    }
+
+    /// Remove the machines directory before each test.
+    override func tearDown() {
+        super.tearDown()
+        try? manager.removeItem(at: machinesDirectory)
+        try? manager.createDirectory(
+            at: machinesDirectory, withIntermediateDirectories: true, attributes: nil
+        )
+        _ = manager.createFile(
+            atPath: machinesDirectory.appendingPathComponent(".gitignore", isDirectory: false).path,
+            contents: "*".data(using: .utf8)
+        )
+    }
 
 }

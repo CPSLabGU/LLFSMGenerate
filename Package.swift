@@ -20,10 +20,10 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/apple/swift-docc-plugin", from: "1.3.0"),
-        .package(url: "https://github.com/mipalgu/VHDLMachines", from: "2.1.0"),
+        .package(url: "https://github.com/mipalgu/VHDLMachines", from: "3.1.0"),
         .package(url: "https://github.com/mipalgu/VHDLParsing", from: "2.4.0"),
         .package(url: "https://github.com/apple/swift-argument-parser", from: "1.3.0"),
-        .package(url: "https://github.com/mipalgu/VHDLKripkeStructureGenerator.git", from: "0.2.0"),
+        .package(url: "https://github.com/mipalgu/VHDLKripkeStructureGenerator.git", from: "0.2.1"),
         .package(url: "https://github.com/CPSLabGU/SwiftUtils.git", from: "0.1.0")
     ],
     targets: [
@@ -63,12 +63,19 @@ let package = Package(
                 .product(name: "VHDLParsing", package: "VHDLParsing"),
                 .product(name: "ArgumentParser", package: "swift-argument-parser"),
                 .product(name: "VHDLKripkeStructureGenerator", package: "VHDLKripkeStructureGenerator"),
-                .product(name: "SwiftUtils", package: "SwiftUtils")
+                .product(name: "SwiftUtils", package: "SwiftUtils"),
+                "TestHelpers"
             ]
         ),
         .testTarget(
-            name: "VHDLMachineTransformationsTests",
+            name: "TestHelpers",
             dependencies: ["VHDLMachineTransformations", "VHDLParsing", "VHDLMachines", "JavascriptModel"]
+        ),
+        .testTarget(
+            name: "VHDLMachineTransformationsTests",
+            dependencies: [
+                "VHDLMachineTransformations", "VHDLParsing", "VHDLMachines", "JavascriptModel", "TestHelpers"
+            ]
         )
     ]
 )

@@ -1,5 +1,5 @@
-// LLFSMGenerate.swift
-// VHDLMachineTransformations
+// ArrangementModel+pingArrangement.swift
+// LLFSMGenerate
 // 
 // Created by Morgan McColl.
 // Copyright © 2024 Morgan McColl. All rights reserved.
@@ -52,20 +52,40 @@
 // along with this program; if not, see http://www.gnu.org/licenses/
 // or write to the Free Software Foundation, Inc., 51 Franklin Street,
 // Fifth Floor, Boston, MA  02110-1301, USA.
-// 
 
-import ArgumentParser
+import Foundation
+import JavascriptModel
 
-/// Main program for `llfsmgenerate`.
-@main
-struct LLFSMGenerate: ParsableCommand {
+/// Add creation of ping arrangement.
+public extension ArrangementModel {
 
-    /// This struct acts as an umbrella struct to multiple `ParsableCommand` subcommands.
-    static var configuration = CommandConfiguration(
-        commandName: "llfsmgenerate",
-        abstract: "A utility for performing operations on LLFSM formats.",
-        version: "1.4.0",
-        subcommands: [Generate.self, VHDLGenerator.self, CleanCommand.self, InstallCommand.self]
-    )
+    /// Create a ping arrangement that contains a ping machine located at `path`.
+    /// - Parameter path: The location of the ping machine.
+    /// - Returns: The arrangement model.
+    static func pingArrangement(path: URL) -> ArrangementModel {
+        ArrangementModel(
+            clocks: [ClockModel(name: "clk", frequency: "125 MHz")],
+            externalVariables: "externalPing: out std_logic; externalPong: out std_logic;",
+            machines: [
+                MachineReference(
+                    name: "PingMachine",
+                    path: path.path,
+                    mappings: [
+                        JavascriptModel.VariableMapping(source: "clk", destination: "clk"),
+                        JavascriptModel.VariableMapping(source: "ping", destination: "ping"),
+                        JavascriptModel.VariableMapping(source: "pong", destination: "pong")
+                    ]
+                )
+            ],
+            globalVariables: """
+            signal ping: std_logic;
+            signal pong: std_logic;
+            """,
+            globalMappings: [
+                VariableMapping(source: "externalPing", destination: "ping"),
+                VariableMapping(source: "externalPong", destination: "pong")
+            ]
+        )
+    }
 
 }

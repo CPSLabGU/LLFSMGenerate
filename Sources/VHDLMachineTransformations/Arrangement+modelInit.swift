@@ -58,39 +58,27 @@ import JavascriptModel
 import VHDLMachines
 import VHDLParsing
 
+/// Add conversion initialiser between ``ArrangementModel`` and `Arrangement`.
 extension Arrangement {
 
-    public init?(model: ArrangementModel) {
-        let decoder = JSONDecoder()
-        let machineTuples: [(VariableName, MachineMapping)] = model.machines
-            .compactMap { (reference: MachineReference) -> (VariableName, MachineMapping)? in
-                let url = URL(fileURLWithPath: reference.path, isDirectory: true)
+    /// Create an `Arrangement` from its javascript representation.
+    /// - Parameter model: The javascript model to convert.
+    /// - Parameter basePath: The path of the directory containing the arrangement folder.
+    @inlinable
+    public init?(model: ArrangementModel, basePath: URL? = nil) {
+        let keyNames = model.machines.map(\.name)
+        guard keyNames.count == Set(keyNames).count else {
+            return nil
+        }
+        let machineTuples: [(MachineInstance, MachineMapping)] = model.machines
+            .compactMap { (reference: MachineReference) -> (MachineInstance, MachineMapping)? in
                 guard
-                    let name = VariableName(rawValue: reference.name),
-                    let data = try? Data(
-                        contentsOf: url.appendingPathComponent("model.json", isDirectory: false)
-                    ),
-                    let machineModel = try? decoder.decode(MachineModel.self, from: data),
-                    let machine = Machine(model: machineModel)
+                    let instance = MachineInstance(reference: reference),
+                    let mapping = MachineMapping(reference: reference, basePath: basePath)
                 else {
                     return nil
                 }
-                let mappings: [VHDLMachines.VariableMapping] = reference.mappings.compactMap {
-                    guard
-                        let source = VariableName(rawValue: $0.source),
-                        let destination = VariableName(rawValue: $0.destination)
-                    else {
-                        return nil
-                    }
-                    return VHDLMachines.VariableMapping(source: source, destination: destination)
-                }
-                guard
-                    mappings.count == reference.mappings.count,
-                    let mapping = MachineMapping(machine: machine, with: mappings)
-                else {
-                    return nil
-                }
-                return (name, mapping)
+                return (instance, mapping)
             }
         guard
             machineTuples.count == model.machines.count,
@@ -102,32 +90,97 @@ extension Arrangement {
         let externalsRaw = model.externalVariables.components(separatedBy: ";")
             .filter { !$0.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }
         let externalSignals = externalsRaw.compactMap { PortSignal(rawValue: $0 + ";") }
-        guard externalSignals.count == externalsRaw.count else {
-            return nil
-        }
         let signalsRaw = model.globalVariables.components(separatedBy: ";")
             .filter { !$0.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }
         let localSignals = signalsRaw.compactMap { LocalSignal(rawValue: $0 + ";") }
-        guard localSignals.count == signalsRaw.count else {
-            return nil
-        }
         let clocks = model.clocks.compactMap { Clock(model: $0) }
-        guard clocks.count == model.clocks.count else {
-            return nil
-        }
         let clockNames = clocks.map(\.name)
         let signalNames = localSignals.map(\.name) + externalSignals.map(\.name)
-        let machineNames: [VariableName] = Array(machines.keys)
-        let allNames = clockNames + signalNames + machineNames
-        guard Set(allNames).count == allNames.count else {
+        let allNames = clockNames + signalNames
+        let globalMappings = model.globalMappings.compactMap {
+            VHDLMachines.VariableMapping(mapping: $0)
+        }
+        guard
+            externalSignals.count == externalsRaw.count,
+            localSignals.count == signalsRaw.count,
+            clocks.count == model.clocks.count,
+            globalMappings.count == model.globalMappings.count,
+            Set(allNames).count == allNames.count
+        else {
             return nil
         }
         self.init(
-            machines: machines,
+            mappings: machines,
             externalSignals: externalSignals,
             signals: localSignals,
-            clocks: clocks
+            clocks: clocks,
+            globalMappings: globalMappings
         )
+    }
+
+}
+
+/// Add init from javascript model.
+extension MachineInstance {
+
+    /// Create a `MachineInstace` from its javascript model.
+    /// - Parameter reference: The ``MachineReferece`` js model to convert.
+    @inlinable
+    init?(reference: MachineReference) {
+        let url = URL(fileURLWithPath: reference.path, isDirectory: true)
+        let nameRaw = url.lastPathComponent
+        guard
+            nameRaw.hasSuffix(".machine"),
+            let name = VariableName(rawValue: reference.name),
+            let type = VariableName(rawValue: String(nameRaw.dropLast(8)))
+        else {
+            return nil
+        }
+        self.init(name: name, type: type)
+    }
+
+}
+
+/// Add init from js model.
+extension MachineMapping {
+
+    /// Create a `MachineMapping` from its javascript model.
+    /// - Parameter reference: The ``MachineReferece`` js model to convert.
+    /// - Parameter basePath: The path of the directory containing the arrangement folder.
+    @inlinable
+    init?(reference: MachineReference, basePath: URL? = nil) {
+        let url = URL(fileURLWithPath: reference.path, isDirectory: true, relativeTo: basePath)
+            .appendingPathComponent("model.json", isDirectory: false)
+        let mappings: [VHDLMachines.VariableMapping] = reference.mappings.compactMap {
+            VHDLMachines.VariableMapping(mapping: $0)
+        }
+        guard
+            mappings.count == reference.mappings.count,
+            let data = try? Data(contentsOf: url),
+            let machineModel = try? JSONDecoder().decode(MachineModel.self, from: data),
+            let machine = Machine(model: machineModel)
+        else {
+            return nil
+        }
+        self.init(machine: machine, with: mappings)
+    }
+
+}
+
+/// Add init from js model.
+extension VHDLMachines.VariableMapping {
+
+    /// Create a `VariableMapping` from its javascript model.
+    /// - Parameter mapping: The ``VariableMapping`` js model to convert.
+    @inlinable
+    init?(mapping: JavascriptModel.VariableMapping) {
+        guard
+            let source = VariableName(rawValue: mapping.source),
+            let destination = VariableName(rawValue: mapping.destination)
+        else {
+            return nil
+        }
+        self.init(source: source, destination: destination)
     }
 
 }

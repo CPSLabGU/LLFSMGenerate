@@ -1,5 +1,5 @@
-// LLFSMGenerate.swift
-// VHDLMachineTransformations
+// UseStatement+constants.swift
+// LLFSMGenerate
 // 
 // Created by Morgan McColl.
 // Copyright © 2024 Morgan McColl. All rights reserved.
@@ -52,20 +52,26 @@
 // along with this program; if not, see http://www.gnu.org/licenses/
 // or write to the Free Software Foundation, Inc., 51 Franklin Street,
 // Fifth Floor, Boston, MA  02110-1301, USA.
-// 
 
-import ArgumentParser
+import VHDLParsing
 
-/// Main program for `llfsmgenerate`.
-@main
-struct LLFSMGenerate: ParsableCommand {
+// swiftlint:disable force_unwrapping
+// swiftlint:disable missing_docs
 
-    /// This struct acts as an umbrella struct to multiple `ParsableCommand` subcommands.
-    static var configuration = CommandConfiguration(
-        commandName: "llfsmgenerate",
-        abstract: "A utility for performing operations on LLFSM formats.",
-        version: "1.4.0",
-        subcommands: [Generate.self, VHDLGenerator.self, CleanCommand.self, InstallCommand.self]
-    )
+/// Add test constants.
+public extension UseStatement {
+
+    /// An import to the `IEEE.std_logic_1164.all` module
+    static let stdLogic1164 = UseStatement(
+        nonEmptyComponents: [.module(name: .ieee), .module(name: .stdLogic1164), .all]
+    )!
+
+    /// An import to the `IEEE.math_real.all` module.
+    static let mathReal = UseStatement(
+        nonEmptyComponents: [.module(name: .ieee), .module(name: .mathReal), .all]
+    )!
 
 }
+
+// swiftlint:enable missing_docs
+// swiftlint:enable force_unwrapping

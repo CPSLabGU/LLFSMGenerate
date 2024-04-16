@@ -181,6 +181,88 @@ final class VHDLGeneratorTests: MachineTester {
         try assertContents(wrapper: files, parentFolder: machine0Path)
     }
 
+    /// Test that the `VHDL` file is created correctly for an arrangement.
+    func testArrangementCreation() throws {
+        Generate.main([self.arrangement1Folder.path])
+        VHDLGenerator.main([self.arrangement1Folder.path])
+        guard let contents = self.manager.contents(
+            atPath: self.machinesFolder.appendingPathComponent(
+                "Arrangement1.arrangement/build/vhdl/Arrangement1.vhd", isDirectory: false
+            ).path
+        ) else {
+            XCTFail("File doesn't exist!")
+            return
+        }
+        let expected = ArrangementRepresentation(
+            arrangement: .pingArrangement, name: .arrangement1
+        )?.file.rawValue
+        XCTAssertNotNil(expected)
+        XCTAssertEqual(String(data: contents, encoding: .utf8), expected)
+    }
+
+    /// Test that invalid names are detected.
+    func testArrangementCreationFailsForInvalidName() throws {
+        let newDir = self.machinesFolder.appendingPathComponent(
+            "Arrangement1.new.arrangement", isDirectory: true
+        )
+        try self.manager.moveItem(at: self.arrangement1Folder, to: newDir)
+        defer { try? self.manager.removeItem(at: newDir) }
+        var command = try VHDLGenerator.parse([newDir.path])
+        XCTAssertThrowsError(try command.run()) {
+            guard let error = $0 as? GenerationError else {
+                XCTFail("Thrown incorrect error.")
+                return
+            }
+            XCTAssertEqual(
+                error,
+                .invalidFormat(
+                    message: "The arrangement is not named correctly!"
+                )
+            )
+        }
+    }
+
+    /// Test that the arrangement creation works when `vhdl` folder already exists.
+    func testArrangementCreationWhenVHDLExists() throws {
+        Generate.main([self.arrangement1Folder.path])
+        VHDLGenerator.main([self.arrangement1Folder.path])
+        VHDLGenerator.main([self.arrangement1Folder.path])
+        guard let contents = self.manager.contents(
+            atPath: self.machinesFolder.appendingPathComponent(
+                "Arrangement1.arrangement/build/vhdl/Arrangement1.vhd", isDirectory: false
+            ).path
+        ) else {
+            XCTFail("File doesn't exist!")
+            return
+        }
+        let expected = ArrangementRepresentation(
+            arrangement: .pingArrangement, name: .arrangement1
+        )?.file.rawValue
+        XCTAssertNotNil(expected)
+        XCTAssertEqual(String(data: contents, encoding: .utf8), expected)
+    }
+
+    /// Test that the arrangement creation works when machines are already compiled.
+    func testArrangementCreationWhenMachinesHaveVHDL() throws {
+        Generate.main([self.pingMachineFolder.path])
+        Generate.main([self.arrangement1Folder.path])
+        VHDLGenerator.main([self.pingMachineFolder.path])
+        VHDLGenerator.main([self.arrangement1Folder.path])
+        guard let contents = self.manager.contents(
+            atPath: self.machinesFolder.appendingPathComponent(
+                "Arrangement1.arrangement/build/vhdl/Arrangement1.vhd", isDirectory: false
+            ).path
+        ) else {
+            XCTFail("File doesn't exist!")
+            return
+        }
+        let expected = ArrangementRepresentation(
+            arrangement: .pingArrangement, name: .arrangement1
+        )?.file.rawValue
+        XCTAssertNotNil(expected)
+        XCTAssertEqual(String(data: contents, encoding: .utf8), expected)
+    }
+
     /// Assert a file wrapper contents recursively against the file system.
     func assertContents(wrapper: FileWrapper, parentFolder: URL) throws {
         guard

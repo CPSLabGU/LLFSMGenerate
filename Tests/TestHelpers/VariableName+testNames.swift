@@ -1,5 +1,5 @@
-// LLFSMGenerate.swift
-// VHDLMachineTransformations
+// VariableName+testNames.swift
+// LLFSMGenerate
 // 
 // Created by Morgan McColl.
 // Copyright © 2024 Morgan McColl. All rights reserved.
@@ -52,20 +52,50 @@
 // along with this program; if not, see http://www.gnu.org/licenses/
 // or write to the Free Software Foundation, Inc., 51 Franklin Street,
 // Fifth Floor, Boston, MA  02110-1301, USA.
-// 
 
-import ArgumentParser
+import VHDLParsing
 
-/// Main program for `llfsmgenerate`.
-@main
-struct LLFSMGenerate: ParsableCommand {
+// swiftlint:disable force_unwrapping
+// swiftlint:disable missing_docs
 
-    /// This struct acts as an umbrella struct to multiple `ParsableCommand` subcommands.
-    static var configuration = CommandConfiguration(
-        commandName: "llfsmgenerate",
-        abstract: "A utility for performing operations on LLFSM formats.",
-        version: "1.4.0",
-        subcommands: [Generate.self, VHDLGenerator.self, CleanCommand.self, InstallCommand.self]
-    )
+/// Add common test variables.
+public extension VariableName {
+
+    static let arrangement1 = VariableName(rawValue: "Arrangement1")!
+
+    static let beginExecution = VariableName(rawValue: "beginExecution")!
+
+    static let clk = VariableName(rawValue: "clk")!
+
+    static let externalPing = VariableName(rawValue: "externalPing")!
+
+    static let externalPong = VariableName(rawValue: "externalPong")!
+
+    static let ieee = VariableName(rawValue: "IEEE")!
+
+    static let initial = VariableName(rawValue: "Initial")!
+
+    static let `internal` = VariableName(rawValue: "Internal")!
+
+    static let mathReal = VariableName(rawValue: "math_real")!
+
+    static let onEntry = VariableName(rawValue: "OnEntry")!
+
+    static let onExit = VariableName(rawValue: "OnExit")!
+
+    static let ping = VariableName(rawValue: "ping")!
+
+    static let pingMachine = VariableName(rawValue: "PingMachine")!
+
+    static let pong = VariableName(rawValue: "pong")!
+
+    static let sendPing = VariableName(rawValue: "SendPing")!
+
+    static let stdLogic1164 = VariableName(rawValue: "std_logic_1164")!
+
+    static let waitForPong = VariableName(rawValue: "WaitForPong")!
 
 }
+
+// swiftlint:enable missing_docs
+// swiftlint:enable force_unwrapping
