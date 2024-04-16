@@ -154,14 +154,12 @@ final class CleanCommandTests: MachineTester {
     func testCleanArrangement() throws {
         Generate.main([self.arrangement1Folder.path])
         VHDLGenerator.main([self.arrangement1Folder.path])
-        let filesBefore = try self.manager.contentsOfDirectory(
-            at: self.arrangement1Folder, includingPropertiesForKeys: []
-        )
+        let filesBefore = try self.manager.contentsOfDirectory(atPath: self.arrangement1Folder.path)
         XCTAssertGreaterThan(filesBefore.count, 1)
         CleanCommand.main([self.arrangement1Folder.path])
-        let files = try self.manager.contentsOfDirectory(
-            at: self.arrangement1Folder, includingPropertiesForKeys: []
-        )
+        let files = try self.manager.contentsOfDirectory(atPath: self.arrangement1Folder.path).map {
+            self.arrangement1Folder.appendingPathComponent($0)
+        }
         XCTAssertEqual(
             files, [self.arrangement1Folder.appendingPathComponent("model.json", isDirectory: false)]
         )
