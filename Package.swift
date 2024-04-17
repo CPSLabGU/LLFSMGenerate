@@ -52,7 +52,11 @@ let package = Package(
         ),
         .testTarget(
             name: "TestHelpers",
-            dependencies: ["VHDLMachineTransformations", "VHDLParsing", "VHDLMachines", "JavascriptModel"]
+            dependencies: [
+                .product(name: "VHDLMachines", package: "VHDLMachines"),
+                .product(name: "VHDLParsing", package: "VHDLParsing"),
+                .product(name: "VHDLJSModels", package: "VHDLJSModels")
+            ]
         )
     ]
 )
