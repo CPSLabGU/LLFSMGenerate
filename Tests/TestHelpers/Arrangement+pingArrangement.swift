@@ -64,7 +64,7 @@ public extension Arrangement {
     /// An arrangement containing the `PingMachine`.
     static let pingArrangement = Arrangement(
         mappings: [
-            MachineInstance(name: .pingMachine, type: .pingMachine): MachineMapping(
+            MachineInstance(name: .pingMachineInst, type: .pingMachine): MachineMapping(
                 machine: .pingMachine,
                 with: [
                     VHDLMachines.VariableMapping(source: .clk, destination: .clk),
