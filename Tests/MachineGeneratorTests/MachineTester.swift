@@ -55,8 +55,8 @@
 // 
 
 import Foundation
+import JavascriptModel
 import TestHelpers
-import VHDLJSModels
 import VHDLMachines
 import XCTest
 

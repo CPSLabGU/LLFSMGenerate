@@ -56,7 +56,7 @@
 
 import ArgumentParser
 import Foundation
-import VHDLJSModels
+import JavascriptModel
 import VHDLMachines
 import VHDLMachineTransformations
 
