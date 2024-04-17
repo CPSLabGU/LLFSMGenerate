@@ -41,8 +41,6 @@ let package = Package(
             name: "MachineGeneratorTests",
             dependencies: [
                 .target(name: "MachineGenerator"),
-                .target(name: "JavascriptModel"),
-                .target(name: "VHDLMachineTransformations"),
                 .product(name: "VHDLMachines", package: "VHDLMachines"),
                 .product(name: "VHDLParsing", package: "VHDLParsing"),
                 .product(name: "ArgumentParser", package: "swift-argument-parser"),
