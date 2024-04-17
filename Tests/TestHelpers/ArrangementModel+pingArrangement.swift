@@ -68,7 +68,7 @@ public extension ArrangementModel {
             externalVariables: "externalPing: out std_logic; externalPong: out std_logic;",
             machines: [
                 MachineReference(
-                    name: "PingMachine",
+                    name: "PingMachine_inst",
                     path: path.path,
                     mappings: [
                         JavascriptModel.VariableMapping(source: "clk", destination: "clk"),
@@ -80,11 +80,7 @@ public extension ArrangementModel {
             globalVariables: """
             signal ping: std_logic;
             signal pong: std_logic;
-            """,
-            globalMappings: [
-                VariableMapping(source: "externalPing", destination: "ping"),
-                VariableMapping(source: "externalPong", destination: "pong")
-            ]
+            """
         )
     }
 

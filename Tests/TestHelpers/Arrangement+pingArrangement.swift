@@ -64,7 +64,7 @@ public extension Arrangement {
     /// An arrangement containing the `PingMachine`.
     static let pingArrangement = Arrangement(
         mappings: [
-            MachineInstance(name: .pingMachine, type: .pingMachine): MachineMapping(
+            MachineInstance(name: .pingMachineInst, type: .pingMachine): MachineMapping(
                 machine: .pingMachine,
                 with: [
                     VHDLMachines.VariableMapping(source: .clk, destination: .clk),
@@ -80,11 +80,7 @@ public extension Arrangement {
         signals: [
             LocalSignal(type: .stdLogic, name: .ping), LocalSignal(type: .stdLogic, name: .pong)
         ],
-        clocks: [Clock(name: .clk, frequency: 125, unit: .MHz)],
-        globalMappings: [
-            VHDLMachines.VariableMapping(source: .externalPing, destination: .ping),
-            VHDLMachines.VariableMapping(source: .externalPong, destination: .pong)
-        ]
+        clocks: [Clock(name: .clk, frequency: 125, unit: .MHz)]
     )!
 
 }
