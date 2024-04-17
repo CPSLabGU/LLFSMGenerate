@@ -55,7 +55,7 @@
 // 
 
 import Foundation
-import JavascriptModel
+import VHDLJSModels
 import VHDLMachines
 import VHDLParsing
 

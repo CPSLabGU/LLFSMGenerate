@@ -54,7 +54,7 @@
 // Fifth Floor, Boston, MA  02110-1301, USA.
 // 
 
-import JavascriptModel
+import VHDLJSModels
 import VHDLMachines
 import VHDLMachineTransformations
 import XCTest

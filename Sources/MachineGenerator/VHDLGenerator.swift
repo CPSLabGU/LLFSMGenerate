@@ -56,8 +56,8 @@
 
 import ArgumentParser
 import Foundation
-import JavascriptModel
 import SwiftUtils
+import VHDLJSModels
 import VHDLKripkeStructureGenerator
 import VHDLMachines
 import VHDLParsing

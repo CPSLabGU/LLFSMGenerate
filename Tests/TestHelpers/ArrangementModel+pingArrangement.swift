@@ -54,7 +54,7 @@
 // Fifth Floor, Boston, MA  02110-1301, USA.
 
 import Foundation
-import JavascriptModel
+import VHDLJSModels
 
 /// Add creation of ping arrangement.
 public extension ArrangementModel {
