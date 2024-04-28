@@ -79,10 +79,10 @@ jobs:
       #     tag: ${{ matrix.swift }}-RELEASE
 
       - name: Install winget
-        with: Cyberboss/install-winget@v1
+      - with: Cyberboss/install-winget@v1
 
       - name: Install Latest swift
-        run: winget install --id Swift.Toolchain -e
+      - run: winget install --id Swift.Toolchain -e
 
       - name: Checkout repo
         uses: actions/checkout@v2
