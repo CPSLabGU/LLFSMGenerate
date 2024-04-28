@@ -1,5 +1,5 @@
-// BezierPath.swift
-// VHDLMachineTransformations
+// UseStatement+constants.swift
+// LLFSMGenerate
 // 
 // Created by Morgan McColl.
 // Copyright © 2024 Morgan McColl. All rights reserved.
@@ -52,36 +52,26 @@
 // along with this program; if not, see http://www.gnu.org/licenses/
 // or write to the Free Software Foundation, Inc., 51 Franklin Street,
 // Fifth Floor, Boston, MA  02110-1301, USA.
-// 
 
-/// A cubic bezier path defined between a `source` and target` and shaped by two control points (`onctrol0`
-/// and `control1`).
-public struct BezierPath: Equatable, Hashable, Codable, Sendable {
+import VHDLParsing
 
-    /// The start point of the bezier path.
-    public var source: Point2D
+// swiftlint:disable force_unwrapping
+// swiftlint:disable missing_docs
 
-    /// The last point of the bezier path.
-    public var target: Point2D
+/// Add test constants.
+public extension UseStatement {
 
-    /// The first control point.
-    public var control0: Point2D
+    /// An import to the `IEEE.std_logic_1164.all` module
+    static let stdLogic1164 = UseStatement(
+        nonEmptyComponents: [.module(name: .ieee), .module(name: .stdLogic1164), .all]
+    )!
 
-    /// The second control point.
-    public var control1: Point2D
-
-    /// Create a new bezier path from the coordinates of it's respective points.
-    /// - Parameters:
-    ///   - source: The start point of the bezier path.
-    ///   - target: The last point of the bezier path.
-    ///   - control0: The first control point.
-    ///   - control1: The second control point.
-    @inlinable
-    public init(source: Point2D, target: Point2D, control0: Point2D, control1: Point2D) {
-        self.source = source
-        self.target = target
-        self.control0 = control0
-        self.control1 = control1
-    }
+    /// An import to the `IEEE.math_real.all` module.
+    static let mathReal = UseStatement(
+        nonEmptyComponents: [.module(name: .ieee), .module(name: .mathReal), .all]
+    )!
 
 }
+
+// swiftlint:enable missing_docs
+// swiftlint:enable force_unwrapping

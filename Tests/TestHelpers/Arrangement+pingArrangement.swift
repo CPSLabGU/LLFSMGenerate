@@ -1,5 +1,5 @@
-// ActionModel+modelInit.swift
-// VHDLMachineTransformations
+// Arrangement+pingArrangement.swift
+// LLFSMGenerate
 // 
 // Created by Morgan McColl.
 // Copyright © 2024 Morgan McColl. All rights reserved.
@@ -52,22 +52,37 @@
 // along with this program; if not, see http://www.gnu.org/licenses/
 // or write to the Free Software Foundation, Inc., 51 Franklin Street,
 // Fifth Floor, Boston, MA  02110-1301, USA.
-// 
 
-import JavascriptModel
 import VHDLMachines
 import VHDLParsing
 
-/// Add action model conversion.
-extension ActionModel {
+// swiftlint:disable force_unwrapping
 
-    /// Create an `ActionModel` from it's parsed VHDL components.
-    /// - Parameters:
-    ///   - name: The name of the action.
-    ///   - code: The code within the action.
-    @inlinable
-    public init(name: VariableName, code: SynchronousBlock) {
-        self.init(name: name.rawValue, code: code.rawValue)
-    }
+/// Add ping machines arrangement.
+public extension Arrangement {
+
+    /// An arrangement containing the `PingMachine`.
+    static let pingArrangement = Arrangement(
+        mappings: [
+            MachineInstance(name: .pingMachineInst, type: .pingMachine): MachineMapping(
+                machine: .pingMachine,
+                with: [
+                    VHDLMachines.VariableMapping(source: .clk, destination: .clk),
+                    VHDLMachines.VariableMapping(source: .ping, destination: .ping),
+                    VHDLMachines.VariableMapping(source: .pong, destination: .pong)
+                ]
+            )!
+        ],
+        externalSignals: [
+            PortSignal(type: .stdLogic, name: .externalPing, mode: .output),
+            PortSignal(type: .stdLogic, name: .externalPong, mode: .output)
+        ],
+        signals: [
+            LocalSignal(type: .stdLogic, name: .ping), LocalSignal(type: .stdLogic, name: .pong)
+        ],
+        clocks: [Clock(name: .clk, frequency: 125, unit: .MHz)]
+    )!
 
 }
+
+// swiftlint:enable force_unwrapping

@@ -1,5 +1,5 @@
-// Clock+modelInit.swift
-// VHDLMachineTransformations
+// ArrangementModel+pingArrangement.swift
+// LLFSMGenerate
 // 
 // Created by Morgan McColl.
 // Copyright © 2024 Morgan McColl. All rights reserved.
@@ -52,48 +52,36 @@
 // along with this program; if not, see http://www.gnu.org/licenses/
 // or write to the Free Software Foundation, Inc., 51 Franklin Street,
 // Fifth Floor, Boston, MA  02110-1301, USA.
-// 
 
 import Foundation
 import JavascriptModel
-import VHDLMachines
-import VHDLParsing
 
-/// Add init from ``ClockModel``.
-extension Clock {
+/// Add creation of ping arrangement.
+public extension ArrangementModel {
 
-    /// Create a clock from its javascript model.
-    /// - Parameter model: The javascript model representing this clock.
-    @inlinable
-    public init?(model: ClockModel) {
-        guard let name = VariableName(rawValue: model.name) else {
-            return nil
-        }
-        let frequency = model.frequency.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard frequency.count >= 3 else {
-            return nil
-        }
-        let separator = frequency[frequency.index(
-            frequency.startIndex, offsetBy: frequency.count - 3
-        )]
-        guard let scalar = separator.unicodeScalars.first else {
-            return nil
-        }
-        let unitLength: Int
-        if UInt(String(separator)) != nil || CharacterSet.whitespacesAndNewlines.contains(scalar) {
-            unitLength = 2
-        } else {
-            unitLength = 3
-        }
-        guard let unit = Clock.FrequencyUnit(rawValue: String(frequency.suffix(unitLength))) else {
-            return nil
-        }
-        let numberRaw = String(frequency.prefix(frequency.count - unitLength))
-            .trimmingCharacters(in: .whitespacesAndNewlines)
-        guard let number = UInt(numberRaw) else {
-            return nil
-        }
-        self.init(name: name, frequency: number, unit: unit)
+    /// Create a ping arrangement that contains a ping machine located at `path`.
+    /// - Parameter path: The location of the ping machine.
+    /// - Returns: The arrangement model.
+    static func pingArrangement(path: URL) -> ArrangementModel {
+        ArrangementModel(
+            clocks: [ClockModel(name: "clk", frequency: "125 MHz")],
+            externalVariables: "externalPing: out std_logic; externalPong: out std_logic;",
+            machines: [
+                MachineReference(
+                    name: "PingMachine_inst",
+                    path: path.path,
+                    mappings: [
+                        JavascriptModel.VariableMapping(source: "clk", destination: "clk"),
+                        JavascriptModel.VariableMapping(source: "ping", destination: "ping"),
+                        JavascriptModel.VariableMapping(source: "pong", destination: "pong")
+                    ]
+                )
+            ],
+            globalVariables: """
+            signal ping: std_logic;
+            signal pong: std_logic;
+            """
+        )
     }
 
 }

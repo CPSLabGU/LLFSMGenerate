@@ -1,5 +1,5 @@
-// TransitionTests.swift
-// VHDLMachineTransformations
+// VariableName+testNames.swift
+// LLFSMGenerate
 // 
 // Created by Morgan McColl.
 // Copyright © 2024 Morgan McColl. All rights reserved.
@@ -52,62 +52,52 @@
 // along with this program; if not, see http://www.gnu.org/licenses/
 // or write to the Free Software Foundation, Inc., 51 Franklin Street,
 // Fifth Floor, Boston, MA  02110-1301, USA.
-// 
 
-import JavascriptModel
-import VHDLMachines
-@testable import VHDLMachineTransformations
 import VHDLParsing
-import XCTest
 
-/// Test class for ``Transition`` extensions.
-final class TransitionTests: XCTestCase {
+// swiftlint:disable force_unwrapping
+// swiftlint:disable missing_docs
 
-    /// The model to convert.
-    let model = TransitionModel(
-        source: "state1",
-        target: "state2",
-        condition: "true",
-        layout: TransitionLayout(path: BezierPath(
-            source: Point2D(x: 0, y: 0),
-            target: Point2D(x: 1, y: 1),
-            control0: Point2D(x: 2, y: 2),
-            control1: Point2D(x: 3, y: 3)
-        ))
-    )
+/// Add common test variables.
+public extension VariableName {
 
-    // swiftlint:disable force_unwrapping
+    static let arrangement1 = VariableName(rawValue: "Arrangement1")!
 
-    /// Some states to use for the conversion.
-    let states = [
-        State(name: VariableName(rawValue: "state1")!, actions: [:], signals: [], externalVariables: []),
-        State(name: VariableName(rawValue: "state2")!, actions: [:], signals: [], externalVariables: [])
-    ]
+    static let beginExecution = VariableName(rawValue: "beginExecution")!
 
-    // swiftlint:enable force_unwrapping
+    static let clk = VariableName(rawValue: "clk")!
 
-    /// Test the conversion from a model to a transition.
-    func testModelConversion() {
-        let transition = Transition(model: model, states: states)
-        let expected = Transition(
-            condition: .conditional(condition: .literal(value: true)),
-            source: 0,
-            target: 1
-        )
-        XCTAssertEqual(transition, expected)
-    }
+    static let externalPing = VariableName(rawValue: "externalPing")!
 
-    /// Test invalid model.
-    func testInvalidModel() {
-        var model = model
-        var model2 = model
-        var model3 = model
-        model.condition = "1 + 2"
-        XCTAssertNil(Transition(model: model, states: states))
-        model2.source = "state3"
-        XCTAssertNil(Transition(model: model2, states: states))
-        model3.target = "state 2"
-        XCTAssertNil(Transition(model: model3, states: states))
-    }
+    static let externalPong = VariableName(rawValue: "externalPong")!
+
+    static let ieee = VariableName(rawValue: "IEEE")!
+
+    static let initial = VariableName(rawValue: "Initial")!
+
+    static let `internal` = VariableName(rawValue: "Internal")!
+
+    static let mathReal = VariableName(rawValue: "math_real")!
+
+    static let onEntry = VariableName(rawValue: "OnEntry")!
+
+    static let onExit = VariableName(rawValue: "OnExit")!
+
+    static let ping = VariableName(rawValue: "ping")!
+
+    static let pingMachine = VariableName(rawValue: "PingMachine")!
+
+    static let pingMachineInst = VariableName(rawValue: "PingMachine_inst")!
+
+    static let pong = VariableName(rawValue: "pong")!
+
+    static let sendPing = VariableName(rawValue: "SendPing")!
+
+    static let stdLogic1164 = VariableName(rawValue: "std_logic_1164")!
+
+    static let waitForPong = VariableName(rawValue: "WaitForPong")!
 
 }
+
+// swiftlint:enable missing_docs
+// swiftlint:enable force_unwrapping

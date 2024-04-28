@@ -56,13 +56,11 @@
 
 import ArgumentParser
 import Foundation
+import JavascriptModel
+import SwiftUtils
 import VHDLKripkeStructureGenerator
 import VHDLMachines
 import VHDLParsing
-
-#if os(Linux)
-import IO
-#endif
 
 /// A sub-command that generates VHDL source files from LLFSM definitions.
 struct VHDLGenerator: ParsableCommand {
@@ -83,22 +81,117 @@ struct VHDLGenerator: ParsableCommand {
     /// Runs the command.
     @inlinable
     mutating func run() throws {
-        let path = URL(fileURLWithPath: options.path, isDirectory: true)
-            .appendingPathComponent("machine.json", isDirectory: false)
+        guard !options.pathURL.lastPathComponent.lowercased().hasSuffix(".arrangement") else {
+            try createArrangement()
+            return
+        }
+        let buildFolder = options.pathURL.appendingPathComponent("build", isDirectory: true)
+        try self.createMachine(sourcePath: options.pathURL, destinationPath: buildFolder)
+    }
+
+    // swiftlint:disable function_body_length
+
+    /// Create an arrangement.
+    @inlinable
+    func createArrangement() throws {
+        let nameRaw = options.pathURL.lastPathComponent.dropLast(".arrangement".count)
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !nameRaw.isEmpty, let name = VariableName(rawValue: nameRaw) else {
+            throw GenerationError.invalidFormat(message: "The arrangement is not named correctly!")
+        }
+        let decoder = JSONDecoder()
+        let modelData = try Data(
+            contentsOf: options.pathURL.appendingPathComponent("model.json", isDirectory: false)
+        )
+        let model = try decoder.decode(ArrangementModel.self, from: modelData)
+        let arrangementFile = options.pathURL.appendingPathComponent("arrangement.json", isDirectory: false)
+        let data = try Data(contentsOf: arrangementFile)
+        let arrangement = try decoder.decode(Arrangement.self, from: data)
+        let f: (Machine, VariableName) -> MachineRepresentation? = {
+            MachineRepresentation(machine: $0, name: $1)
+        }
+        guard
+            let representation = ArrangementRepresentation(
+                arrangement: arrangement, name: name, createMachine: f
+            ),
+            let vhdlFile = representation.file.rawValue.data(using: .utf8)
+        else {
+            throw GenerationError.invalidFormat(message: "The arrangement contains invalid data!")
+        }
+        let buildFolder = options.pathURL.appendingPathComponent("build", isDirectory: true)
+        let vhdlFolder = buildFolder.appendingPathComponent("vhdl", isDirectory: true)
+        let destination = vhdlFolder.appendingPathComponent(
+            "\(name.rawValue).vhd", isDirectory: false
+        )
+        let manager = FileManager.default
+        if manager.fileExists(atPath: vhdlFolder.path) {
+            try manager.removeItem(at: vhdlFolder)
+        }
+        try manager.createDirectory(at: vhdlFolder, withIntermediateDirectories: true)
+        try model.machines.forEach {
+            let path = URL(fileURLWithPath: $0.path, isDirectory: true)
+            var cleanCommand = try CleanCommand.parse([path.path])
+            try cleanCommand.run()
+            var generateCommand = try Generate.parse([path.path])
+            try generateCommand.run()
+            var vhdlCommand = try VHDLGenerator.parse([path.path])
+            try vhdlCommand.run()
+            let machineVHDLFolder = path.appendingPathComponent("build/vhdl", isDirectory: true)
+            let files = try manager.contentsOfDirectory(
+                at: machineVHDLFolder, includingPropertiesForKeys: nil
+            )
+            guard files.allSatisfy({ $0.lastPathComponent.lowercased().hasSuffix(".vhd") }) else {
+                throw GenerationError.invalidGeneration(
+                    message: "Failed to generate VHDL for machine \(path.lastPathComponent)"
+                )
+            }
+            try files.forEach {
+                let target = vhdlFolder.appendingPathComponent($0.lastPathComponent, isDirectory: false)
+                if manager.fileExists(atPath: target.path) {
+                    try manager.removeItem(at: target)
+                }
+                try manager.copyItem(at: $0, to: target)
+            }
+        }
+        if manager.fileExists(atPath: destination.path) {
+            try manager.removeItem(at: destination)
+        }
+        try vhdlFile.write(to: destination, options: .atomic)
+    }
+
+    // swiftlint:enable function_body_length
+
+    /// Create the VHDL for a machine.
+    /// - Parameters:
+    ///   - sourcePath: The path to the machine to generate.
+    ///   - destinationPath: The folder to store the VHDL generated files.
+    @inlinable
+    func createMachine(sourcePath: URL, destinationPath: URL) throws {
+        let path = sourcePath.appendingPathComponent("machine.json", isDirectory: false)
         let data = try Data(contentsOf: path)
         let machine = try JSONDecoder().decode(Machine.self, from: data)
-        guard let representation = MachineRepresentation(machine: machine) else {
-            throw GenerationError.invalidGeneration(
-                message: "Failed to generate VHDL for \(machine.name.rawValue)."
+        let nameRaw = sourcePath.lastPathComponent
+        guard
+            nameRaw.hasSuffix(".machine"),
+            nameRaw != ".machine",
+            let name = VariableName(rawValue: String(nameRaw.dropLast(8)))
+        else {
+            throw GenerationError.invalidFormat(
+                message: "The machine specified is invalid. " +
+                    "Please make sure you specify a machine with the .machine extension and valid name."
             )
         }
-        let machinePath = URL(fileURLWithPath: options.path, isDirectory: true)
-        let buildFolder = machinePath.appendingPathComponent("build", isDirectory: true)
+        guard let representation = MachineRepresentation(machine: machine, name: name) else {
+            throw GenerationError.invalidGeneration(
+                message: "Failed to generate VHDL for \(name.rawValue)."
+            )
+        }
+        let buildFolder = destinationPath
         guard includeKripkeStructure else {
             let file = VHDLFile(representation: representation)
             let vhdlFolder = buildFolder.appendingPathComponent("vhdl", isDirectory: true)
             let vhdlPath = vhdlFolder.appendingPathComponent(
-                "\(machine.name.rawValue).vhd", isDirectory: false
+                "\(representation.entity.name.rawValue).vhd", isDirectory: false
             )
             try FileManager.default.createDirectory(at: vhdlFolder, withIntermediateDirectories: true)
             try (file.rawValue + "\n").write(to: vhdlPath, atomically: true, encoding: .utf8)
@@ -106,7 +199,7 @@ struct VHDLGenerator: ParsableCommand {
         }
         guard let files = VHDLKripkeStructureGenerator().generateAll(representation: representation) else {
             throw GenerationError.invalidGeneration(
-                message: "Failed to generate Kripke Structure for \(machine.name.rawValue)."
+                message: "Failed to generate Kripke Structure for \(name.rawValue)."
             )
         }
         try files.write(to: buildFolder, options: .atomic, originalContentsURL: nil)

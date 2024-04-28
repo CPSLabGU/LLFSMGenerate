@@ -212,6 +212,41 @@ final class GeneratorTests: MachineTester {
         XCTAssertEqual(newMachine, oldMachine)
     }
 
+    /// Test that the arrangement is created correctly.
+    func testArrangementCreation() throws {
+        Generate.main([self.arrangement1Folder.path])
+        guard let data = self.manager.contents(
+            atPath: self.arrangement1Folder.appendingPathComponent(
+                "arrangement.json", isDirectory: false
+            ).path
+        ) else {
+            XCTFail("Failed to read file.")
+            return
+        }
+        let arrangement = try self.decoder.decode(Arrangement.self, from: data)
+        XCTAssertEqual(arrangement, .pingArrangement)
+    }
+
+    /// Test that arrangement creation throws the correct error when arrangement generation fails.
+    func testArrangementCreationThrowsCorrectErrorWhenFails() throws {
+        let modelPath = self.arrangement1Folder.appendingPathComponent("model.json", isDirectory: false)
+        try self.manager.removeItem(at: modelPath)
+        let model = ArrangementModel.pingArrangement(path: self.arrangement1Folder)
+        let data = try self.encoder.encode(model)
+        try data.write(to: modelPath)
+        var command = try Generate.parse([self.arrangement1Folder.path])
+        XCTAssertThrowsError(try command.run()) {
+            guard let error = $0 as? GenerationError else {
+                XCTFail("Error is not of type GenerationError.")
+                return
+            }
+            XCTAssertEqual(
+                error,
+                .invalidGeneration(message: "Cannot create valid arrangement from model.")
+            )
+        }
+    }
+
 }
 
 /// Add initialiser for testing `Generate`.

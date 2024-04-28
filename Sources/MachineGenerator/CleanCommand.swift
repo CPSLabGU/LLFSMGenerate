@@ -83,6 +83,12 @@ struct CleanCommand: ParsableCommand {
             return
         }
         try cleanBuildFolder(manager: manager)
+        guard !options.pathURL.lastPathComponent.lowercased().hasSuffix(".arrangement") else {
+            _ = try? manager.removeItem(
+                at: options.pathURL.appendingPathComponent("arrangement.json", isDirectory: false)
+            )
+            return
+        }
         try cleanMachine(manager: manager)
     }
 

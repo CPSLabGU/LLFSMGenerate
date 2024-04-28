@@ -1,5 +1,5 @@
-// Point2D.swift
-// VHDLMachineTransformations
+// Machine+pingMachine.swift
+// LLFSMGenerate
 // 
 // Created by Morgan McColl.
 // Copyright © 2024 Morgan McColl. All rights reserved.
@@ -52,25 +52,70 @@
 // along with this program; if not, see http://www.gnu.org/licenses/
 // or write to the Free Software Foundation, Inc., 51 Franklin Street,
 // Fifth Floor, Boston, MA  02110-1301, USA.
-// 
 
-/// A point in 2-dimensions.
-public struct Point2D: Equatable, Hashable, Codable, Sendable {
+import VHDLMachines
+import VHDLParsing
 
-    /// The x-coordinate of the point.
-    public var x: Double
+/// Add test data.
+public extension Machine {
 
-    /// The y-coordinate of the point.
-    public var y: Double
-
-    /// Initialise this point from it's coordinates in cartesian space.
-    /// - Parameters:
-    ///   - x: The x-coordinate of the point.
-    ///   - y: The y-coordinate of the point.
-    @inlinable
-    public init(x: Double, y: Double) {
-        self.x = x
-        self.y = y
-    }
+    /// A `PingMachine`.
+    static let pingMachine = Machine(
+        actions: [.internal, .onEntry, .onExit],
+        includes: [.library(value: .ieee), .include(statement: .stdLogic1164)],
+        externalSignals: [
+            PortSignal(type: .stdLogic, name: .ping, mode: .output),
+            PortSignal(type: .stdLogic, name: .pong, mode: .input)
+        ],
+        clocks: [Clock(name: .clk, frequency: 125, unit: .MHz)],
+        drivingClock: 0,
+        machineSignals: [],
+        isParameterised: false,
+        parameterSignals: [],
+        returnableSignals: [],
+        states: [
+            State(name: .initial, actions: [:], signals: [], externalVariables: []),
+            State(
+                name: .sendPing,
+                actions: [
+                    .onExit: .statement(statement: .assignment(
+                        name: .variable(reference: .variable(name: .ping)),
+                        value: .literal(value: .bit(value: .high))
+                    ))
+                ],
+                signals: [],
+                externalVariables: [.ping]
+            ),
+            State(
+                name: .waitForPong,
+                actions: [
+                    .onEntry: .statement(statement: .assignment(
+                        name: .variable(reference: .variable(name: .ping)),
+                        value: .literal(value: .bit(value: .low))
+                    )),
+                    .internal: .statement(statement: .assignment(
+                        name: .variable(reference: .variable(name: .ping)),
+                        value: .literal(value: .bit(value: .low))
+                    ))
+                ],
+                signals: [],
+                externalVariables: [.ping, .pong]
+            )
+        ],
+        transitions: [
+            Transition(condition: .conditional(condition: .literal(value: true)), source: 0, target: 1),
+            Transition(condition: .conditional(condition: .literal(value: true)), source: 1, target: 2),
+            Transition(
+                condition: .conditional(condition: .comparison(value: .equality(
+                    lhs: .reference(variable: .variable(reference: .variable(name: .pong))),
+                    rhs: .literal(value: .bit(value: .high))
+                ))),
+                source: 2,
+                target: 1
+            )
+        ],
+        initialState: 0,
+        suspendedState: nil
+    )
 
 }

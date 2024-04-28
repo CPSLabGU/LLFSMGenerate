@@ -56,14 +56,11 @@
 
 import Foundation
 @testable import MachineGenerator
+import SwiftUtils
 import VHDLKripkeStructureGenerator
 import VHDLMachines
 import VHDLParsing
 import XCTest
-
-#if os(Linux)
-import IO
-#endif
 
 /// Test class for ``VHDLGenerator``.
 final class VHDLGeneratorTests: MachineTester {
@@ -73,13 +70,10 @@ final class VHDLGeneratorTests: MachineTester {
 
     /// Test the main method generates the `VHDL` file correctly.
     func testRunGeneratesVHDL() throws {
-        guard let machine = Machine(machine0LocatedInFolder: self.machine0Path) else {
-            XCTFail("Failed to create machine.")
-            return
-        }
+        let machine = Machine.machine0
         VHDLGenerator.main([pathRaw])
         let vhdlPath = machine0Path.appendingPathComponent("build/vhdl/Machine0.vhd", isDirectory: false)
-        guard let representation = MachineRepresentation(machine: machine) else {
+        guard let representation = MachineRepresentation(machine: machine, name: .machine0) else {
             XCTFail("Failed to create VHDL for machine.")
             return
         }
@@ -89,10 +83,8 @@ final class VHDLGeneratorTests: MachineTester {
 
     /// Test that the main method throws the correct error for an invalid machine.
     func testRunThrowsErrorForInvalidMachine() throws {
-        guard
-            var machine = Machine(machine0LocatedInFolder: self.machine0Path),
-            let onEntry = VariableName(rawValue: "OnEntry")
-        else {
+        var machine = Machine.machine0
+        guard let onEntry = VariableName(rawValue: "OnEntry") else {
             XCTFail("Failed to create machine.")
             return
         }
@@ -109,15 +101,77 @@ final class VHDLGeneratorTests: MachineTester {
         }
     }
 
+    /// Test the correct error is thrown for paths without the correct extension.
+    func testPathWithoutExtension() throws {
+        let invalidPath = self.machinesFolder.appendingPathComponent("invalid", isDirectory: true)
+        try self.manager.copyItem(at: self.machine0Path, to: invalidPath)
+        defer { _ = try? self.manager.removeItem(at: invalidPath) }
+        var command = try VHDLGenerator.parse([invalidPath.path])
+        XCTAssertThrowsError(try command.run()) {
+            guard let error = $0 as? GenerationError else {
+                XCTFail("Thrown incorrect error.")
+                return
+            }
+            XCTAssertEqual(
+                error,
+                .invalidFormat(
+                    message: "The machine specified is invalid. " +
+                        "Please make sure you specify a machine with the .machine extension and valid name."
+                )
+            )
+        }
+    }
+
+    /// Test correct errors are thrown for paths with only the machine extension.
+    func testEmptyMachinePath() throws {
+        let path = self.machinesFolder.appendingPathComponent(".machine", isDirectory: true)
+        try self.manager.copyItem(at: self.machine0Path, to: path)
+        defer { _ = try? self.manager.removeItem(at: path) }
+        var command = try VHDLGenerator.parse([path.path])
+        XCTAssertThrowsError(try command.run()) {
+            print($0.localizedDescription)
+            fflush(stdout)
+            guard let error = $0 as? GenerationError else {
+                XCTFail("Thrown incorrect error.")
+                return
+            }
+            XCTAssertEqual(
+                error,
+                .invalidFormat(
+                    message: "The machine specified is invalid. " +
+                        "Please make sure you specify a machine with the .machine extension and valid name."
+                )
+            )
+        }
+    }
+
+    /// Test that VHDL keyword in machine name throw an error.
+    func testVHDLNameInPath() throws {
+        let path = self.machinesFolder.appendingPathComponent("signal.machine", isDirectory: true)
+        try self.manager.copyItem(at: self.machine0Path, to: path)
+        defer { _ = try? self.manager.removeItem(at: path) }
+        var command = try VHDLGenerator.parse([path.path])
+        XCTAssertThrowsError(try command.run()) {
+            guard let error = $0 as? GenerationError else {
+                XCTFail("Thrown incorrect error.")
+                return
+            }
+            XCTAssertEqual(
+                error,
+                .invalidFormat(
+                    message: "The machine specified is invalid. " +
+                        "Please make sure you specify a machine with the .machine extension and valid name."
+                )
+            )
+        }
+    }
+
     /// Test the VHDL generator creates the correct Kripke structure.
     func testRunGeneratesKripkeStructure() throws {
-        guard let machine = Machine(machine0LocatedInFolder: self.machine0Path) else {
-            XCTFail("Failed to create machine.")
-            return
-        }
+        let machine = Machine.machine0
         VHDLGenerator.main(["--include-kripke-structure", pathRaw])
         guard
-            let representation = MachineRepresentation(machine: machine),
+            let representation = MachineRepresentation(machine: machine, name: .machine0),
             let files = generator.generateAll(representation: representation)
         else {
             XCTFail("Failed to create VHDL for machine.")
@@ -125,6 +179,88 @@ final class VHDLGeneratorTests: MachineTester {
         }
         files.preferredFilename = "build"
         try assertContents(wrapper: files, parentFolder: machine0Path)
+    }
+
+    /// Test that the `VHDL` file is created correctly for an arrangement.
+    func testArrangementCreation() throws {
+        Generate.main([self.arrangement1Folder.path])
+        VHDLGenerator.main([self.arrangement1Folder.path])
+        guard let contents = self.manager.contents(
+            atPath: self.machinesFolder.appendingPathComponent(
+                "Arrangement1.arrangement/build/vhdl/Arrangement1.vhd", isDirectory: false
+            ).path
+        ) else {
+            XCTFail("File doesn't exist!")
+            return
+        }
+        let expected = ArrangementRepresentation(
+            arrangement: .pingArrangement, name: .arrangement1
+        )?.file.rawValue
+        XCTAssertNotNil(expected)
+        XCTAssertEqual(String(data: contents, encoding: .utf8), expected)
+    }
+
+    /// Test that invalid names are detected.
+    func testArrangementCreationFailsForInvalidName() throws {
+        let newDir = self.machinesFolder.appendingPathComponent(
+            "Arrangement1.new.arrangement", isDirectory: true
+        )
+        try self.manager.moveItem(at: self.arrangement1Folder, to: newDir)
+        defer { try? self.manager.removeItem(at: newDir) }
+        var command = try VHDLGenerator.parse([newDir.path])
+        XCTAssertThrowsError(try command.run()) {
+            guard let error = $0 as? GenerationError else {
+                XCTFail("Thrown incorrect error.")
+                return
+            }
+            XCTAssertEqual(
+                error,
+                .invalidFormat(
+                    message: "The arrangement is not named correctly!"
+                )
+            )
+        }
+    }
+
+    /// Test that the arrangement creation works when `vhdl` folder already exists.
+    func testArrangementCreationWhenVHDLExists() throws {
+        Generate.main([self.arrangement1Folder.path])
+        VHDLGenerator.main([self.arrangement1Folder.path])
+        VHDLGenerator.main([self.arrangement1Folder.path])
+        guard let contents = self.manager.contents(
+            atPath: self.machinesFolder.appendingPathComponent(
+                "Arrangement1.arrangement/build/vhdl/Arrangement1.vhd", isDirectory: false
+            ).path
+        ) else {
+            XCTFail("File doesn't exist!")
+            return
+        }
+        let expected = ArrangementRepresentation(
+            arrangement: .pingArrangement, name: .arrangement1
+        )?.file.rawValue
+        XCTAssertNotNil(expected)
+        XCTAssertEqual(String(data: contents, encoding: .utf8), expected)
+    }
+
+    /// Test that the arrangement creation works when machines are already compiled.
+    func testArrangementCreationWhenMachinesHaveVHDL() throws {
+        Generate.main([self.pingMachineFolder.path])
+        Generate.main([self.arrangement1Folder.path])
+        VHDLGenerator.main([self.pingMachineFolder.path])
+        VHDLGenerator.main([self.arrangement1Folder.path])
+        guard let contents = self.manager.contents(
+            atPath: self.machinesFolder.appendingPathComponent(
+                "Arrangement1.arrangement/build/vhdl/Arrangement1.vhd", isDirectory: false
+            ).path
+        ) else {
+            XCTFail("File doesn't exist!")
+            return
+        }
+        let expected = ArrangementRepresentation(
+            arrangement: .pingArrangement, name: .arrangement1
+        )?.file.rawValue
+        XCTAssertNotNil(expected)
+        XCTAssertEqual(String(data: contents, encoding: .utf8), expected)
     }
 
     /// Assert a file wrapper contents recursively against the file system.

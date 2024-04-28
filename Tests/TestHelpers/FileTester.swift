@@ -1,5 +1,5 @@
-// StateModel+stateInit.swift
-// VHDLMachineTransformations
+// FileTester.swift
+// LLFSMGenerate
 // 
 // Created by Morgan McColl.
 // Copyright © 2024 Morgan McColl. All rights reserved.
@@ -52,44 +52,40 @@
 // along with this program; if not, see http://www.gnu.org/licenses/
 // or write to the Free Software Foundation, Inc., 51 Franklin Street,
 // Fifth Floor, Boston, MA  02110-1301, USA.
-// 
 
-import JavascriptModel
-import VHDLMachines
-import VHDLParsing
+import Foundation
+import XCTest
 
-/// Add conversion from `State`.
-extension StateModel {
+/// Add helper methods for testing files.
+open class FileTester: XCTestCase {
 
-    /// Convert a `State` into it's javascrip model.
-    /// - Parameters:
-    ///   - state: The state to convert.
-    ///   - layout: The layout of the state.
-    @inlinable
-    public init(state: State, layout: StateLayout) {
-        let actionNames = Set(state.actions.map(\.key))
-        // swiftlint:disable force_unwrapping
-        let actions = state.actions.map {
-            ActionModel(name: $0, code: $1)
-        } + [
-            ActionName(rawValue: "Internal")!,
-            ActionName(rawValue: "OnEntry")!,
-            ActionName(rawValue: "OnExit")!
-        ]
-        .compactMap {
-            guard !actionNames.contains($0) else {
-                return nil
-            }
-            return ActionModel(name: $0.rawValue, code: "")
-        }
-        // swiftlint:enable force_unwrapping
-        self.init(
-            name: state.name.rawValue,
-            variables: state.signals.map(\.rawValue).joined(separator: "\n"),
-            externalVariables: state.externalVariables.map(\.rawValue).joined(separator: "\n"),
-            actions: actions.sorted { $0.name < $1.name },
-            layout: layout
-        )
+    /// A `JSON` encoder.
+    public let encoder = JSONEncoder()
+
+    /// A `JSON` decoder.
+    public let decoder = JSONDecoder()
+
+    /// A file manager.
+    public let manager = FileManager.default
+
+    /// The path to the root directory of the package.
+    public var currentDirectory: URL {
+        URL(fileURLWithPath: manager.currentDirectoryPath, isDirectory: true)
+    }
+
+    /// The path to the `MachineGeneratorTests` target.
+    public var generatorDirectory: URL {
+        testsDirectory.appendingPathComponent("MachineGeneratorTests", isDirectory: true)
+    }
+
+    /// The path to the `Tests` directory.
+    public var testsDirectory: URL {
+        currentDirectory.appendingPathComponent("Tests", isDirectory: true)
+    }
+
+    /// The path to the `VHDLMachinesTransformationsTests` target.
+    public var transformationsDirectory: URL {
+        testsDirectory.appendingPathComponent("VHDLMachineTransformationsTests", isDirectory: true)
     }
 
 }

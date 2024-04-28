@@ -85,7 +85,8 @@ struct InstallCommand: ParsableCommand {
     /// - Throws: ``GenerationError``.
     @inlinable
     func run() throws {
-        guard self.path.path.trimmingCharacters(in: .whitespacesAndNewlines).hasSuffix(".machine") else {
+        let folder = self.path.pathURL.lastPathComponent.lowercased()
+        guard folder.hasSuffix(".machine") || folder.hasSuffix(".arrangement") else {
             throw GenerationError.invalidMachine(message: "The path provided is not a machine.")
         }
         let manager = FileManager.default
