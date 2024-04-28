@@ -35,6 +35,12 @@ let package = Package(
                 .product(name: "VHDLKripkeStructureGenerator", package: "VHDLKripkeStructureGenerator"),
                 .product(name: "SwiftUtils", package: "SwiftUtils"),
                 .product(name: "VHDLJSModels", package: "VHDLJSModels")
+            ],
+            swiftSettings: [
+                .unsafeFlags(
+                    ["-Xfrontend", "-entry-point-function-name", "-Xfrontend", "wWinMain"],
+                    .when(platforms: [.windows])
+                )
             ]
         ),
         .testTarget(
