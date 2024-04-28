@@ -80,8 +80,6 @@ jobs:
 
       - name: Install winget
         uses: Cyberboss/install-winget@v1
-        with:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Install Latest swift
         run: winget install --id Swift.Toolchain -e
