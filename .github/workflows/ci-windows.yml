@@ -72,17 +72,11 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-      # - name: Setup Swift
-      #   uses: compnerd/gha-setup-swift@v0.2.1
-      #   with:
-      #     branch: swift-${{ matrix.swift }}-release
-      #     tag: ${{ matrix.swift }}-RELEASE
-
-      - name: Install winget
-      - with: Cyberboss/install-winget@v1
-
-      - name: Install Latest swift
-      - run: winget install --id Swift.Toolchain -e
+      - name: Setup Swift
+        uses: compnerd/gha-setup-swift@v0.2.1
+        with:
+          branch: swift-${{ matrix.swift }}-release
+          tag: ${{ matrix.swift }}-RELEASE
 
       - name: Checkout repo
         uses: actions/checkout@v2
