@@ -81,11 +81,11 @@ struct VHDLGenerator: ParsableCommand {
     /// Runs the command.
     @inlinable
     mutating func run() throws {
-        guard !(try options.pathURL.lastPathComponent.lowercased().hasSuffix(".arrangement")) else {
+        guard !options.pathURL.lastPathComponent.lowercased().hasSuffix(".arrangement") else {
             try createArrangement()
             return
         }
-        let buildFolder = try options.pathURL.appendingPathComponent("build", isDirectory: true)
+        let buildFolder = options.pathURL.appendingPathComponent("build", isDirectory: true)
         try self.createMachine(sourcePath: options.pathURL, destinationPath: buildFolder)
     }
 
@@ -94,7 +94,7 @@ struct VHDLGenerator: ParsableCommand {
     /// Create an arrangement.
     @inlinable
     func createArrangement() throws {
-        let nameRaw = try options.pathURL.lastPathComponent.dropLast(".arrangement".count)
+        let nameRaw = options.pathURL.lastPathComponent.dropLast(".arrangement".count)
             .trimmingCharacters(in: .whitespacesAndNewlines)
         guard !nameRaw.isEmpty, let name = VariableName(rawValue: nameRaw) else {
             throw GenerationError.invalidFormat(message: "The arrangement is not named correctly!")
@@ -104,9 +104,7 @@ struct VHDLGenerator: ParsableCommand {
             contentsOf: options.pathURL.appendingPathComponent("model.json", isDirectory: false)
         )
         let model = try decoder.decode(ArrangementModel.self, from: modelData)
-        let arrangementFile = try options.pathURL.appendingPathComponent(
-            "arrangement.json", isDirectory: false
-        )
+        let arrangementFile = options.pathURL.appendingPathComponent("arrangement.json", isDirectory: false)
         let data = try Data(contentsOf: arrangementFile)
         let arrangement = try decoder.decode(Arrangement.self, from: data)
         let f: (Machine, VariableName) -> MachineRepresentation? = {
@@ -120,7 +118,7 @@ struct VHDLGenerator: ParsableCommand {
         else {
             throw GenerationError.invalidFormat(message: "The arrangement contains invalid data!")
         }
-        let buildFolder = try options.pathURL.appendingPathComponent("build", isDirectory: true)
+        let buildFolder = options.pathURL.appendingPathComponent("build", isDirectory: true)
         let vhdlFolder = buildFolder.appendingPathComponent("vhdl", isDirectory: true)
         let destination = vhdlFolder.appendingPathComponent(
             "\(name.rawValue).vhd", isDirectory: false

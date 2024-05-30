@@ -64,44 +64,24 @@ struct PathArgument: ParsableArguments {
     @Argument(help: "The path to the machine folder.", completion: .directory)
     var path: String
 
-    /// Whether the `path` is a directory.
-    @inlinable var isDirectory: Bool {
-        get throws {
-            let manager = FileManager()
-            var isDirectory: ObjCBool = false
-            guard manager.fileExists(atPath: path, isDirectory: &isDirectory) else {
-                throw GenerationError.invalidInput(message: "The path does not exist.")
-            }
-            return isDirectory.boolValue
-        }
-    }
-
     /// The path to the machine file.
     @inlinable var machine: URL {
-        get throws {
-            try pathURL.appendingPathComponent("machine.json", isDirectory: false)
-        }
+        pathURL.appendingPathComponent("machine.json", isDirectory: false)
     }
 
     /// The path to the users input (the machine folder).
     @inlinable var pathURL: URL {
-        get throws {
-            try URL(fileURLWithPath: path, isDirectory: isDirectory)
-        }
+        URL(fileURLWithPath: path, isDirectory: true)
     }
 
     /// The path to the build folder.
     @inlinable var buildFolder: URL {
-        get throws {
-            try pathURL.appendingPathComponent("build", isDirectory: true)
-        }
+        pathURL.appendingPathComponent("build", isDirectory: true)
     }
 
     /// The path to the vhdl folder.
     @inlinable var vhdlFolder: URL {
-        get throws {
-            try buildFolder.appendingPathComponent("vhdl", isDirectory: true)
-        }
+        buildFolder.appendingPathComponent("vhdl", isDirectory: true)
     }
 
 }

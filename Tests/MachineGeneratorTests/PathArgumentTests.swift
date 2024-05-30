@@ -61,10 +61,6 @@ import XCTest
 /// Test class for ``PathArgument``.
 final class PathArgumentTests: XCTestCase {
 
-    let manager = FileManager.default
-
-    let url = URL(fileURLWithPath: "path", isDirectory: true)
-
     /// A command with a path.
     var command: Generate {
         get throws {
@@ -79,36 +75,16 @@ final class PathArgumentTests: XCTestCase {
         }
     }
 
-    override func setUp() {
-        guard !manager.fileExists(atPath: url.path) else {
-            XCTFail("The path must not exist for this test to pass.")
-            exit(1)
-        }
-        _ = try? manager.createDirectory(atPath: url.path, withIntermediateDirectories: true)
-    }
-
-    override func tearDown() {
-        _ = try? manager.removeItem(at: url)
-    }
-
     /// Test that the computed properties are correct.
     func testComputedProperties() throws {
+        let url = URL(fileURLWithPath: "path", isDirectory: true)
         XCTAssertEqual(try argument.pathURL, url)
         let machine = url.appendingPathComponent("machine.json", isDirectory: false)
-        manager.createFile(atPath: machine.path, contents: nil)
         XCTAssertEqual(try argument.machine, machine)
         let build = url.appendingPathComponent("build", isDirectory: true)
-        try manager.createDirectory(at: build, withIntermediateDirectories: true)
         XCTAssertEqual(try argument.buildFolder, build)
         let vhdl = build.appendingPathComponent("vhdl", isDirectory: true)
-        try manager.createDirectory(at: vhdl, withIntermediateDirectories: true)
         XCTAssertEqual(try argument.vhdlFolder, vhdl)
-    }
-
-    func testIsDirectory() throws {
-        XCTAssertTrue(try argument.isDirectory)
-        try manager.removeItem(at: url)
-        XCTAssertThrowsError(try argument.isDirectory)
     }
 
 }
