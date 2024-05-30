@@ -85,7 +85,7 @@ struct InstallCommand: ParsableCommand {
     /// - Throws: ``GenerationError``.
     @inlinable
     func run() throws {
-        let folder = self.path.pathURL.lastPathComponent.lowercased()
+        let folder = try self.path.pathURL.lastPathComponent.lowercased()
         guard folder.hasSuffix(".machine") || folder.hasSuffix(".arrangement") else {
             throw GenerationError.invalidMachine(message: "The path provided is not a machine.")
         }
@@ -102,7 +102,7 @@ struct InstallCommand: ParsableCommand {
         }
         isDirectory = false
         guard
-            manager.fileExists(atPath: self.path.buildFolder.path, isDirectory: &isDirectory),
+            manager.fileExists(atPath: try self.path.buildFolder.path, isDirectory: &isDirectory),
             isDirectory.boolValue
         else {
             throw GenerationError.invalidGeneration(

@@ -83,7 +83,7 @@ struct CleanCommand: ParsableCommand {
             return
         }
         try cleanBuildFolder(manager: manager)
-        guard !options.pathURL.lastPathComponent.lowercased().hasSuffix(".arrangement") else {
+        guard !(try options.pathURL.lastPathComponent.lowercased().hasSuffix(".arrangement")) else {
             _ = try? manager.removeItem(
                 at: options.pathURL.appendingPathComponent("arrangement.json", isDirectory: false)
             )
@@ -98,7 +98,7 @@ struct CleanCommand: ParsableCommand {
     @inlinable
     func cleanBuildFolder(manager: FileManager) throws {
         var isDirectory: ObjCBool = false
-        guard manager.fileExists(atPath: options.buildFolder.path, isDirectory: &isDirectory) else {
+        guard manager.fileExists(atPath: try options.buildFolder.path, isDirectory: &isDirectory) else {
             return
         }
         guard isDirectory.boolValue else {
@@ -113,7 +113,7 @@ struct CleanCommand: ParsableCommand {
     @inlinable
     func cleanMachine(manager: FileManager) throws {
         var isDirectory: ObjCBool = true
-        guard manager.fileExists(atPath: options.machine.path, isDirectory: &isDirectory) else {
+        guard manager.fileExists(atPath: try options.machine.path, isDirectory: &isDirectory) else {
             return
         }
         guard !isDirectory.boolValue else {
