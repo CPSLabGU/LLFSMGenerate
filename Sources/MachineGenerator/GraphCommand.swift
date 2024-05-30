@@ -71,7 +71,7 @@ struct GraphCommand: ParsableCommand {
         let manager = FileManager()
         var isDirectory: ObjCBool = false
         guard
-            path.path.hasPrefix(".machine"),
+            path.pathURL.lastPathComponent.hasSuffix(".machine"),
             manager.fileExists(atPath: path.path, isDirectory: &isDirectory),
             isDirectory.boolValue
         else {
