@@ -269,7 +269,8 @@ final class VHDLGeneratorTests: MachineTester {
             wrapper.isDirectory, let files = wrapper.fileWrappers, let name = wrapper.preferredFilename
         else {
             let name = wrapper.preferredFilename ?? wrapper.filename ?? "<unknown file>"
-            XCTFail("Failed to read file contents in \(name).")
+            let wrapperString = "{ \(wrapper.isDirectory), \(wrapper.fileWrappers ?? [:]) }"
+            XCTFail("Failed to read file contents in \(name).\nWrapper: \(wrapperString)")
             return
         }
         let path = parentFolder.appendingPathComponent(name, isDirectory: true)
