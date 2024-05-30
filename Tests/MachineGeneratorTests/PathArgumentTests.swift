@@ -61,8 +61,10 @@ import XCTest
 /// Test class for ``PathArgument``.
 final class PathArgumentTests: XCTestCase {
 
+    /// A file manager.
     let manager = FileManager.default
 
+    /// the path to the `path` folder.
     let url = URL(fileURLWithPath: "path", isDirectory: true)
 
     /// A command with a path.
@@ -79,6 +81,7 @@ final class PathArgumentTests: XCTestCase {
         }
     }
 
+    /// Create the path directory before every test.
     override func setUp() {
         guard !manager.fileExists(atPath: url.path) else {
             XCTFail("The path must not exist for this test to pass.")
@@ -87,6 +90,7 @@ final class PathArgumentTests: XCTestCase {
         _ = try? manager.createDirectory(atPath: url.path, withIntermediateDirectories: true)
     }
 
+    /// Delete the path directory after every test.
     override func tearDown() {
         _ = try? manager.removeItem(at: url)
     }
@@ -105,6 +109,7 @@ final class PathArgumentTests: XCTestCase {
         XCTAssertEqual(try argument.vhdlFolder, vhdl)
     }
 
+    /// Test that the `isDirectory` computed property has the correct behaviour.
     func testIsDirectory() throws {
         XCTAssertTrue(try argument.isDirectory)
         try manager.removeItem(at: url)
