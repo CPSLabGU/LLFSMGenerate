@@ -65,22 +65,48 @@ struct GraphCommand: ParsableCommand {
         abstract: "Generate a graphviz file (.dot) for the entire kripke structure."
     )
 
-    @OptionGroup var path: PathArgument
+    @Flag(name: .customLong("machine"), help: "Whether the path is a machine folder.")
+    var isMachine = false
+
+    @Argument(help: """
+        The path to the resource containing the Kripke Structure. This path may be the json file itself
+        or a path to a machine folder.
+        """
+    )
+    var path: String
+
+    @Option(help: "The directory that will contain the newly generated graphviz file.")
+    var destination: String = FileManager.default.currentDirectoryPath
+
+    var destinationURL: URL {
+        URL(fileURLWithPath: destination, isDirectory: true)
+    }
 
     func run() throws {
-        let manager = FileManager()
+        guard isMachine else {
+            let pathURL = URL(fileURLWithPath: path, isDirectory: false)
+            try self.generate(pathURL: pathURL)
+            return
+        }
+        let manager = FileManager.default
         var isDirectory: ObjCBool = false
         guard
-            path.pathURL.lastPathComponent.hasSuffix(".machine"),
-            manager.fileExists(atPath: path.path, isDirectory: &isDirectory),
+            path.hasSuffix(".machine"),
+            manager.fileExists(atPath: path, isDirectory: &isDirectory),
             isDirectory.boolValue
         else {
             throw GenerationError.invalidInput(message: "The path must be a valid machines location.")
         }
-        let url = path.pathURL.appendingPathComponent("output.json", isDirectory: false)
+        let pathURL = URL(fileURLWithPath: path, isDirectory: true)
+            .appendingPathComponent("output.json", isDirectory: false)
+        try self.generate(pathURL: pathURL)
+    }
+
+    func generate(pathURL url: URL) throws {
+        let manager = FileManager.default
         guard manager.fileExists(atPath: url.path) else {
             throw GenerationError.invalidMachine(
-                message: "The Kripke structure does not exist in this machine."
+                message: "The Kripke structure does not exist at this specified location."
             )
         }
         let contents = try Data(contentsOf: url)
@@ -91,14 +117,15 @@ struct GraphCommand: ParsableCommand {
                 message: "The Kripke structure could not be exported to Graphviz."
             )
         }
-        let graphvizFile = path.buildFolder.appendingPathComponent("output.dot", isDirectory: false)
-        isDirectory = false
-        if !manager.fileExists(atPath: path.buildFolder.path, isDirectory: &isDirectory)
-            || !isDirectory.boolValue {
-            _ = try? manager.removeItem(at: path.buildFolder)
-            try manager.createDirectory(at: path.buildFolder, withIntermediateDirectories: true)
-        }
-        if manager.fileExists(atPath: graphvizFile.path) {
+        let name = url.deletingPathExtension().lastPathComponent
+        let graphvizFile = destinationURL.appendingPathComponent("\(name).dot", isDirectory: false)
+        var isDirectory: ObjCBool = false
+        if !manager.fileExists(atPath: destinationURL.path, isDirectory: &isDirectory) {
+            if !isDirectory.boolValue {
+                throw GenerationError.invalidInput(message: "The destination must be a directory.")
+            }
+            try manager.createDirectory(at: destinationURL, withIntermediateDirectories: true)
+        } else if manager.fileExists(atPath: graphvizFile.path) {
             try manager.removeItem(at: graphvizFile)
         }
         try data.write(to: graphvizFile)
