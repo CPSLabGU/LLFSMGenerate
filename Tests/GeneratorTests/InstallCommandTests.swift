@@ -55,7 +55,7 @@
 
 import ArgumentParser
 import Foundation
-@testable import MachineGenerator
+@testable import GeneratorCommands
 import XCTest
 
 /// Test class for ``InstallCommand``.

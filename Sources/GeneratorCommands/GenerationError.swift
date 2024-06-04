@@ -1,4 +1,4 @@
-// PathArgument.swift
+// GenerationError.swift
 // VHDLMachineTransformations
 // 
 // Created by Morgan McColl.
@@ -54,34 +54,34 @@
 // Fifth Floor, Boston, MA  02110-1301, USA.
 // 
 
-import ArgumentParser
-import Foundation
+/// Errors thrown by the generator.
+public enum GenerationError: Error, Equatable, Codable, Hashable, Sendable, CustomStringConvertible {
 
-/// A struct defining the shared arguments for the machine generator.
-struct PathArgument: ParsableArguments {
+    /// An error with the current machine.
+    case invalidMachine(message: String)
 
-    /// The path to the machine folder.
-    @Argument(help: "The path to the machine folder.", completion: .directory)
-    var path: String
+    /// An error during the model generation process.
+    case invalidExportation(message: String)
 
-    /// The path to the machine file.
-    @inlinable var machine: URL {
-        pathURL.appendingPathComponent("machine.json", isDirectory: false)
-    }
+    /// An error with the current generated format.
+    case invalidFormat(message: String)
 
-    /// The path to the users input (the machine folder).
-    @inlinable var pathURL: URL {
-        URL(fileURLWithPath: path, isDirectory: true)
-    }
+    /// An error during the Machine generation process.
+    case invalidGeneration(message: String)
 
-    /// The path to the build folder.
-    @inlinable var buildFolder: URL {
-        pathURL.appendingPathComponent("build", isDirectory: true)
-    }
+    /// An error with user input.
+    case invalidInput(message: String)
 
-    /// The path to the vhdl folder.
-    @inlinable var vhdlFolder: URL {
-        buildFolder.appendingPathComponent("vhdl", isDirectory: true)
+    /// An invalid layout for new machine.
+    case invalidLayout(message: String)
+
+    /// The message contained within the error.
+    @inlinable public var description: String {
+        switch self {
+        case let .invalidMachine(message), let .invalidExportation(message), let .invalidFormat(message),
+        let .invalidGeneration(message), let .invalidInput(message), let .invalidLayout(message):
+            return "\(message)"
+        }
     }
 
 }

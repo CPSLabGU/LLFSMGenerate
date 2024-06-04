@@ -58,17 +58,17 @@ import Foundation
 import VHDLKripkeStructures
 
 /// A command for generating `GraphViz` files (`.dot`) from encoded Kripke Structures in JSON.
-struct GraphCommand: ParsableCommand {
+public struct GraphCommand: ParsableCommand {
 
     /// The configuration of this command.
-    static var configuration = CommandConfiguration(
+    public static var configuration = CommandConfiguration(
         commandName: "graph",
         abstract: "Generate a graphviz file (.dot) for the entire kripke structure."
     )
 
     /// Whether the `path` points to a machine folder.
     @Flag(name: .customLong("machine"), help: "Whether the path is a machine folder.")
-    var isMachine = false
+    @usableFromInline var isMachine = false
 
     /// The `path` to the Kripke Structure.
     @Argument(help: """
@@ -76,14 +76,19 @@ struct GraphCommand: ParsableCommand {
         or a path to a machine folder.
         """
     )
-    var path: String
+    @usableFromInline var path: String
 
     /// The destination location of the generated graphviz file.
     @Option(help: "The path of the newly generated graphviz file.")
-    var destination: String?
+    @usableFromInline var destination: String?
+
+    /// Default init.
+    @inlinable
+    public init() {}
 
     /// Generate the graphviz file.
-    func run() throws {
+    @inlinable
+    public func run() throws {
         guard isMachine else {
             let pathURL = URL(fileURLWithPath: path, isDirectory: false)
             try self.generate(pathURL: pathURL)
@@ -105,6 +110,7 @@ struct GraphCommand: ParsableCommand {
 
     /// Generate the graphviz file from the kripke structure in `url`.
     /// - Parameter url: The path to the kripke structure.
+    @inlinable
     func generate(pathURL url: URL) throws {
         let manager = FileManager.default
         var isDirectory: ObjCBool = false
@@ -132,6 +138,7 @@ struct GraphCommand: ParsableCommand {
     /// Get the `URL` for the graphviz file.
     /// - Parameter name: The default name of the file.
     /// - Returns: The path to the graphviz file.
+    @inlinable
     func graphvizFile(defaultName name: String) -> URL {
         let manager = FileManager.default
         guard let destination else {

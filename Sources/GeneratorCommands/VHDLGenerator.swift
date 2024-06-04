@@ -63,24 +63,28 @@ import VHDLMachines
 import VHDLParsing
 
 /// A sub-command that generates VHDL source files from LLFSM definitions.
-struct VHDLGenerator: ParsableCommand {
+public struct VHDLGenerator: ParsableCommand {
 
     /// The configuration for the command.
-    static var configuration = CommandConfiguration(
+    public static var configuration = CommandConfiguration(
         commandName: "vhdl",
         abstract: "A utility for generating VHDL source files from LLFSM definitions."
     )
 
     /// Whether to include the Kripke Structure generator program with the machine.
     @Flag(help: "Create the Kripke Structure generator program with the machine.")
-    var includeKripkeStructure = false
+    @usableFromInline var includeKripkeStructure = false
 
     /// The shared options between other subcommands.
-    @OptionGroup var options: PathArgument
+    @OptionGroup @usableFromInline var options: PathArgument
+
+    /// Default init.
+    @inlinable
+    public init() {}
 
     /// Runs the command.
     @inlinable
-    mutating func run() throws {
+    public mutating func run() throws {
         guard !options.pathURL.lastPathComponent.lowercased().hasSuffix(".arrangement") else {
             try createArrangement()
             return

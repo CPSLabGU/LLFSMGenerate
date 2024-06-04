@@ -58,25 +58,29 @@ import ArgumentParser
 import Foundation
 
 /// A command that cleans all generated files.
-struct CleanCommand: ParsableCommand {
+public struct CleanCommand: ParsableCommand {
 
     /// The command configuration.
-    static var configuration = CommandConfiguration(
+    public static var configuration = CommandConfiguration(
         commandName: "clean",
         abstract: "Clean the generated source files from the machine."
     )
 
     /// A flag that specifies that only the build folder must be removed.
     @Flag(help: "Only clean the build folder.")
-    var cleanBuildFolder = false
+    @usableFromInline var cleanBuildFolder = false
 
     /// A path to the machine to clean.
-    @OptionGroup var options: PathArgument
+    @OptionGroup @usableFromInline var options: PathArgument
+
+    /// Default init.
+    @inlinable
+    public init() {}
 
     /// Clean the generated files from the machine.
     /// - Throws: ``GenerationError``.
     @inlinable
-    mutating func run() throws {
+    public mutating func run() throws {
         let manager = FileManager.default
         guard !cleanBuildFolder else {
             try cleanBuildFolder(manager: manager)

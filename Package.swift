@@ -36,13 +36,26 @@ let package = Package(
                 .product(name: "VHDLKripkeStructureGenerator", package: "VHDLKripkeStructureGenerator"),
                 .product(name: "SwiftUtils", package: "SwiftUtils"),
                 .product(name: "VHDLJSModels", package: "VHDLJSModels"),
+                .product(name: "VHDLKripkeStructures", package: "VHDLKripkeStructures"),
+                .target(name: "GeneratorCommands")
+            ]
+        ),
+        .target(
+            name: "GeneratorCommands",
+            dependencies: [
+                .product(name: "ArgumentParser", package: "swift-argument-parser"),
+                .product(name: "VHDLMachines", package: "VHDLMachines"),
+                .product(name: "VHDLParsing", package: "VHDLParsing"),
+                .product(name: "VHDLKripkeStructureGenerator", package: "VHDLKripkeStructureGenerator"),
+                .product(name: "SwiftUtils", package: "SwiftUtils"),
+                .product(name: "VHDLJSModels", package: "VHDLJSModels"),
                 .product(name: "VHDLKripkeStructures", package: "VHDLKripkeStructures")
             ]
         ),
         .testTarget(
-            name: "MachineGeneratorTests",
+            name: "GeneratorTests",
             dependencies: [
-                .target(name: "MachineGenerator"),
+                .target(name: "GeneratorCommands"),
                 .product(name: "VHDLMachines", package: "VHDLMachines"),
                 .product(name: "VHDLParsing", package: "VHDLParsing"),
                 .product(name: "ArgumentParser", package: "swift-argument-parser"),

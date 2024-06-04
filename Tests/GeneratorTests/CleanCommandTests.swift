@@ -53,7 +53,7 @@
 // or write to the Free Software Foundation, Inc., 51 Franklin Street,
 // Fifth Floor, Boston, MA  02110-1301, USA.
 
-@testable import MachineGenerator
+@testable import GeneratorCommands
 import XCTest
 
 /// Test class for ``CleanCommand``.
@@ -63,8 +63,8 @@ final class CleanCommandTests: MachineTester {
     override func setUp() {
         super.setUp()
         let path = self.machine0Path.path
-        LLFSMGenerate.main(["model", path])
-        LLFSMGenerate.main(["vhdl", "--include-kripke-structure", path])
+        Generate.main([path])
+        VHDLGenerator.main(["--include-kripke-structure", path])
         var isDirectory: ObjCBool = true
         XCTAssertTrue(manager.fileExists(atPath: self.jsonFile.path, isDirectory: &isDirectory))
         XCTAssertFalse(isDirectory.boolValue)

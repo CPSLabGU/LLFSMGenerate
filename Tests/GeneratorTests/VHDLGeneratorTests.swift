@@ -55,7 +55,7 @@
 // 
 
 import Foundation
-@testable import MachineGenerator
+@testable import GeneratorCommands
 import SwiftUtils
 import VHDLKripkeStructureGenerator
 import VHDLMachines
