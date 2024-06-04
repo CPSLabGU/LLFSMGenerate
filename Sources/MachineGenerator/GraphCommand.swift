@@ -57,6 +57,7 @@ import ArgumentParser
 import Foundation
 import VHDLKripkeStructures
 
+/// A command for generating `GraphViz` files (`.dot`) from encoded Kripke Structures in JSON.
 struct GraphCommand: ParsableCommand {
 
     /// The configuration of this command.
@@ -65,9 +66,11 @@ struct GraphCommand: ParsableCommand {
         abstract: "Generate a graphviz file (.dot) for the entire kripke structure."
     )
 
+    /// Whether the `path` points to a machine folder.
     @Flag(name: .customLong("machine"), help: "Whether the path is a machine folder.")
     var isMachine = false
 
+    /// The `path` to the Kripke Structure.
     @Argument(help: """
         The path to the resource containing the Kripke Structure. This path may be the json file itself
         or a path to a machine folder.
@@ -75,9 +78,11 @@ struct GraphCommand: ParsableCommand {
     )
     var path: String
 
+    /// The destination location of the generated graphviz file.
     @Option(help: "The path of the newly generated graphviz file.")
     var destination: String?
 
+    /// Generate the graphviz file.
     func run() throws {
         guard isMachine else {
             let pathURL = URL(fileURLWithPath: path, isDirectory: false)
@@ -98,6 +103,8 @@ struct GraphCommand: ParsableCommand {
         try self.generate(pathURL: pathURL)
     }
 
+    /// Generate the graphviz file from the kripke structure in `url`.
+    /// - Parameter url: The path to the kripke structure.
     func generate(pathURL url: URL) throws {
         let manager = FileManager.default
         var isDirectory: ObjCBool = false
@@ -122,6 +129,9 @@ struct GraphCommand: ParsableCommand {
         try data.write(to: graphvizFile, options: .atomic)
     }
 
+    /// Get the `URL` for the graphviz file.
+    /// - Parameter name: The default name of the file.
+    /// - Returns: The path to the graphviz file.
     func graphvizFile(defaultName name: String) -> URL {
         let manager = FileManager.default
         guard let destination else {
