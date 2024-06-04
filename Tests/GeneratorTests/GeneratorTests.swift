@@ -55,8 +55,8 @@
 // 
 
 import Foundation
-import JavascriptModel
 @testable import GeneratorCommands
+import JavascriptModel
 import VHDLMachines
 import XCTest
 
