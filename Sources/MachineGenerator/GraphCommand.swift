@@ -75,12 +75,8 @@ struct GraphCommand: ParsableCommand {
     )
     var path: String
 
-    @Option(help: "The directory that will contain the newly generated graphviz file.")
-    var destination: String = FileManager.default.currentDirectoryPath
-
-    var destinationURL: URL {
-        URL(fileURLWithPath: destination, isDirectory: true)
-    }
+    @Option(help: "The path of the newly generated graphviz file.")
+    var destination: String?
 
     func run() throws {
         guard isMachine else {
@@ -104,7 +100,8 @@ struct GraphCommand: ParsableCommand {
 
     func generate(pathURL url: URL) throws {
         let manager = FileManager.default
-        guard manager.fileExists(atPath: url.path) else {
+        var isDirectory: ObjCBool = false
+        guard manager.fileExists(atPath: url.path, isDirectory: &isDirectory), !isDirectory.boolValue else {
             throw GenerationError.invalidMachine(
                 message: "The Kripke structure does not exist at this specified location."
             )
@@ -117,18 +114,34 @@ struct GraphCommand: ParsableCommand {
                 message: "The Kripke structure could not be exported to Graphviz."
             )
         }
-        let name = url.deletingPathExtension().lastPathComponent
-        let graphvizFile = destinationURL.appendingPathComponent("\(name).dot", isDirectory: false)
-        var isDirectory: ObjCBool = false
-        if !manager.fileExists(atPath: destinationURL.path, isDirectory: &isDirectory) {
-            if !isDirectory.boolValue {
-                throw GenerationError.invalidInput(message: "The destination must be a directory.")
-            }
-            try manager.createDirectory(at: destinationURL, withIntermediateDirectories: true)
-        } else if manager.fileExists(atPath: graphvizFile.path) {
-            try manager.removeItem(at: graphvizFile)
+        let graphvizFile = self.graphvizFile(defaultName: url.deletingPathExtension().lastPathComponent)
+        let previousDirectory = graphvizFile.deletingLastPathComponent()
+        if !manager.fileExists(atPath: previousDirectory.path) {
+            try manager.createDirectory(at: previousDirectory, withIntermediateDirectories: true)
         }
-        try data.write(to: graphvizFile)
+        try data.write(to: graphvizFile, options: .atomic)
+    }
+
+    func graphvizFile(defaultName name: String) -> URL {
+        let manager = FileManager.default
+        guard let destination else {
+            let currentPath = URL(fileURLWithPath: manager.currentDirectoryPath, isDirectory: true)
+            return currentPath.appendingPathComponent("\(name).dot", isDirectory: false)
+        }
+        var isDirectory: ObjCBool = false
+        guard !manager.fileExists(atPath: destination, isDirectory: &isDirectory) else {
+            guard isDirectory.boolValue else {
+                return URL(fileURLWithPath: destination, isDirectory: false)
+            }
+            return URL(fileURLWithPath: destination, isDirectory: true)
+                .appendingPathComponent("\(name).dot", isDirectory: false)
+        }
+        guard destination.hasSuffix(".dot") else {
+            print("Cannot discern if destination is directory or file. Defaulting to directory.")
+            return URL(fileURLWithPath: destination, isDirectory: true)
+                .appendingPathComponent("\(name).dot", isDirectory: false)
+        }
+        return URL(fileURLWithPath: destination, isDirectory: false)
     }
 
 }
