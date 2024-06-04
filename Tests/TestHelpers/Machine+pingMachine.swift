@@ -67,7 +67,7 @@ public extension Machine {
             PortSignal(type: .stdLogic, name: .ping, mode: .output),
             PortSignal(type: .stdLogic, name: .pong, mode: .input)
         ],
-        clocks: [Clock(name: .clk, frequency: 125, unit: .MHz)],
+        clocks: [Clock(name: .clk, frequency: 5, unit: .MHz)],
         drivingClock: 0,
         machineSignals: [],
         isParameterised: false,

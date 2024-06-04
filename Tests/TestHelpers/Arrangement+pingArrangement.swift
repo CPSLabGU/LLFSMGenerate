@@ -80,7 +80,7 @@ public extension Arrangement {
         signals: [
             LocalSignal(type: .stdLogic, name: .ping), LocalSignal(type: .stdLogic, name: .pong)
         ],
-        clocks: [Clock(name: .clk, frequency: 125, unit: .MHz)]
+        clocks: [Clock(name: .clk, frequency: 5, unit: .MHz)]
     )!
 
 }
