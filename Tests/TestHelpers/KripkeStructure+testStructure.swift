@@ -53,23 +53,930 @@
 // or write to the Free Software Foundation, Inc., 51 Franklin Street,
 // Fifth Floor, Boston, MA  02110-1301, USA.
 
+import Foundation
 import VHDLKripkeStructures
 import VHDLParsing
 
+// swiftlint:disable file_length
+
+/// Add constant kripke structures.
 extension KripkeStructure {
 
-    static let testStructure: KripkeStructure? = {
-        let initialState = Node(
-            type: .read,
-            currentState: .initial,
-            executeOnEntry: true,
-            nextState: .initial,
-            properties: [.ping: .bit(value: .low)]
-        )
-        let nodes = [
-            initialState
-        ]
-        return nil
+    /// The ping pong kripke structure.
+    public static let pingPongStructure: KripkeStructure = {
+        let decoder = JSONDecoder()
+        // swiftlint:disable:next force_unwrapping
+        return (try? decoder.decode(KripkeStructure.self, from: KripkeStructure.raw.data(using: .utf8)!))!
     }()
 
+    /// The raw JSON string for the ping pong kripke structure.
+    static let raw = """
+    {
+    "edges" : [
+        {
+        "currentState" : "Initial",
+        "executeOnEntry" : true,
+        "nextState" : "SendPing",
+        "properties" : [
+            "PingMachine_ping",
+            "'0'",
+            "PingMachine_pong",
+            "'0'",
+            "ping",
+            "'0'",
+            "pong",
+            "'0'"
+        ],
+        "type" : {
+            "write" : {
+
+            }
+        }
+        },
+        [
+        {
+            "cost" : {
+            "energy" : {
+                "coefficient" : 0,
+                "exponent" : 0
+            },
+            "time" : {
+                "coefficient" : 0,
+                "exponent" : 0
+            }
+            },
+            "target" : {
+            "currentState" : "SendPing",
+            "executeOnEntry" : true,
+            "nextState" : "SendPing",
+            "properties" : [
+                "PingMachine_ping",
+                "'0'",
+                "PingMachine_pong",
+                "'0'",
+                "ping",
+                "'0'",
+                "pong",
+                "'0'"
+            ],
+            "type" : {
+                "read" : {
+
+                }
+            }
+            }
+        }
+        ],
+        {
+        "currentState" : "WaitForPong",
+        "executeOnEntry" : true,
+        "nextState" : "WaitForPong",
+        "properties" : [
+            "PingMachine_ping",
+            "'1'",
+            "PingMachine_pong",
+            "'1'",
+            "ping",
+            "'1'",
+            "pong",
+            "'1'"
+        ],
+        "type" : {
+            "read" : {
+
+            }
+        }
+        },
+        [
+        {
+            "cost" : {
+            "energy" : {
+                "coefficient" : 0,
+                "exponent" : 0
+            },
+            "time" : {
+                "coefficient" : 1,
+                "exponent" : -6
+            }
+            },
+            "target" : {
+            "currentState" : "WaitForPong",
+            "executeOnEntry" : true,
+            "nextState" : "SendPing",
+            "properties" : [
+                "PingMachine_ping",
+                "'0'",
+                "PingMachine_pong",
+                "'1'",
+                "ping",
+                "'0'",
+                "pong",
+                "'1'"
+            ],
+            "type" : {
+                "write" : {
+
+                }
+            }
+            }
+        }
+        ],
+        {
+        "currentState" : "WaitForPong",
+        "executeOnEntry" : true,
+        "nextState" : "SendPing",
+        "properties" : [
+            "PingMachine_ping",
+            "'0'",
+            "PingMachine_pong",
+            "'1'",
+            "ping",
+            "'0'",
+            "pong",
+            "'1'"
+        ],
+        "type" : {
+            "write" : {
+
+            }
+        }
+        },
+        [
+        {
+            "cost" : {
+            "energy" : {
+                "coefficient" : 0,
+                "exponent" : 0
+            },
+            "time" : {
+                "coefficient" : 0,
+                "exponent" : 0
+            }
+            },
+            "target" : {
+            "currentState" : "SendPing",
+            "executeOnEntry" : true,
+            "nextState" : "SendPing",
+            "properties" : [
+                "PingMachine_ping",
+                "'0'",
+                "PingMachine_pong",
+                "'1'",
+                "ping",
+                "'0'",
+                "pong",
+                "'1'"
+            ],
+            "type" : {
+                "read" : {
+
+                }
+            }
+            }
+        }
+        ],
+        {
+        "currentState" : "SendPing",
+        "executeOnEntry" : true,
+        "nextState" : "WaitForPong",
+        "properties" : [
+            "PingMachine_ping",
+            "'1'",
+            "PingMachine_pong",
+            "'1'",
+            "ping",
+            "'1'",
+            "pong",
+            "'1'"
+        ],
+        "type" : {
+            "write" : {
+
+            }
+        }
+        },
+        [
+        {
+            "cost" : {
+            "energy" : {
+                "coefficient" : 0,
+                "exponent" : 0
+            },
+            "time" : {
+                "coefficient" : 0,
+                "exponent" : 0
+            }
+            },
+            "target" : {
+            "currentState" : "WaitForPong",
+            "executeOnEntry" : true,
+            "nextState" : "WaitForPong",
+            "properties" : [
+                "PingMachine_ping",
+                "'1'",
+                "PingMachine_pong",
+                "'0'",
+                "ping",
+                "'1'",
+                "pong",
+                "'0'"
+            ],
+            "type" : {
+                "read" : {
+
+                }
+            }
+            }
+        },
+        {
+            "cost" : {
+            "energy" : {
+                "coefficient" : 0,
+                "exponent" : 0
+            },
+            "time" : {
+                "coefficient" : 0,
+                "exponent" : 0
+            }
+            },
+            "target" : {
+            "currentState" : "WaitForPong",
+            "executeOnEntry" : true,
+            "nextState" : "WaitForPong",
+            "properties" : [
+                "PingMachine_ping",
+                "'1'",
+                "PingMachine_pong",
+                "'1'",
+                "ping",
+                "'1'",
+                "pong",
+                "'1'"
+            ],
+            "type" : {
+                "read" : {
+
+                }
+            }
+            }
+        }
+        ],
+        {
+        "currentState" : "WaitForPong",
+        "executeOnEntry" : false,
+        "nextState" : "WaitForPong",
+        "properties" : [
+            "PingMachine_ping",
+            "'0'",
+            "PingMachine_pong",
+            "'0'",
+            "ping",
+            "'0'",
+            "pong",
+            "'0'"
+        ],
+        "type" : {
+            "write" : {
+
+            }
+        }
+        },
+        [
+        {
+            "cost" : {
+            "energy" : {
+                "coefficient" : 0,
+                "exponent" : 0
+            },
+            "time" : {
+                "coefficient" : 0,
+                "exponent" : 0
+            }
+            },
+            "target" : {
+            "currentState" : "WaitForPong",
+            "executeOnEntry" : false,
+            "nextState" : "WaitForPong",
+            "properties" : [
+                "PingMachine_ping",
+                "'0'",
+                "PingMachine_pong",
+                "'0'",
+                "ping",
+                "'0'",
+                "pong",
+                "'0'"
+            ],
+            "type" : {
+                "read" : {
+
+                }
+            }
+            }
+        },
+        {
+            "cost" : {
+            "energy" : {
+                "coefficient" : 0,
+                "exponent" : 0
+            },
+            "time" : {
+                "coefficient" : 0,
+                "exponent" : 0
+            }
+            },
+            "target" : {
+            "currentState" : "WaitForPong",
+            "executeOnEntry" : false,
+            "nextState" : "WaitForPong",
+            "properties" : [
+                "PingMachine_ping",
+                "'0'",
+                "PingMachine_pong",
+                "'1'",
+                "ping",
+                "'0'",
+                "pong",
+                "'1'"
+            ],
+            "type" : {
+                "read" : {
+
+                }
+            }
+            }
+        }
+        ],
+        {
+        "currentState" : "WaitForPong",
+        "executeOnEntry" : true,
+        "nextState" : "WaitForPong",
+        "properties" : [
+            "PingMachine_ping",
+            "'1'",
+            "PingMachine_pong",
+            "'0'",
+            "ping",
+            "'1'",
+            "pong",
+            "'0'"
+        ],
+        "type" : {
+            "read" : {
+
+            }
+        }
+        },
+        [
+        {
+            "cost" : {
+            "energy" : {
+                "coefficient" : 0,
+                "exponent" : 0
+            },
+            "time" : {
+                "coefficient" : 1,
+                "exponent" : -6
+            }
+            },
+            "target" : {
+            "currentState" : "WaitForPong",
+            "executeOnEntry" : false,
+            "nextState" : "WaitForPong",
+            "properties" : [
+                "PingMachine_ping",
+                "'0'",
+                "PingMachine_pong",
+                "'0'",
+                "ping",
+                "'0'",
+                "pong",
+                "'0'"
+            ],
+            "type" : {
+                "write" : {
+
+                }
+            }
+            }
+        }
+        ],
+        {
+        "currentState" : "SendPing",
+        "executeOnEntry" : true,
+        "nextState" : "WaitForPong",
+        "properties" : [
+            "PingMachine_ping",
+            "'1'",
+            "PingMachine_pong",
+            "'0'",
+            "ping",
+            "'1'",
+            "pong",
+            "'0'"
+        ],
+        "type" : {
+            "write" : {
+
+            }
+        }
+        },
+        [
+        {
+            "cost" : {
+            "energy" : {
+                "coefficient" : 0,
+                "exponent" : 0
+            },
+            "time" : {
+                "coefficient" : 0,
+                "exponent" : 0
+            }
+            },
+            "target" : {
+            "currentState" : "WaitForPong",
+            "executeOnEntry" : true,
+            "nextState" : "WaitForPong",
+            "properties" : [
+                "PingMachine_ping",
+                "'1'",
+                "PingMachine_pong",
+                "'0'",
+                "ping",
+                "'1'",
+                "pong",
+                "'0'"
+            ],
+            "type" : {
+                "read" : {
+
+                }
+            }
+            }
+        },
+        {
+            "cost" : {
+            "energy" : {
+                "coefficient" : 0,
+                "exponent" : 0
+            },
+            "time" : {
+                "coefficient" : 0,
+                "exponent" : 0
+            }
+            },
+            "target" : {
+            "currentState" : "WaitForPong",
+            "executeOnEntry" : true,
+            "nextState" : "WaitForPong",
+            "properties" : [
+                "PingMachine_ping",
+                "'1'",
+                "PingMachine_pong",
+                "'1'",
+                "ping",
+                "'1'",
+                "pong",
+                "'1'"
+            ],
+            "type" : {
+                "read" : {
+
+                }
+            }
+            }
+        }
+        ],
+        {
+        "currentState" : "SendPing",
+        "executeOnEntry" : true,
+        "nextState" : "SendPing",
+        "properties" : [
+            "PingMachine_ping",
+            "'0'",
+            "PingMachine_pong",
+            "'1'",
+            "ping",
+            "'0'",
+            "pong",
+            "'1'"
+        ],
+        "type" : {
+            "read" : {
+
+            }
+        }
+        },
+        [
+        {
+            "cost" : {
+            "energy" : {
+                "coefficient" : 0,
+                "exponent" : 0
+            },
+            "time" : {
+                "coefficient" : 1,
+                "exponent" : -6
+            }
+            },
+            "target" : {
+            "currentState" : "SendPing",
+            "executeOnEntry" : true,
+            "nextState" : "WaitForPong",
+            "properties" : [
+                "PingMachine_ping",
+                "'1'",
+                "PingMachine_pong",
+                "'1'",
+                "ping",
+                "'1'",
+                "pong",
+                "'1'"
+            ],
+            "type" : {
+                "write" : {
+
+                }
+            }
+            }
+        }
+        ],
+        {
+        "currentState" : "SendPing",
+        "executeOnEntry" : true,
+        "nextState" : "SendPing",
+        "properties" : [
+            "PingMachine_ping",
+            "'0'",
+            "PingMachine_pong",
+            "'0'",
+            "ping",
+            "'0'",
+            "pong",
+            "'0'"
+        ],
+        "type" : {
+            "read" : {
+
+            }
+        }
+        },
+        [
+        {
+            "cost" : {
+            "energy" : {
+                "coefficient" : 0,
+                "exponent" : 0
+            },
+            "time" : {
+                "coefficient" : 1,
+                "exponent" : -6
+            }
+            },
+            "target" : {
+            "currentState" : "SendPing",
+            "executeOnEntry" : true,
+            "nextState" : "WaitForPong",
+            "properties" : [
+                "PingMachine_ping",
+                "'1'",
+                "PingMachine_pong",
+                "'0'",
+                "ping",
+                "'1'",
+                "pong",
+                "'0'"
+            ],
+            "type" : {
+                "write" : {
+
+                }
+            }
+            }
+        }
+        ],
+        {
+        "currentState" : "Initial",
+        "executeOnEntry" : true,
+        "nextState" : "Initial",
+        "properties" : [
+            "PingMachine_ping",
+            "'0'",
+            "PingMachine_pong",
+            "'0'",
+            "ping",
+            "'0'",
+            "pong",
+            "'0'"
+        ],
+        "type" : {
+            "read" : {
+
+            }
+        }
+        },
+        [
+        {
+            "cost" : {
+            "energy" : {
+                "coefficient" : 0,
+                "exponent" : 0
+            },
+            "time" : {
+                "coefficient" : 1,
+                "exponent" : -6
+            }
+            },
+            "target" : {
+            "currentState" : "Initial",
+            "executeOnEntry" : true,
+            "nextState" : "SendPing",
+            "properties" : [
+                "PingMachine_ping",
+                "'0'",
+                "PingMachine_pong",
+                "'0'",
+                "ping",
+                "'0'",
+                "pong",
+                "'0'"
+            ],
+            "type" : {
+                "write" : {
+
+                }
+            }
+            }
+        }
+        ]
+    ],
+    "initialStates" : [
+        {
+        "currentState" : "Initial",
+        "executeOnEntry" : true,
+        "nextState" : "Initial",
+        "properties" : [
+            "PingMachine_ping",
+            "'0'",
+            "PingMachine_pong",
+            "'0'",
+            "ping",
+            "'0'",
+            "pong",
+            "'0'"
+        ],
+        "type" : {
+            "read" : {
+
+            }
+        }
+        }
+    ],
+    "nodes" : [
+        {
+        "currentState" : "WaitForPong",
+        "executeOnEntry" : false,
+        "nextState" : "WaitForPong",
+        "properties" : [
+            "PingMachine_ping",
+            "'0'",
+            "PingMachine_pong",
+            "'0'",
+            "ping",
+            "'0'",
+            "pong",
+            "'0'"
+        ],
+        "type" : {
+            "write" : {
+
+            }
+        }
+        },
+        {
+        "currentState" : "WaitForPong",
+        "executeOnEntry" : true,
+        "nextState" : "WaitForPong",
+        "properties" : [
+            "PingMachine_ping",
+            "'1'",
+            "PingMachine_pong",
+            "'1'",
+            "ping",
+            "'1'",
+            "pong",
+            "'1'"
+        ],
+        "type" : {
+            "read" : {
+
+            }
+        }
+        },
+        {
+        "currentState" : "SendPing",
+        "executeOnEntry" : true,
+        "nextState" : "SendPing",
+        "properties" : [
+            "PingMachine_ping",
+            "'0'",
+            "PingMachine_pong",
+            "'0'",
+            "ping",
+            "'0'",
+            "pong",
+            "'0'"
+        ],
+        "type" : {
+            "read" : {
+
+            }
+        }
+        },
+        {
+        "currentState" : "WaitForPong",
+        "executeOnEntry" : true,
+        "nextState" : "SendPing",
+        "properties" : [
+            "PingMachine_ping",
+            "'0'",
+            "PingMachine_pong",
+            "'1'",
+            "ping",
+            "'0'",
+            "pong",
+            "'1'"
+        ],
+        "type" : {
+            "write" : {
+
+            }
+        }
+        },
+        {
+        "currentState" : "Initial",
+        "executeOnEntry" : true,
+        "nextState" : "Initial",
+        "properties" : [
+            "PingMachine_ping",
+            "'0'",
+            "PingMachine_pong",
+            "'0'",
+            "ping",
+            "'0'",
+            "pong",
+            "'0'"
+        ],
+        "type" : {
+            "read" : {
+
+            }
+        }
+        },
+        {
+        "currentState" : "SendPing",
+        "executeOnEntry" : true,
+        "nextState" : "WaitForPong",
+        "properties" : [
+            "PingMachine_ping",
+            "'1'",
+            "PingMachine_pong",
+            "'1'",
+            "ping",
+            "'1'",
+            "pong",
+            "'1'"
+        ],
+        "type" : {
+            "write" : {
+
+            }
+        }
+        },
+        {
+        "currentState" : "SendPing",
+        "executeOnEntry" : true,
+        "nextState" : "WaitForPong",
+        "properties" : [
+            "PingMachine_ping",
+            "'1'",
+            "PingMachine_pong",
+            "'0'",
+            "ping",
+            "'1'",
+            "pong",
+            "'0'"
+        ],
+        "type" : {
+            "write" : {
+
+            }
+        }
+        },
+        {
+        "currentState" : "WaitForPong",
+        "executeOnEntry" : true,
+        "nextState" : "WaitForPong",
+        "properties" : [
+            "PingMachine_ping",
+            "'1'",
+            "PingMachine_pong",
+            "'0'",
+            "ping",
+            "'1'",
+            "pong",
+            "'0'"
+        ],
+        "type" : {
+            "read" : {
+
+            }
+        }
+        },
+        {
+        "currentState" : "Initial",
+        "executeOnEntry" : true,
+        "nextState" : "SendPing",
+        "properties" : [
+            "PingMachine_ping",
+            "'0'",
+            "PingMachine_pong",
+            "'0'",
+            "ping",
+            "'0'",
+            "pong",
+            "'0'"
+        ],
+        "type" : {
+            "write" : {
+
+            }
+        }
+        },
+        {
+        "currentState" : "WaitForPong",
+        "executeOnEntry" : false,
+        "nextState" : "WaitForPong",
+        "properties" : [
+            "PingMachine_ping",
+            "'0'",
+            "PingMachine_pong",
+            "'0'",
+            "ping",
+            "'0'",
+            "pong",
+            "'0'"
+        ],
+        "type" : {
+            "read" : {
+
+            }
+        }
+        },
+        {
+        "currentState" : "SendPing",
+        "executeOnEntry" : true,
+        "nextState" : "SendPing",
+        "properties" : [
+            "PingMachine_ping",
+            "'0'",
+            "PingMachine_pong",
+            "'1'",
+            "ping",
+            "'0'",
+            "pong",
+            "'1'"
+        ],
+        "type" : {
+            "read" : {
+
+            }
+        }
+        },
+        {
+        "currentState" : "WaitForPong",
+        "executeOnEntry" : false,
+        "nextState" : "WaitForPong",
+        "properties" : [
+            "PingMachine_ping",
+            "'0'",
+            "PingMachine_pong",
+            "'1'",
+            "ping",
+            "'0'",
+            "pong",
+            "'1'"
+        ],
+        "type" : {
+            "read" : {
+
+            }
+        }
+        }
+    ]
+    }
+    """
+
 }
+
+// swiftlint:enable file_length
