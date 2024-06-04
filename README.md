@@ -77,7 +77,6 @@ llfsmgenerate install <path_to_LLFSM_folder> --vivado <path_to_vivado_project_di
 
 Please see the *help* section of the binary for a complete list of parameters and sub-commands.
 ```shell
-llfsmgenerate --help
 OVERVIEW: A utility for performing operations on LLFSM formats.
 
 USAGE: llfsmgenerate <subcommand>
@@ -91,6 +90,7 @@ SUBCOMMANDS:
   vhdl                    A utility for generating VHDL source files from LLFSM definitions.
   clean                   Clean the generated source files from the machine.
   install                 Install the VHDL files into a specified directory.
+  graph                   Generate a graphviz file (.dot) for the entire kripke structure.
 
   See 'llfsmgenerate help <subcommand>' for detailed help.
 ```
