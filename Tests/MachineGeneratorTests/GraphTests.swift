@@ -129,4 +129,53 @@ final class GraphTests: MachineTester {
         XCTAssertFalse(manager.fileExists(atPath: dotFile.path))
     }
 
+    /// Test that the correct error is thrown when the kripke structure is not present.
+    func testCommandThrowsErrorForMissingKripkeStructure() throws {
+        try manager.removeItem(at: self.pingMachineKripkeStructure)
+        let command = try GraphCommand.parse([self.pingMachineKripkeStructure.path])
+        XCTAssertThrowsError(try command.run()) {
+            guard let error = $0 as? GenerationError, case .invalidMachine(let message) = error else {
+                XCTFail("Expected GenerationError but got \($0)")
+                return
+            }
+            XCTAssertEqual(message, "The Kripke structure does not exist at this specified location.")
+        }
+        XCTAssertFalse(manager.fileExists(atPath: dotFile.path))
+    }
+
+    /// Test command overwrites existing `.dot` file.
+    func testCommandOverwritesFile() throws {
+        XCTAssertTrue(manager.createFile(atPath: dotFile.path, contents: nil))
+        GraphCommand.main([self.pingMachineKripkeStructure.path, "--destination", self.dotFile.path])
+        var isDirectory: ObjCBool = false
+        XCTAssertTrue(manager.fileExists(atPath: dotFile.path, isDirectory: &isDirectory))
+        XCTAssertFalse(isDirectory.boolValue)
+        XCTAssertFalse(try Data(contentsOf: dotFile).isEmpty)
+    }
+
+    /// Test that the file is created in a subdirectory that exists.
+    func testCommandPlacesFileInFolderthatExists() throws {
+        try manager.createDirectory(at: self.pingMachineBuildFolder, withIntermediateDirectories: true)
+        XCTAssertFalse(manager.fileExists(atPath: self.buildDotFile.path))
+        GraphCommand.main([
+            self.pingMachineKripkeStructure.path, "--destination", self.pingMachineBuildFolder.path
+        ])
+        var isDirectory: ObjCBool = false
+        XCTAssertTrue(manager.fileExists(atPath: buildDotFile.path, isDirectory: &isDirectory))
+        XCTAssertFalse(isDirectory.boolValue)
+        XCTAssertFalse(try Data(contentsOf: buildDotFile).isEmpty)
+    }
+
+    /// Test that the file is created in a subdirectory that doesn't exist.
+    func testCommandPlacesFileInFolder() throws {
+        XCTAssertFalse(manager.fileExists(atPath: self.pingMachineBuildFolder.path))
+        GraphCommand.main([
+            self.pingMachineKripkeStructure.path, "--destination", self.pingMachineBuildFolder.path
+        ])
+        var isDirectory: ObjCBool = false
+        XCTAssertTrue(manager.fileExists(atPath: buildDotFile.path, isDirectory: &isDirectory))
+        XCTAssertFalse(isDirectory.boolValue)
+        XCTAssertFalse(try Data(contentsOf: buildDotFile).isEmpty)
+    }
+
 }
