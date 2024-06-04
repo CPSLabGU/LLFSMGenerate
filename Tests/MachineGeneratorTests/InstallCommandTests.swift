@@ -92,8 +92,8 @@ final class InstallCommandTests: MachineTester {
     /// Setup install locations before every run.
     override func setUp() {
         super.setUp()
+        let projectContents = Data("project file!".utf8)
         guard
-            let projectContents = "project file!".data(using: .utf8),
             (try? self.manager.createDirectory(at: vivadoPath, withIntermediateDirectories: true)) != nil,
             manager.createFile(atPath: self.projectFilePath.path, contents: projectContents),
             (try? self.manager.createDirectory(at: newPath, withIntermediateDirectories: true)) != nil
@@ -186,7 +186,7 @@ final class InstallCommandTests: MachineTester {
     /// Test that the correct error is thrown for a file path to the machine.
     func testThrowsErrorForFilePath() throws {
         let newFile = self.vivadoPath.appendingPathComponent("Machine0.machine", isDirectory: false)
-        XCTAssertTrue(self.manager.createFile(atPath: newFile.path, contents: "new file".data(using: .utf8)))
+        XCTAssertTrue(self.manager.createFile(atPath: newFile.path, contents: Data("new file".utf8)))
         let command = try InstallCommand.parse([newFile.path, self.vivadoPath.path])
         XCTAssertThrowsError(try command.run()) {
             guard let error = $0 as? GenerationError else {
@@ -231,7 +231,7 @@ final class InstallCommandTests: MachineTester {
     func testThrowsErrorForCorruptedBuildFolder() throws {
         let corruptedFile = self.buildFolder.appendingPathComponent("vhdl/Machine0", isDirectory: false)
         XCTAssertTrue(self.manager.createFile(
-            atPath: corruptedFile.path, contents: "corrupted".data(using: .utf8)
+            atPath: corruptedFile.path, contents: Data("corrupted".utf8)
         ))
         let command = try InstallCommand.parse([self.machine0Path.path, self.vivadoPath.path])
         XCTAssertThrowsError(try command.run()) {
