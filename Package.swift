@@ -17,7 +17,7 @@ let executableTarget = PackageDescription.Target.executableTarget(
         .product(name: "VHDLKripkeStructures", package: "VHDLKripkeStructures"),
         .target(name: "GeneratorCommands")
     ],
-    swiftSettings: [.unsafeFlags(["-Xswiftc", "-parse-as-library"])]
+    swiftSettings: [.unsafeFlags(["-parse-as-library"])]
 )
 #else
 /// The executable target.
