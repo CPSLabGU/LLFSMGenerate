@@ -58,7 +58,8 @@ let package = Package(
             dependencies: [
                 .product(name: "VHDLMachines", package: "VHDLMachines"),
                 .product(name: "VHDLParsing", package: "VHDLParsing"),
-                .product(name: "VHDLJSModels", package: "VHDLJSModels")
+                .product(name: "VHDLJSModels", package: "VHDLJSModels"),
+                .product(name: "VHDLKripkeStructures", package: "VHDLKripkeStructures")
             ]
         )
     ]
