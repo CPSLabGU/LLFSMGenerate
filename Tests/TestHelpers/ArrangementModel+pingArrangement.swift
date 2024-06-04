@@ -64,7 +64,7 @@ public extension ArrangementModel {
     /// - Returns: The arrangement model.
     static func pingArrangement(path: URL) -> ArrangementModel {
         ArrangementModel(
-            clocks: [ClockModel(name: "clk", frequency: "125 MHz")],
+            clocks: [ClockModel(name: "clk", frequency: "5 MHz")],
             externalVariables: "externalPing: out std_logic; externalPong: out std_logic;",
             machines: [
                 MachineReference(

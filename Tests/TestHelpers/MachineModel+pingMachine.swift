@@ -152,7 +152,7 @@ public extension MachineModel {
             )
         ],
         initialState: "Initial",
-        clocks: [ClockModel(name: "clk", frequency: "125 MHz")]
+        clocks: [ClockModel(name: "clk", frequency: "5 MHz")]
     )
 
 }

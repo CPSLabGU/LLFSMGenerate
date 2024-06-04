@@ -1,4 +1,4 @@
-// Arrangement+pingArrangement.swift
+// KripkeStructure+testStructure.swift
 // LLFSMGenerate
 // 
 // Created by Morgan McColl.
@@ -53,36 +53,23 @@
 // or write to the Free Software Foundation, Inc., 51 Franklin Street,
 // Fifth Floor, Boston, MA  02110-1301, USA.
 
-import VHDLMachines
+import VHDLKripkeStructures
 import VHDLParsing
 
-// swiftlint:disable force_unwrapping
+extension KripkeStructure {
 
-/// Add ping machines arrangement.
-public extension Arrangement {
-
-    /// An arrangement containing the `PingMachine`.
-    static let pingArrangement = Arrangement(
-        mappings: [
-            MachineInstance(name: .pingMachineInst, type: .pingMachine): MachineMapping(
-                machine: .pingMachine,
-                with: [
-                    VHDLMachines.VariableMapping(source: .clk, destination: .clk),
-                    VHDLMachines.VariableMapping(source: .ping, destination: .ping),
-                    VHDLMachines.VariableMapping(source: .pong, destination: .pong)
-                ]
-            )!
-        ],
-        externalSignals: [
-            PortSignal(type: .stdLogic, name: .externalPing, mode: .output),
-            PortSignal(type: .stdLogic, name: .externalPong, mode: .output)
-        ],
-        signals: [
-            LocalSignal(type: .stdLogic, name: .ping), LocalSignal(type: .stdLogic, name: .pong)
-        ],
-        clocks: [Clock(name: .clk, frequency: 5, unit: .MHz)]
-    )!
+    static let testStructure: KripkeStructure? = {
+        let initialState = Node(
+            type: .read,
+            currentState: .initial,
+            executeOnEntry: true,
+            nextState: .initial,
+            properties: [.ping: .bit(value: .low)]
+        )
+        let nodes = [
+            initialState
+        ]
+        return nil
+    }()
 
 }
-
-// swiftlint:enable force_unwrapping
