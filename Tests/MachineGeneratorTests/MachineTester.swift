@@ -123,6 +123,11 @@ class MachineTester: XCTestCase {
         machinesFolder.appendingPathComponent("PingMachine.machine", isDirectory: true)
     }
 
+    /// The build folder in the ping machine.
+    var pingMachineBuildFolder: URL {
+        pingMachineFolder.appendingPathComponent("build", isDirectory: true)
+    }
+
     /// The path to the `PingMachine` kripke structure (`output.json`).
     var pingMachineKripkeStructure: URL {
         pingMachineFolder.appendingPathComponent("output.json", isDirectory: false)
