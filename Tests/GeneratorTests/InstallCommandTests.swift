@@ -131,8 +131,8 @@ final class InstallCommandTests: MachineTester {
         XCTAssertEqual(contents, vivadoContents)
         let files = try self.manager.contentsOfDirectory(at: self.vivadoPath, includingPropertiesForKeys: nil)
         XCTAssertEqual(files.count, 2)
-        let expected: Set<URL> = [self.projectFilePath, vivadoVHDLFile]
-        XCTAssertTrue(files.allSatisfy { expected.contains($0) })
+        let expected: Set<String> = [self.projectFilePath.path, vivadoVHDLFile.path]
+        XCTAssertTrue(files.map(\.path).allSatisfy { expected.contains($0) })
         XCTAssertEqual(Set(files).count, 2)
         XCTAssertEqual(
             try String(
