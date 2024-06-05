@@ -154,18 +154,23 @@ final class InstallCommandTests: MachineTester {
         )
         XCTAssertEqual(projectFiles.count, 2)
         XCTAssertEqual(Set(projectFiles).count, 2)
-        let expected: Set<URL> = [self.projectFilePath, self.vhdlSourcesPath]
-        XCTAssertTrue(projectFiles.allSatisfy(expected.contains))
+        let expected: Set<String> = [self.projectFilePath.path, self.vhdlSourcesPath.path]
+        XCTAssertTrue(projectFiles.map(\.path).allSatisfy(expected.contains))
         XCTAssertEqual(
-            try manager.contentsOfDirectory(at: self.vhdlSourcesPath, includingPropertiesForKeys: nil),
-            [self.sources1Path]
+            try manager.contentsOfDirectory(at: self.vhdlSourcesPath, includingPropertiesForKeys: nil)
+                .map(\.path),
+            [self.sources1Path.path]
         )
         XCTAssertEqual(
-            try manager.contentsOfDirectory(at: self.sources1Path, includingPropertiesForKeys: nil),
-            [self.newPath]
+            try manager.contentsOfDirectory(at: self.sources1Path, includingPropertiesForKeys: nil)
+                .map(\.path),
+            [self.newPath.path]
         )
         let vhdlFiles = try manager.contentsOfDirectory(at: self.newPath, includingPropertiesForKeys: nil)
-        XCTAssertEqual(vhdlFiles, [self.newPath.appendingPathComponent("Machine0.vhd", isDirectory: false)])
+        XCTAssertEqual(
+            vhdlFiles.map(\.path),
+            [self.newPath.appendingPathComponent("Machine0.vhd", isDirectory: false).path]
+        )
         let vhdlFilePath = self.buildFolder.appendingPathComponent("vhdl/Machine0.vhd", isDirectory: false)
         let contents = try String(contentsOf: vhdlFilePath, encoding: .utf8)
         XCTAssertEqual(contents, try String(contentsOf: vhdlFilePath, encoding: .utf8))
