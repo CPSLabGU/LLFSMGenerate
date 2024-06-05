@@ -79,9 +79,7 @@ class MachineTester: XCTestCase {
     }
 
     /// A URL to the package root.
-    let packagePath = URL(fileURLWithPath: #file).pathComponents.prefix { $0 != "Tests" }
-        .joined(separator: "/")
-        .dropFirst()
+    let packagePath = FileManager.default.currentDirectoryPath
 
     /// The path to the package root.
     var packageRootPath: URL {
