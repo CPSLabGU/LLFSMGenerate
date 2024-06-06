@@ -61,10 +61,10 @@ import VHDLMachines
 import VHDLMachineTransformations
 
 /// The Main program for transforming between machine formats.
-struct Generate: ParsableCommand {
+public struct Generate: ParsableCommand {
 
     /// The command configuration describing a sub-command.
-    static var configuration = CommandConfiguration(
+    public static var configuration = CommandConfiguration(
         commandName: "model",
         abstract: "A utility for converting LLFSM formats."
     )
@@ -76,12 +76,12 @@ struct Generate: ParsableCommand {
     @Flag(
         help: "Regenerate the Javascript model. If this flag is specified, the program will generate the javascript model from the existing LLFSM format on the file system."
     )
-    var exportModel = false
+    @usableFromInline var exportModel = false
 
     // swiftlint:enable line_length
 
     /// The shared options for the program.
-    @OptionGroup var options: PathArgument
+    @OptionGroup @usableFromInline var options: PathArgument
 
     /// The path to the machine folder as a string.
     @inlinable var path: String {
@@ -127,10 +127,14 @@ struct Generate: ParsableCommand {
         pathURL.appendingPathComponent("model.json", isDirectory: false)
     }
 
+    /// Default init.
+    @inlinable
+    public init() {}
+
     /// The main function for the program.
     /// - Throws: ``GenerationError``.
     @inlinable
-    mutating func run() throws {
+    public mutating func run() throws {
         guard exportModel else {
             guard !pathURL.lastPathComponent.lowercased().hasSuffix(".arrangement") else {
                 try createArrangement()
@@ -143,6 +147,7 @@ struct Generate: ParsableCommand {
     }
 
     /// Create an `Arrangement` from the model.
+    @inlinable
     func createArrangement() throws {
         let model = try decoder.decode(ArrangementModel.self, from: model)
         guard let arrangement = Arrangement(

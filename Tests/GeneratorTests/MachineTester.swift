@@ -75,13 +75,11 @@ class MachineTester: XCTestCase {
 
     /// A path to Machine0.
     var pathRaw: String {
-        String(packagePath) + "/Tests/MachineGeneratorTests/machines/Machine0.machine"
+        String(packagePath) + "/Tests/GeneratorTests/machines/Machine0.machine"
     }
 
     /// A URL to the package root.
-    let packagePath = URL(fileURLWithPath: #file).pathComponents.prefix { $0 != "Tests" }
-        .joined(separator: "/")
-        .dropFirst()
+    let packagePath = FileManager.default.currentDirectoryPath
 
     /// The path to the package root.
     var packageRootPath: URL {
@@ -90,7 +88,7 @@ class MachineTester: XCTestCase {
 
     /// The path to the machines folder.
     var machinesFolder: URL {
-        packageRootPath.appendingPathComponent("Tests/MachineGeneratorTests/machines", isDirectory: true)
+        packageRootPath.appendingPathComponent("Tests/GeneratorTests/machines", isDirectory: true)
     }
 
     /// The path to Machine0.

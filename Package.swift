@@ -3,6 +3,39 @@
 
 import PackageDescription
 
+#if os(Windows)
+/// The executable target.
+let executableTarget = PackageDescription.Target.executableTarget(
+    name: "MachineGenerator",
+    dependencies: [
+        .product(name: "ArgumentParser", package: "swift-argument-parser"),
+        .product(name: "VHDLMachines", package: "VHDLMachines"),
+        .product(name: "VHDLParsing", package: "VHDLParsing"),
+        .product(name: "VHDLKripkeStructureGenerator", package: "VHDLKripkeStructureGenerator"),
+        .product(name: "SwiftUtils", package: "SwiftUtils"),
+        .product(name: "VHDLJSModels", package: "VHDLJSModels"),
+        .product(name: "VHDLKripkeStructures", package: "VHDLKripkeStructures"),
+        .target(name: "GeneratorCommands")
+    ],
+    swiftSettings: [.unsafeFlags(["-parse-as-library"])]
+)
+#else
+/// The executable target.
+let executableTarget = PackageDescription.Target.executableTarget(
+    name: "MachineGenerator",
+    dependencies: [
+        .product(name: "ArgumentParser", package: "swift-argument-parser"),
+        .product(name: "VHDLMachines", package: "VHDLMachines"),
+        .product(name: "VHDLParsing", package: "VHDLParsing"),
+        .product(name: "VHDLKripkeStructureGenerator", package: "VHDLKripkeStructureGenerator"),
+        .product(name: "SwiftUtils", package: "SwiftUtils"),
+        .product(name: "VHDLJSModels", package: "VHDLJSModels"),
+        .product(name: "VHDLKripkeStructures", package: "VHDLKripkeStructures"),
+        .target(name: "GeneratorCommands")
+    ]
+)
+#endif
+
 /// Package definition.
 let package = Package(
     name: "LLFSMGenerate",
@@ -27,8 +60,9 @@ let package = Package(
     targets: [
         // Targets are the basic building blocks of a package, defining a module or a test suite.
         // Targets can depend on other targets in this package and products from dependencies.
-        .executableTarget(
-            name: "MachineGenerator",
+        executableTarget,
+        .target(
+            name: "GeneratorCommands",
             dependencies: [
                 .product(name: "ArgumentParser", package: "swift-argument-parser"),
                 .product(name: "VHDLMachines", package: "VHDLMachines"),
@@ -40,9 +74,9 @@ let package = Package(
             ]
         ),
         .testTarget(
-            name: "MachineGeneratorTests",
+            name: "GeneratorTests",
             dependencies: [
-                .target(name: "MachineGenerator"),
+                .target(name: "GeneratorCommands"),
                 .product(name: "VHDLMachines", package: "VHDLMachines"),
                 .product(name: "VHDLParsing", package: "VHDLParsing"),
                 .product(name: "ArgumentParser", package: "swift-argument-parser"),

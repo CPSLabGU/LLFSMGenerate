@@ -64,7 +64,7 @@ final class Machine0Tests: XCTestCase {
 
     /// A path to Machine0.
     var pathRaw: String {
-        String(packagePath) + "/Tests/MachineGeneratorTests/machines"
+        String(packagePath) + "/Tests/GeneratorTests/machines"
     }
 
     /// A URL to the package root.

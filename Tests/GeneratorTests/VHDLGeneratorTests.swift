@@ -55,7 +55,7 @@
 // 
 
 import Foundation
-@testable import MachineGenerator
+@testable import GeneratorCommands
 import SwiftUtils
 import VHDLKripkeStructureGenerator
 import VHDLMachines
@@ -197,7 +197,7 @@ final class VHDLGeneratorTests: MachineTester {
             arrangement: .pingArrangement, name: .arrangement1
         )?.file.rawValue
         XCTAssertNotNil(expected)
-        XCTAssertEqual(String(data: contents, encoding: .utf8), expected)
+        XCTAssertEqual(String(decoding: contents, as: UTF8.self), expected)
     }
 
     /// Test that invalid names are detected.
@@ -239,7 +239,7 @@ final class VHDLGeneratorTests: MachineTester {
             arrangement: .pingArrangement, name: .arrangement1
         )?.file.rawValue
         XCTAssertNotNil(expected)
-        XCTAssertEqual(String(data: contents, encoding: .utf8), expected)
+        XCTAssertEqual(String(decoding: contents, as: UTF8.self), expected)
     }
 
     /// Test that the arrangement creation works when machines are already compiled.
@@ -260,7 +260,7 @@ final class VHDLGeneratorTests: MachineTester {
             arrangement: .pingArrangement, name: .arrangement1
         )?.file.rawValue
         XCTAssertNotNil(expected)
-        XCTAssertEqual(String(data: contents, encoding: .utf8), expected)
+        XCTAssertEqual(String(decoding: contents, as: UTF8.self), expected)
     }
 
     /// Assert a file wrapper contents recursively against the file system.
@@ -290,12 +290,11 @@ final class VHDLGeneratorTests: MachineTester {
             try assertContents(wrapper: wrapper, parentFolder: parentFolder)
             return
         }
-        guard
-            let data = wrapper.regularFileContents, let contents = String(data: data, encoding: .utf8)
-        else {
+        guard let data = wrapper.regularFileContents else {
             XCTFail("Failed to read file contents in \(name).")
             return
         }
+        let contents = String(decoding: data, as: UTF8.self)
         let result = try String(
             contentsOf: parentFolder.appendingPathComponent("\(name)", isDirectory: false)
         )

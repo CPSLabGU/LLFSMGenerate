@@ -55,6 +55,7 @@
 // 
 
 import ArgumentParser
+import GeneratorCommands
 
 /// Main program for `llfsmgenerate`.
 @main
