@@ -19,10 +19,10 @@ let package = Package(
         .package(url: "https://github.com/mipalgu/VHDLMachines", from: "4.0.1"),
         .package(url: "https://github.com/mipalgu/VHDLParsing", from: "2.4.0"),
         .package(url: "https://github.com/apple/swift-argument-parser", from: "1.3.0"),
-        .package(url: "https://github.com/mipalgu/VHDLKripkeStructureGenerator.git", from: "0.3.2"),
+        .package(url: "https://github.com/mipalgu/VHDLKripkeStructureGenerator.git", from: "0.4.1"),
         .package(url: "https://github.com/CPSLabGU/SwiftUtils.git", from: "0.1.0"),
         .package(url: "https://github.com/CPSLabGU/VHDLJSModels", from: "1.0.0"),
-        .package(url: "https://github.com/CPSLabGU/VHDLKripkeStructures", from: "1.2.1")
+        .package(url: "https://github.com/CPSLabGU/VHDLKripkeStructures", from: "1.3.0")
     ],
     targets: [
         // Targets are the basic building blocks of a package, defining a module or a test suite.
