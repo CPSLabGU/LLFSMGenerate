@@ -137,11 +137,13 @@ public struct InstallCommand: ParsableCommand {
     @inlinable
     func installLocal(files: [URL], manager: FileManager, installLocation: URL) throws {
         try files.forEach {
-            try manager.copyItem(
-                at: $0, to: installLocation.appendingPathComponent(
-                    $0.lastPathComponent, isDirectory: $0.hasDirectoryPath
-                )
+            let installPath = installLocation.appendingPathComponent(
+                $0.lastPathComponent, isDirectory: $0.hasDirectoryPath
             )
+            if !installPath.hasDirectoryPath, manager.fileExists(atPath: installPath.path) {
+                try manager.removeItem(at: installPath)
+            }
+            try manager.copyItem(at: $0, to: installPath)
         }
     }
 
