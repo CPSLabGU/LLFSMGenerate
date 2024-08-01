@@ -71,6 +71,12 @@ let package = Package(
                 .product(name: "SwiftUtils", package: "SwiftUtils"),
                 .product(name: "VHDLJSModels", package: "VHDLJSModels"),
                 .product(name: "VHDLKripkeStructures", package: "VHDLKripkeStructures")
+            ],
+            swiftSettings: [
+                .unsafeFlags(
+                    ["-Xfrontend", "-entry-point-function-name", "-Xfrontend", "wWinMain"],
+                    .when(platforms: [.windows])
+                )
             ]
         ),
         .testTarget(
