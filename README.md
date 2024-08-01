@@ -3,11 +3,12 @@
 [![Swift Lint](https://github.com/CPSLabGU/LLFSMGenerate/actions/workflows/swiftlint.yml/badge.svg)](https://github.com/CPSLabGU/LLFSMGenerate/actions/workflows/swiftlint.yml)
 [![Linux CI](https://github.com/CPSLabGU/LLFSMGenerate/actions/workflows/ci-linux.yml/badge.svg)](https://github.com/CPSLabGU/LLFSMGenerate/actions/workflows/ci-linux.yml)
 [![MacOS CI](https://github.com/CPSLabGU/LLFSMGenerate/actions/workflows/ci-macOS.yml/badge.svg)](https://github.com/CPSLabGU/LLFSMGenerate/actions/workflows/ci-macOS.yml)
+[![Windows CI](https://github.com/CPSLabGU/LLFSMGenerate/actions/workflows/ci-windows.yml/badge.svg)](https://github.com/CPSLabGU/LLFSMGenerate/actions/workflows/ci-windows.yml)
 
 `llfsmgenerate` is a command-line utility for transforming and compiling LLFSM formats that use the `VHDL`
 Hardware Description Language.
 This program allows the transformation between [VHDL LLFSMs](https://github.com/mipalgu/VHDLMachines) and
-other standard Javascript models, such as the VHDL LLFSM editor (to be released soon) that utilises *React*.
+other standard Javascript models, such as the [VHDL LLFSM editor](https://github.com/CPSLabGU/editor) that utilises *React*.
 In addition to this support, the program can generate the relative `vhd` files for standard execution and
 formal verification via Kripke structure generation.
 
@@ -16,6 +17,8 @@ formal verification via Kripke structure generation.
 - Swift 5.7 or later (See [Installing Swift](#installing-swift)).
 - macOS 13 (Ventura) or later.
 - Linux (Ubuntu 20.04 or later).
+- Windows 10 or later.
+- Windows Server Edition 2022 or later.
 
 ## Usage
 You may compile the binary by invoking a `swift build` within the package directory.
@@ -127,7 +130,7 @@ You may now install swift via:
 
 ```shell
 source ~/.bash_profile
-swiftenv install 5.9
+swiftenv install 5.10
 ```
 
 The full instructions are provided in the
@@ -137,3 +140,7 @@ The full instructions are provided in the
 
 Make sure you install the latest version of XCode through your App store or
 [developer website](https://developer.apple.com/xcode/).
+
+### Windows
+
+The full instructions for installing swift may be found on the [swift website](https://www.swift.org/install/windows/).
