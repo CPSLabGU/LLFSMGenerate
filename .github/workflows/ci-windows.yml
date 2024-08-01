@@ -66,7 +66,7 @@ jobs:
     strategy:
       matrix:
         os: [windows-latest]
-        swift: ["5.9"]
+        swift: ["5.9", "5.10"]
         build_mode: ["debug", "release"]
     name: Swift ${{ matrix.swift }} ${{ matrix.build_mode }} on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
