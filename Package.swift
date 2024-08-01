@@ -69,7 +69,7 @@ let package = Package(
                 .product(name: "VHDLParsing", package: "VHDLParsing"),
                 .product(name: "VHDLKripkeStructureGenerator", package: "VHDLKripkeStructureGenerator"),
                 .product(name: "SwiftUtils", package: "SwiftUtils"),
-                .product(name: "VHDLJSModels", package: "VHDLJSModels")
+                .product(name: "VHDLJSModels", package: "VHDLJSModels"),
                 .product(name: "VHDLKripkeStructures", package: "VHDLKripkeStructures")
             ],
             swiftSettings: [
