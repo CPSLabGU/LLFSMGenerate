@@ -1,5 +1,5 @@
-// PathArgumentTests.swift
-// LLFSMGenerate
+// PathArgument.swift
+// VHDLMachineTransformations
 // 
 // Created by Morgan McColl.
 // Copyright © 2024 Morgan McColl. All rights reserved.
@@ -52,39 +52,41 @@
 // along with this program; if not, see http://www.gnu.org/licenses/
 // or write to the Free Software Foundation, Inc., 51 Franklin Street,
 // Fifth Floor, Boston, MA  02110-1301, USA.
+// 
 
 import ArgumentParser
 import Foundation
-@testable import MachineGenerator
-import XCTest
 
-/// Test class for ``PathArgument``.
-final class PathArgumentTests: XCTestCase {
+/// A struct defining the shared arguments for the machine generator.
+@usableFromInline
+struct PathArgument: ParsableArguments {
 
-    /// A command with a path.
-    var command: Generate {
-        get throws {
-            try Generate.parse(["path"])
-        }
+    /// The path to the machine folder.
+    @Argument(help: "The path to the machine folder.", completion: .directory)
+    @usableFromInline var path: String
+
+    /// The path to the machine file.
+    @inlinable var machine: URL {
+        pathURL.appendingPathComponent("machine.json", isDirectory: false)
     }
 
-    /// The argument under test.
-    var argument: PathArgument {
-        get throws {
-            try command.options
-        }
+    /// The path to the users input (the machine folder).
+    @inlinable var pathURL: URL {
+        URL(fileURLWithPath: path, isDirectory: true)
     }
 
-    /// Test that the computed properties are correct.
-    func testComputedProperties() throws {
-        let url = URL(fileURLWithPath: "path", isDirectory: true)
-        XCTAssertEqual(try argument.pathURL, url)
-        let machine = url.appendingPathComponent("machine.json", isDirectory: false)
-        XCTAssertEqual(try argument.machine, machine)
-        let build = url.appendingPathComponent("build", isDirectory: true)
-        XCTAssertEqual(try argument.buildFolder, build)
-        let vhdl = build.appendingPathComponent("vhdl", isDirectory: true)
-        XCTAssertEqual(try argument.vhdlFolder, vhdl)
+    /// The path to the build folder.
+    @inlinable var buildFolder: URL {
+        pathURL.appendingPathComponent("build", isDirectory: true)
     }
+
+    /// The path to the vhdl folder.
+    @inlinable var vhdlFolder: URL {
+        buildFolder.appendingPathComponent("vhdl", isDirectory: true)
+    }
+
+    /// Default init.
+    @usableFromInline
+    init() {}
 
 }

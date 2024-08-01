@@ -57,6 +57,7 @@
 import Foundation
 import JavascriptModel
 import TestHelpers
+import VHDLKripkeStructures
 import VHDLMachines
 import XCTest
 
@@ -74,13 +75,11 @@ class MachineTester: XCTestCase {
 
     /// A path to Machine0.
     var pathRaw: String {
-        String(packagePath) + "/Tests/MachineGeneratorTests/machines/Machine0.machine"
+        String(packagePath) + "/Tests/GeneratorTests/machines/Machine0.machine"
     }
 
     /// A URL to the package root.
-    let packagePath = URL(fileURLWithPath: #file).pathComponents.prefix { $0 != "Tests" }
-        .joined(separator: "/")
-        .dropFirst()
+    let packagePath = FileManager.default.currentDirectoryPath
 
     /// The path to the package root.
     var packageRootPath: URL {
@@ -89,7 +88,7 @@ class MachineTester: XCTestCase {
 
     /// The path to the machines folder.
     var machinesFolder: URL {
-        packageRootPath.appendingPathComponent("Tests/MachineGeneratorTests/machines", isDirectory: true)
+        packageRootPath.appendingPathComponent("Tests/GeneratorTests/machines", isDirectory: true)
     }
 
     /// The path to Machine0.
@@ -122,6 +121,16 @@ class MachineTester: XCTestCase {
         machinesFolder.appendingPathComponent("PingMachine.machine", isDirectory: true)
     }
 
+    /// The build folder in the ping machine.
+    var pingMachineBuildFolder: URL {
+        pingMachineFolder.appendingPathComponent("build", isDirectory: true)
+    }
+
+    /// The path to the `PingMachine` kripke structure (`output.json`).
+    var pingMachineKripkeStructure: URL {
+        pingMachineFolder.appendingPathComponent("output.json", isDirectory: false)
+    }
+
     /// Create test machines before every test.
     override func setUp() {
         let createDir: ()? = try? manager
@@ -135,13 +144,15 @@ class MachineTester: XCTestCase {
             let arrangementData = try? encoder.encode(
                 ArrangementModel.pingArrangement(path: self.pingMachineFolder)
             ),
-            let modelData = try? encoder.encode(MachineModel.machine0)
+            let modelData = try? encoder.encode(MachineModel.machine0),
+            let structureData = try? encoder.encode(KripkeStructure.pingPongStructure)
         else {
             XCTFail("Failed to create machine!")
             return
         }
         try? self.manager.createDirectory(at: self.pingMachineFolder, withIntermediateDirectories: true)
         try? pingData.write(to: pingMachineFolder.appendingPathComponent("model.json", isDirectory: false))
+        try? structureData.write(to: pingMachineKripkeStructure)
         try? self.manager.createDirectory(at: arrangement1Folder, withIntermediateDirectories: true)
         try? arrangementData.write(
             to: arrangement1Folder.appendingPathComponent("model.json", isDirectory: false)

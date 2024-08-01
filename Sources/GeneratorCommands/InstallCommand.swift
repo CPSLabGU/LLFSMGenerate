@@ -57,34 +57,38 @@ import ArgumentParser
 import Foundation
 
 /// A command that installs generated files into a specified directory.
-struct InstallCommand: ParsableCommand {
+public struct InstallCommand: ParsableCommand {
 
     /// The configuration of this command.
-    static var configuration = CommandConfiguration(
+    public static var configuration = CommandConfiguration(
         commandName: "install",
         abstract: "Install the VHDL files into a specified directory."
     )
 
     /// The path to the machine to install.
-    @OptionGroup var path: PathArgument
+    @OptionGroup @usableFromInline var path: PathArgument
 
     /// Whether `installPath` is a vivado project directory.
     @Flag(help: "Specifies that the install path is a vivado project directory.")
-    var vivado = false
+    @usableFromInline var vivado = false
 
     /// That path to the install location.
     @Argument(help: "The directory to install the generated files into.", completion: .directory)
-    var installPath: String
+    @usableFromInline var installPath: String
 
     /// A `URL` of the `installPath`.
-    @inlinable var installURL: URL {
+    @usableFromInline var installURL: URL {
         URL(fileURLWithPath: installPath, isDirectory: true)
     }
+
+    /// Default init.
+    @inlinable
+    public init() {}
 
     /// The main entry point for this command.
     /// - Throws: ``GenerationError``.
     @inlinable
-    func run() throws {
+    public func run() throws {
         let folder = self.path.pathURL.lastPathComponent.lowercased()
         guard folder.hasSuffix(".machine") || folder.hasSuffix(".arrangement") else {
             throw GenerationError.invalidMachine(message: "The path provided is not a machine.")
@@ -133,11 +137,13 @@ struct InstallCommand: ParsableCommand {
     @inlinable
     func installLocal(files: [URL], manager: FileManager, installLocation: URL) throws {
         try files.forEach {
-            try manager.copyItem(
-                at: $0, to: installLocation.appendingPathComponent(
-                    $0.lastPathComponent, isDirectory: $0.hasDirectoryPath
-                )
+            let installPath = installLocation.appendingPathComponent(
+                $0.lastPathComponent, isDirectory: $0.hasDirectoryPath
             )
+            if !installPath.hasDirectoryPath, manager.fileExists(atPath: installPath.path) {
+                try manager.removeItem(at: installPath)
+            }
+            try manager.copyItem(at: $0, to: installPath)
         }
     }
 

@@ -55,6 +55,7 @@
 // 
 
 import ArgumentParser
+import GeneratorCommands
 
 /// Main program for `llfsmgenerate`.
 @main
@@ -64,8 +65,10 @@ struct LLFSMGenerate: ParsableCommand {
     static var configuration = CommandConfiguration(
         commandName: "llfsmgenerate",
         abstract: "A utility for performing operations on LLFSM formats.",
-        version: "2.0.0",
-        subcommands: [Generate.self, VHDLGenerator.self, CleanCommand.self, InstallCommand.self]
+        version: "2.1.2",
+        subcommands: [
+            Generate.self, VHDLGenerator.self, CleanCommand.self, InstallCommand.self, GraphCommand.self
+        ]
     )
 
 }

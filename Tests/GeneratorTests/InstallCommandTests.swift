@@ -55,7 +55,7 @@
 
 import ArgumentParser
 import Foundation
-@testable import MachineGenerator
+@testable import GeneratorCommands
 import XCTest
 
 /// Test class for ``InstallCommand``.
@@ -92,8 +92,8 @@ final class InstallCommandTests: MachineTester {
     /// Setup install locations before every run.
     override func setUp() {
         super.setUp()
+        let projectContents = Data("project file!".utf8)
         guard
-            let projectContents = "project file!".data(using: .utf8),
             (try? self.manager.createDirectory(at: vivadoPath, withIntermediateDirectories: true)) != nil,
             manager.createFile(atPath: self.projectFilePath.path, contents: projectContents),
             (try? self.manager.createDirectory(at: newPath, withIntermediateDirectories: true)) != nil
@@ -131,8 +131,8 @@ final class InstallCommandTests: MachineTester {
         XCTAssertEqual(contents, vivadoContents)
         let files = try self.manager.contentsOfDirectory(at: self.vivadoPath, includingPropertiesForKeys: nil)
         XCTAssertEqual(files.count, 2)
-        let expected: Set<URL> = [self.projectFilePath, vivadoVHDLFile]
-        XCTAssertTrue(files.allSatisfy { expected.contains($0) })
+        let expected: Set<String> = [self.projectFilePath.path, vivadoVHDLFile.path]
+        XCTAssertTrue(files.map(\.path).allSatisfy { expected.contains($0) })
         XCTAssertEqual(Set(files).count, 2)
         XCTAssertEqual(
             try String(
@@ -154,18 +154,23 @@ final class InstallCommandTests: MachineTester {
         )
         XCTAssertEqual(projectFiles.count, 2)
         XCTAssertEqual(Set(projectFiles).count, 2)
-        let expected: Set<URL> = [self.projectFilePath, self.vhdlSourcesPath]
-        XCTAssertTrue(projectFiles.allSatisfy(expected.contains))
+        let expected: Set<String> = [self.projectFilePath.path, self.vhdlSourcesPath.path]
+        XCTAssertTrue(projectFiles.map(\.path).allSatisfy(expected.contains))
         XCTAssertEqual(
-            try manager.contentsOfDirectory(at: self.vhdlSourcesPath, includingPropertiesForKeys: nil),
-            [self.sources1Path]
+            try manager.contentsOfDirectory(at: self.vhdlSourcesPath, includingPropertiesForKeys: nil)
+                .map(\.path),
+            [self.sources1Path.path]
         )
         XCTAssertEqual(
-            try manager.contentsOfDirectory(at: self.sources1Path, includingPropertiesForKeys: nil),
-            [self.newPath]
+            try manager.contentsOfDirectory(at: self.sources1Path, includingPropertiesForKeys: nil)
+                .map(\.path),
+            [self.newPath.path]
         )
         let vhdlFiles = try manager.contentsOfDirectory(at: self.newPath, includingPropertiesForKeys: nil)
-        XCTAssertEqual(vhdlFiles, [self.newPath.appendingPathComponent("Machine0.vhd", isDirectory: false)])
+        XCTAssertEqual(
+            vhdlFiles.map(\.path),
+            [self.newPath.appendingPathComponent("Machine0.vhd", isDirectory: false).path]
+        )
         let vhdlFilePath = self.buildFolder.appendingPathComponent("vhdl/Machine0.vhd", isDirectory: false)
         let contents = try String(contentsOf: vhdlFilePath, encoding: .utf8)
         XCTAssertEqual(contents, try String(contentsOf: vhdlFilePath, encoding: .utf8))
@@ -186,7 +191,7 @@ final class InstallCommandTests: MachineTester {
     /// Test that the correct error is thrown for a file path to the machine.
     func testThrowsErrorForFilePath() throws {
         let newFile = self.vivadoPath.appendingPathComponent("Machine0.machine", isDirectory: false)
-        XCTAssertTrue(self.manager.createFile(atPath: newFile.path, contents: "new file".data(using: .utf8)))
+        XCTAssertTrue(self.manager.createFile(atPath: newFile.path, contents: Data("new file".utf8)))
         let command = try InstallCommand.parse([newFile.path, self.vivadoPath.path])
         XCTAssertThrowsError(try command.run()) {
             guard let error = $0 as? GenerationError else {
@@ -231,7 +236,7 @@ final class InstallCommandTests: MachineTester {
     func testThrowsErrorForCorruptedBuildFolder() throws {
         let corruptedFile = self.buildFolder.appendingPathComponent("vhdl/Machine0", isDirectory: false)
         XCTAssertTrue(self.manager.createFile(
-            atPath: corruptedFile.path, contents: "corrupted".data(using: .utf8)
+            atPath: corruptedFile.path, contents: Data("corrupted".utf8)
         ))
         let command = try InstallCommand.parse([self.machine0Path.path, self.vivadoPath.path])
         XCTAssertThrowsError(try command.run()) {

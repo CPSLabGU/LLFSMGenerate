@@ -1,5 +1,5 @@
-// GenerationError.swift
-// VHDLMachineTransformations
+// PathArgumentTests.swift
+// LLFSMGenerate
 // 
 // Created by Morgan McColl.
 // Copyright © 2024 Morgan McColl. All rights reserved.
@@ -52,36 +52,39 @@
 // along with this program; if not, see http://www.gnu.org/licenses/
 // or write to the Free Software Foundation, Inc., 51 Franklin Street,
 // Fifth Floor, Boston, MA  02110-1301, USA.
-// 
 
-/// Errors thrown by the generator.
-enum GenerationError: Error, Equatable, Codable, Hashable, Sendable, CustomStringConvertible {
+import ArgumentParser
+import Foundation
+@testable import GeneratorCommands
+import XCTest
 
-    /// An error with the current machine.
-    case invalidMachine(message: String)
+/// Test class for ``PathArgument``.
+final class PathArgumentTests: XCTestCase {
 
-    /// An error during the model generation process.
-    case invalidExportation(message: String)
-
-    /// An error with the current generated format.
-    case invalidFormat(message: String)
-
-    /// An error during the Machine generation process.
-    case invalidGeneration(message: String)
-
-    /// An error with user input.
-    case invalidInput(message: String)
-
-    /// An invalid layout for new machine.
-    case invalidLayout(message: String)
-
-    /// The message contained within the error.
-    @inlinable var description: String {
-        switch self {
-        case let .invalidMachine(message), let .invalidExportation(message), let .invalidFormat(message),
-        let .invalidGeneration(message), let .invalidInput(message), let .invalidLayout(message):
-            return "\(message)"
+    /// A command with a path.
+    var command: Generate {
+        get throws {
+            try Generate.parse(["path"])
         }
+    }
+
+    /// The argument under test.
+    var argument: PathArgument {
+        get throws {
+            try command.options
+        }
+    }
+
+    /// Test that the computed properties are correct.
+    func testComputedProperties() throws {
+        let url = URL(fileURLWithPath: "path", isDirectory: true)
+        XCTAssertEqual(try argument.pathURL, url)
+        let machine = url.appendingPathComponent("machine.json", isDirectory: false)
+        XCTAssertEqual(try argument.machine, machine)
+        let build = url.appendingPathComponent("build", isDirectory: true)
+        XCTAssertEqual(try argument.buildFolder, build)
+        let vhdl = build.appendingPathComponent("vhdl", isDirectory: true)
+        XCTAssertEqual(try argument.vhdlFolder, vhdl)
     }
 
 }
