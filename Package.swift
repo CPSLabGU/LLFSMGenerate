@@ -48,7 +48,7 @@ let package = Package(
         )
     ],
     dependencies: [
-        .package(url: "https://github.com/apple/swift-docc-plugin", from: "1.4.1"),
+        .package(url: "https://github.com/apple/swift-docc-plugin", exact: "1.3.0"),
         .package(url: "https://github.com/mipalgu/VHDLMachines", from: "4.0.1"),
         .package(url: "https://github.com/mipalgu/VHDLParsing", from: "2.4.0"),
         .package(url: "https://github.com/apple/swift-argument-parser", from: "1.3.0"),
