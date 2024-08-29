@@ -1,30 +1,30 @@
 // VHDLGeneratorTests.swift
 // VHDLMachineTransformations
-// 
+//
 // Created by Morgan McColl.
 // Copyright © 2024 Morgan McColl. All rights reserved.
-// 
+//
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions
 // are met:
-// 
+//
 // 1. Redistributions of source code must retain the above copyright
 //    notice, this list of conditions and the following disclaimer.
-// 
+//
 // 2. Redistributions in binary form must reproduce the above
 //    copyright notice, this list of conditions and the following
 //    disclaimer in the documentation and/or other materials
 //    provided with the distribution.
-// 
+//
 // 3. All advertising materials mentioning features or use of this
 //    software must display the following acknowledgement:
-// 
+//
 //    This product includes software developed by Morgan McColl.
-// 
+//
 // 4. Neither the name of the author nor the names of contributors
 //    may be used to endorse or promote products derived from this
 //    software without specific prior written permission.
-// 
+//
 // THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
 // "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
 // LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -36,31 +36,32 @@
 // LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-// 
+//
 // -----------------------------------------------------------------------
 // This program is free software; you can redistribute it and/or
 // modify it under the above terms or under the terms of the GNU
 // General Public License as published by the Free Software Foundation;
 // either version 2 of the License, or (at your option) any later version.
-// 
+//
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, see http://www.gnu.org/licenses/
 // or write to the Free Software Foundation, Inc., 51 Franklin Street,
 // Fifth Floor, Boston, MA  02110-1301, USA.
-// 
+//
 
 import Foundation
-@testable import GeneratorCommands
 import SwiftUtils
 import VHDLKripkeStructureGenerator
 import VHDLMachines
 import VHDLParsing
 import XCTest
+
+@testable import GeneratorCommands
 
 /// Test class for ``VHDLGenerator``.
 final class VHDLGeneratorTests: MachineTester {
@@ -115,8 +116,8 @@ final class VHDLGeneratorTests: MachineTester {
             XCTAssertEqual(
                 error,
                 .invalidFormat(
-                    message: "The machine specified is invalid. " +
-                        "Please make sure you specify a machine with the .machine extension and valid name."
+                    message: "The machine specified is invalid. "
+                        + "Please make sure you specify a machine with the .machine extension and valid name."
                 )
             )
         }
@@ -138,8 +139,8 @@ final class VHDLGeneratorTests: MachineTester {
             XCTAssertEqual(
                 error,
                 .invalidFormat(
-                    message: "The machine specified is invalid. " +
-                        "Please make sure you specify a machine with the .machine extension and valid name."
+                    message: "The machine specified is invalid. "
+                        + "Please make sure you specify a machine with the .machine extension and valid name."
                 )
             )
         }
@@ -159,8 +160,8 @@ final class VHDLGeneratorTests: MachineTester {
             XCTAssertEqual(
                 error,
                 .invalidFormat(
-                    message: "The machine specified is invalid. " +
-                        "Please make sure you specify a machine with the .machine extension and valid name."
+                    message: "The machine specified is invalid. "
+                        + "Please make sure you specify a machine with the .machine extension and valid name."
                 )
             )
         }
@@ -185,17 +186,24 @@ final class VHDLGeneratorTests: MachineTester {
     func testArrangementCreation() throws {
         Generate.main([self.arrangement1Folder.path])
         VHDLGenerator.main([self.arrangement1Folder.path])
-        guard let contents = self.manager.contents(
-            atPath: self.machinesFolder.appendingPathComponent(
-                "Arrangement1.arrangement/build/vhdl/Arrangement1.vhd", isDirectory: false
-            ).path
-        ) else {
+        guard
+            let contents = self.manager.contents(
+                atPath: self.machinesFolder
+                    .appendingPathComponent(
+                        "Arrangement1.arrangement/build/vhdl/Arrangement1.vhd",
+                        isDirectory: false
+                    )
+                    .path
+            )
+        else {
             XCTFail("File doesn't exist!")
             return
         }
         let expected = ArrangementRepresentation(
-            arrangement: .pingArrangement, name: .arrangement1
-        )?.file.rawValue
+            arrangement: .pingArrangement,
+            name: .arrangement1
+        )?
+        .file.rawValue
         XCTAssertNotNil(expected)
         XCTAssertEqual(String(decoding: contents, as: UTF8.self), expected)
     }
@@ -203,7 +211,8 @@ final class VHDLGeneratorTests: MachineTester {
     /// Test that invalid names are detected.
     func testArrangementCreationFailsForInvalidName() throws {
         let newDir = self.machinesFolder.appendingPathComponent(
-            "Arrangement1.new.arrangement", isDirectory: true
+            "Arrangement1.new.arrangement",
+            isDirectory: true
         )
         try self.manager.moveItem(at: self.arrangement1Folder, to: newDir)
         defer { try? self.manager.removeItem(at: newDir) }
@@ -227,17 +236,24 @@ final class VHDLGeneratorTests: MachineTester {
         Generate.main([self.arrangement1Folder.path])
         VHDLGenerator.main([self.arrangement1Folder.path])
         VHDLGenerator.main([self.arrangement1Folder.path])
-        guard let contents = self.manager.contents(
-            atPath: self.machinesFolder.appendingPathComponent(
-                "Arrangement1.arrangement/build/vhdl/Arrangement1.vhd", isDirectory: false
-            ).path
-        ) else {
+        guard
+            let contents = self.manager.contents(
+                atPath: self.machinesFolder
+                    .appendingPathComponent(
+                        "Arrangement1.arrangement/build/vhdl/Arrangement1.vhd",
+                        isDirectory: false
+                    )
+                    .path
+            )
+        else {
             XCTFail("File doesn't exist!")
             return
         }
         let expected = ArrangementRepresentation(
-            arrangement: .pingArrangement, name: .arrangement1
-        )?.file.rawValue
+            arrangement: .pingArrangement,
+            name: .arrangement1
+        )?
+        .file.rawValue
         XCTAssertNotNil(expected)
         XCTAssertEqual(String(decoding: contents, as: UTF8.self), expected)
     }
@@ -248,17 +264,24 @@ final class VHDLGeneratorTests: MachineTester {
         Generate.main([self.arrangement1Folder.path])
         VHDLGenerator.main([self.pingMachineFolder.path])
         VHDLGenerator.main([self.arrangement1Folder.path])
-        guard let contents = self.manager.contents(
-            atPath: self.machinesFolder.appendingPathComponent(
-                "Arrangement1.arrangement/build/vhdl/Arrangement1.vhd", isDirectory: false
-            ).path
-        ) else {
+        guard
+            let contents = self.manager.contents(
+                atPath: self.machinesFolder
+                    .appendingPathComponent(
+                        "Arrangement1.arrangement/build/vhdl/Arrangement1.vhd",
+                        isDirectory: false
+                    )
+                    .path
+            )
+        else {
             XCTFail("File doesn't exist!")
             return
         }
         let expected = ArrangementRepresentation(
-            arrangement: .pingArrangement, name: .arrangement1
-        )?.file.rawValue
+            arrangement: .pingArrangement,
+            name: .arrangement1
+        )?
+        .file.rawValue
         XCTAssertNotNil(expected)
         XCTAssertEqual(String(decoding: contents, as: UTF8.self), expected)
     }
@@ -275,8 +298,8 @@ final class VHDLGeneratorTests: MachineTester {
         }
         guard let files = wrapper.fileWrappers, let name = wrapper.preferredFilename else {
             let name = wrapper.preferredFilename ?? wrapper.filename ?? "<unknown file>"
-            let wrapperString = "{ \(wrapper.isDirectory), \(wrapper.fileWrappers ?? [:]) }" +
-                "\n\(parentFolder.path)"
+            let wrapperString =
+                "{ \(wrapper.isDirectory), \(wrapper.fileWrappers ?? [:]) }" + "\n\(parentFolder.path)"
             XCTFail("Failed to read file contents in \(name).\nWrapper: \(wrapperString)")
             return
         }
