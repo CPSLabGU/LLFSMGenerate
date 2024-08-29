@@ -67,3 +67,4 @@ on:
 jobs:
   ci-windows:
     uses: cpslabgu/swift-workflows/.github/workflows/ci-windows.yml@main
+    secrets: inherit

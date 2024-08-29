@@ -11,3 +11,4 @@ on:
 jobs:
   cov:
     uses: cpslabgu/swift-workflows/.github/workflows/cov.yml@main
+    secrets: inherit

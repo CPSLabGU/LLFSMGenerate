@@ -12,3 +12,4 @@ on:
 jobs:
   swiftlint:
     uses: cpslabgu/swift-workflows/.github/workflows/swiftlint.yml@main
+    secrets: inherit

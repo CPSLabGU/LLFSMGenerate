@@ -7,3 +7,4 @@ on:
 jobs:
   docs:
     uses: cpslabgu/swift-workflows/.github/workflows/docs.yml@main
+    secrets: inherit

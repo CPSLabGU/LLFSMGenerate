@@ -12,3 +12,4 @@ on:
 jobs:
   ci_macos:
     uses: cpslabgu/swift-workflows/.github/workflows/ci-macOS.yml@main
+    secrets: inherit

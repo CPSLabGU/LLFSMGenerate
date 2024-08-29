@@ -12,3 +12,4 @@ on:
 jobs:
   ci-linux:
     uses: cpslabgu/swift-workflows/.github/workflows/ci-linux.yml@main
+    secrets: inherit

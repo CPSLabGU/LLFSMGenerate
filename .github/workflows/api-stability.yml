@@ -6,3 +6,4 @@ on:
 jobs:
   api-stability:
     uses: cpslabgu/swift-workflows/.github/workflows/api-stability.yml@main
+    secrets: inherit
