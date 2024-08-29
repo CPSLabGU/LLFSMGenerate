@@ -68,7 +68,7 @@ extension MachineModel {
                 actions: [
                     ActionModel(name: "Internal", code: ""),
                     ActionModel(name: "OnEntry", code: ""),
-                    ActionModel(name: "OnExit", code: ""),
+                    ActionModel(name: "OnExit", code: "")
                 ],
                 layout: StateLayout(
                     position: Point2D(x: 0.0, y: 0.0),
@@ -82,7 +82,7 @@ extension MachineModel {
                 actions: [
                     ActionModel(name: "Internal", code: ""),
                     ActionModel(name: "OnEntry", code: ""),
-                    ActionModel(name: "OnExit", code: "ping <= '1';"),
+                    ActionModel(name: "OnExit", code: "ping <= '1';")
                 ],
                 layout: StateLayout(
                     position: Point2D(x: 0.0, y: 200.0),
@@ -105,7 +105,7 @@ extension MachineModel {
                     position: Point2D(x: 0.0, y: 400.0),
                     dimensions: Point2D(x: 200.0, y: 100.0)
                 )
-            ),
+            )
         ],
         externalVariables: """
             ping: out std_logic;
@@ -155,7 +155,7 @@ extension MachineModel {
                         control1: Point2D(x: 50.0, y: 340.0)
                     )
                 )
-            ),
+            )
         ],
         initialState: "Initial",
         clocks: [ClockModel(name: "clk", frequency: "5 MHz")]

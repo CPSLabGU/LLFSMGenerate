@@ -67,7 +67,7 @@ struct LLFSMGenerate: ParsableCommand {
         abstract: "A utility for performing operations on LLFSM formats.",
         version: "2.1.4",
         subcommands: [
-            Generate.self, VHDLGenerator.self, CleanCommand.self, InstallCommand.self, GraphCommand.self,
+            Generate.self, VHDLGenerator.self, CleanCommand.self, InstallCommand.self, GraphCommand.self
         ]
     )
 

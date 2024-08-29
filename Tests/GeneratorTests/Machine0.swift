@@ -72,7 +72,7 @@ extension Machine {
         machine.actions = [.internal, .onEntry, .onExit]
         machine.externalSignals = [
             PortSignal(type: .stdLogic, name: .x, mode: .input),
-            PortSignal(type: .stdLogic, name: .y, mode: .output),
+            PortSignal(type: .stdLogic, name: .y, mode: .output)
         ]
         machine.clocks = [
             Clock(name: .clk, frequency: 50, unit: .MHz)
@@ -107,7 +107,7 @@ extension Machine {
                             name: .variable(reference: .variable(name: .y)),
                             value: .reference(variable: .variable(reference: .variable(name: .initialX)))
                         )
-                    ),
+                    )
                 ],
                 signals: [LocalSignal(type: .stdLogic, name: .initialX)],
                 externalVariables: [.x, .y]
@@ -117,7 +117,7 @@ extension Machine {
                 actions: [:],
                 signals: [],
                 externalVariables: []
-            ),
+            )
         ]
         machine.initialState = 0
         machine.transitions = [
@@ -129,16 +129,16 @@ extension Machine {
                 statement: UseStatement(nonEmptyComponents: [
                     .module(name: .ieee),
                     .module(name: VariableName(rawValue: "std_logic_1164")!),
-                    .all,
+                    .all
                 ])!
             ),
             .include(
                 statement: UseStatement(nonEmptyComponents: [
                     .module(name: .ieee),
                     .module(name: VariableName(rawValue: "math_real")!),
-                    .all,
+                    .all
                 ])!
-            ),
+            )
         ]
         return machine
     }()
@@ -160,7 +160,7 @@ extension MachineModel {
                 actions: [
                     ActionModel(name: "Internal", code: ""),
                     ActionModel(name: "OnEntry", code: "InitialX <= x and machineX;"),
-                    ActionModel(name: "OnExit", code: "y <= InitialX;"),
+                    ActionModel(name: "OnExit", code: "y <= InitialX;")
                 ],
                 layout: StateLayout(
                     position: Point2D(x: 0.0, y: 0.0),
@@ -174,13 +174,13 @@ extension MachineModel {
                 actions: [
                     ActionModel(name: "Internal", code: ""),
                     ActionModel(name: "OnEntry", code: ""),
-                    ActionModel(name: "OnExit", code: ""),
+                    ActionModel(name: "OnExit", code: "")
                 ],
                 layout: StateLayout(
                     position: Point2D(x: 0.0, y: 300.0),
                     dimensions: Point2D(x: 200.0, y: 100.0)
                 )
-            ),
+            )
         ],
         externalVariables: "x: in std_logic;\ny: out std_logic;",
         machineVariables: "signal machineX: std_logic;",

@@ -58,6 +58,8 @@ import VHDLParsing
 // swiftlint:disable force_unwrapping
 // swiftlint:disable missing_docs
 
+// swift-format-ignore: AllPublicDeclarationsHaveDocumentation
+
 /// Add common test variables.
 extension VariableName {
 

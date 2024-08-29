@@ -130,6 +130,7 @@ public struct InstallCommand: ParsableCommand {
     }
 
     /// Install files into a local location on the file system.
+    ///
     /// - Parameters:
     ///   - files: The files to copy into the new location.
     ///   - manager: The manager to perform the copy operation.
@@ -149,7 +150,9 @@ public struct InstallCommand: ParsableCommand {
         }
     }
 
-    /// Install files into a vivado project. This function assumed the files are VHDL files with the `.vhd`
+    /// Install files into a vivado project.
+    ///
+    /// This function assumed the files are VHDL files with the `.vhd`
     /// extension. The files will be copied into `<vivado_project>.srcs/sources_1/new`. This function assumes
     /// that the `installURL` property contains the location of the vivado project.
     /// - Parameters:

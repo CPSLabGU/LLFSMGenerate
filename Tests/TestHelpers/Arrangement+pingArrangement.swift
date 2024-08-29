@@ -58,6 +58,8 @@ import VHDLParsing
 
 // swiftlint:disable force_unwrapping
 
+// swift-format-ignore: DontRepeatTypeInStaticProperties
+
 /// Add ping machines arrangement.
 extension Arrangement {
 
@@ -69,16 +71,16 @@ extension Arrangement {
                 with: [
                     VHDLMachines.VariableMapping(source: .clk, destination: .clk),
                     VHDLMachines.VariableMapping(source: .ping, destination: .ping),
-                    VHDLMachines.VariableMapping(source: .pong, destination: .pong),
+                    VHDLMachines.VariableMapping(source: .pong, destination: .pong)
                 ]
             )!
         ],
         externalSignals: [
             PortSignal(type: .stdLogic, name: .externalPing, mode: .output),
-            PortSignal(type: .stdLogic, name: .externalPong, mode: .output),
+            PortSignal(type: .stdLogic, name: .externalPong, mode: .output)
         ],
         signals: [
-            LocalSignal(type: .stdLogic, name: .ping), LocalSignal(type: .stdLogic, name: .pong),
+            LocalSignal(type: .stdLogic, name: .ping), LocalSignal(type: .stdLogic, name: .pong)
         ],
         clocks: [Clock(name: .clk, frequency: 5, unit: .MHz)]
     )!

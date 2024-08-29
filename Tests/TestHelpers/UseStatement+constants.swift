@@ -61,7 +61,7 @@ import VHDLParsing
 /// Add test constants.
 extension UseStatement {
 
-    /// An import to the `IEEE.std_logic_1164.all` module
+    /// An import to the `IEEE.std_logic_1164.all` module.
     public static let stdLogic1164 = UseStatement(
         nonEmptyComponents: [.module(name: .ieee), .module(name: .stdLogic1164), .all]
     )!

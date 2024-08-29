@@ -78,8 +78,8 @@ public enum GenerationError: Error, Equatable, Codable, Hashable, Sendable, Cust
     /// The message contained within the error.
     @inlinable public var description: String {
         switch self {
-        case let .invalidMachine(message), let .invalidExportation(message), let .invalidFormat(message),
-            let .invalidGeneration(message), let .invalidInput(message), let .invalidLayout(message):
+        case .invalidMachine(let message), .invalidExportation(let message), .invalidFormat(let message),
+            .invalidGeneration(let message), .invalidInput(let message), .invalidLayout(let message):
             return "\(message)"
         }
     }

@@ -55,8 +55,8 @@
 //
 
 import JavascriptModel
-import VHDLMachineTransformations
 import VHDLMachines
+import VHDLMachineTransformations
 import XCTest
 
 /// Test class for ``Machine0``.
