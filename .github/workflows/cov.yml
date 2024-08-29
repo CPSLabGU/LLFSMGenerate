@@ -11,4 +11,6 @@ on:
 jobs:
   cov:
     uses: cpslabgu/swift-workflows/.github/workflows/cov.yml@main
+    with:
+      MINIMUM_COVERAGE: 95
     secrets: inherit
