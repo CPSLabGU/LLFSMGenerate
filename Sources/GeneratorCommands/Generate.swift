@@ -77,9 +77,9 @@ public struct Generate: ParsableCommand {
     /// the file system.
     @Flag(
         help: """
-        Regenerate the Javascript model. If this flag is specified, the program will generate the javascript
-        model from the existing LLFSM format on the file system.
-        """
+            Regenerate the Javascript model. If this flag is specified, the program will generate the
+            javascript model from the existing LLFSM format on the file system.
+            """
     )
     @usableFromInline var exportModel = false
 
