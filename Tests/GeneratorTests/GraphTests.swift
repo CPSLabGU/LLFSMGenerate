@@ -159,7 +159,7 @@ final class GraphTests: MachineTester {
         try manager.createDirectory(at: self.pingMachineBuildFolder, withIntermediateDirectories: true)
         XCTAssertFalse(manager.fileExists(atPath: self.buildDotFile.path))
         GraphCommand.main([
-            self.pingMachineKripkeStructure.path, "--destination", self.pingMachineBuildFolder.path
+            self.pingMachineKripkeStructure.path, "--destination", self.pingMachineBuildFolder.path,
         ])
         var isDirectory: ObjCBool = false
         XCTAssertTrue(manager.fileExists(atPath: buildDotFile.path, isDirectory: &isDirectory))
@@ -171,7 +171,7 @@ final class GraphTests: MachineTester {
     func testCommandPlacesFileInFolder() throws {
         XCTAssertFalse(manager.fileExists(atPath: self.pingMachineBuildFolder.path))
         GraphCommand.main([
-            self.pingMachineKripkeStructure.path, "--destination", self.pingMachineBuildFolder.path
+            self.pingMachineKripkeStructure.path, "--destination", self.pingMachineBuildFolder.path,
         ])
         var isDirectory: ObjCBool = false
         XCTAssertTrue(manager.fileExists(atPath: buildDotFile.path, isDirectory: &isDirectory))

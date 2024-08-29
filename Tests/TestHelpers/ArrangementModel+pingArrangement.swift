@@ -73,7 +73,7 @@ extension ArrangementModel {
                     mappings: [
                         JavascriptModel.VariableMapping(source: "clk", destination: "clk"),
                         JavascriptModel.VariableMapping(source: "ping", destination: "ping"),
-                        JavascriptModel.VariableMapping(source: "pong", destination: "pong")
+                        JavascriptModel.VariableMapping(source: "pong", destination: "pong"),
                     ]
                 )
             ],
