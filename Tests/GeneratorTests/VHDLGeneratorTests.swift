@@ -205,7 +205,7 @@ final class VHDLGeneratorTests: MachineTester {
         )?
         .file.rawValue
         XCTAssertNotNil(expected)
-        XCTAssertEqual(String(decoding: contents, as: UTF8.self), expected)
+        XCTAssertEqual(String(data: contents, encoding: .utf8), expected)
     }
 
     /// Test that invalid names are detected.
@@ -255,7 +255,7 @@ final class VHDLGeneratorTests: MachineTester {
         )?
         .file.rawValue
         XCTAssertNotNil(expected)
-        XCTAssertEqual(String(decoding: contents, as: UTF8.self), expected)
+        XCTAssertEqual(String(data: contents, encoding: .utf8), expected)
     }
 
     /// Test that the arrangement creation works when machines are already compiled.
@@ -283,7 +283,7 @@ final class VHDLGeneratorTests: MachineTester {
         )?
         .file.rawValue
         XCTAssertNotNil(expected)
-        XCTAssertEqual(String(decoding: contents, as: UTF8.self), expected)
+        XCTAssertEqual(String(data: contents, encoding: .utf8), expected)
     }
 
     /// Assert a file wrapper contents recursively against the file system.
@@ -317,7 +317,7 @@ final class VHDLGeneratorTests: MachineTester {
             XCTFail("Failed to read file contents in \(name).")
             return
         }
-        let contents = String(decoding: data, as: UTF8.self)
+        let contents = String(data: data, encoding: .utf8)
         let result = try String(
             contentsOf: parentFolder.appendingPathComponent("\(name)", isDirectory: false)
         )
