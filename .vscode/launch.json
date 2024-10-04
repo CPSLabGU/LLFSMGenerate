@@ -6,7 +6,7 @@
             "sourceLanguages": [
                 "swift"
             ],
-            "args": [],
+            "args": ["model", "/home/morgan/src/Morgan2010/PhD/watchdog/Watchdog.arrangement"],
             "cwd": "${workspaceFolder:LLFSMGenerate}",
             "name": "Debug llfsmgenerate",
             "program": "${workspaceFolder:LLFSMGenerate}/.build/debug/llfsmgenerate",
