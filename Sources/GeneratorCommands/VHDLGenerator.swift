@@ -119,15 +119,46 @@ public struct VHDLGenerator: ParsableCommand {
                 arrangement: arrangement,
                 name: name,
                 createMachine: f
-            ),
-            let vhdlFile = representation.file.rawValue.data(using: .utf8)
+            )
         else {
             throw GenerationError.invalidFormat(message: "The arrangement contains invalid data!")
         }
         let buildFolder = options.pathURL.appendingPathComponent("build", isDirectory: true)
+        guard includeKripkeStructure else {
+            try self.createBasicArrangement(
+                representation: representation, buildFolder: buildFolder, model: model
+            )
+            return
+        }
+        let machinesTuples = try representation.arrangement.machines.map { key, value in
+            guard let machine = representation.machines.first(where: { $0.machine == value.machine }) else {
+                throw GenerationError.invalidGeneration(
+                    message: "No representation for machine \(key.type) called \(key.name)."
+                )
+            }
+            return (key.type, machine)
+        }
+        let machines = Dictionary(uniqueKeysWithValues: machinesTuples)
+        guard let wrapper = VHDLKripkeStructureGenerator().generateAll(
+            representation: representation, machines: machines
+        ) else {
+            throw GenerationError.invalidGeneration(
+                message: "Failed to generate Kripke Structure for \(name.rawValue)."
+            )
+        }
+        try wrapper.write(to: buildFolder, options: .atomic, originalContentsURL: nil)
+    }
+
+    @inlinable
+    func createBasicArrangement<T>(
+        representation: T, buildFolder: URL, model: ArrangementModel
+    ) throws where T: ArrangementVHDLRepresentable {
+        guard let vhdlFile = representation.file.rawValue.data(using: .utf8) else {
+            throw GenerationError.invalidFormat(message: "The arrangement contains invalid data!")
+        }
         let vhdlFolder = buildFolder.appendingPathComponent("vhdl", isDirectory: true)
         let destination = vhdlFolder.appendingPathComponent(
-            "\(name.rawValue).vhd",
+            "\(representation.name.rawValue).vhd",
             isDirectory: false
         )
         let manager = FileManager.default
