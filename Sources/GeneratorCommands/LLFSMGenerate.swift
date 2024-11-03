@@ -63,7 +63,7 @@ public struct LLFSMGenerate: ParsableCommand {
     public static var configuration = CommandConfiguration(
         commandName: "llfsm-generate",
         abstract: "A utility for performing operations on LLFSM formats.",
-        version: "2.1.4",
+        version: "3.0.0",
         subcommands: [
             Generate.self, VHDLGenerator.self, CleanCommand.self, InstallCommand.self, GraphCommand.self,
         ]
