@@ -23,6 +23,24 @@
             "name": "Release llfsmgenerate",
             "program": "${workspaceFolder:LLFSMGenerate}/.build/release/llfsmgenerate",
             "preLaunchTask": "swift: Build Release llfsmgenerate"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:LLFSMGenerate}",
+            "name": "Debug llfsm-generate",
+            "program": "${workspaceFolder:LLFSMGenerate}/.build/debug/llfsm-generate",
+            "preLaunchTask": "swift: Build Debug llfsm-generate"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:LLFSMGenerate}",
+            "name": "Release llfsm-generate",
+            "program": "${workspaceFolder:LLFSMGenerate}/.build/release/llfsm-generate",
+            "preLaunchTask": "swift: Build Release llfsm-generate"
         }
     ]
 }
