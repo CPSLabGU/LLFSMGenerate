@@ -1,4 +1,4 @@
-// LLFSMGenerateTests.swift
+// LLFSMGenerate.swift
 // VHDLMachineTransformations
 //
 // Created by Morgan McColl.
@@ -55,46 +55,22 @@
 //
 
 import ArgumentParser
-import Foundation
-import VHDLMachines
-import XCTest
 
-@testable import GeneratorCommands
+/// Main program for `llfsmgenerate`.
+public struct LLFSMGenerate: ParsableCommand {
 
-/// Test class for `llfsmgenerate` parent struct.
-final class LLFSMGenerateTests: MachineTester {
+    /// This struct acts as an umbrella struct to multiple `ParsableCommand` subcommands.
+    public static var configuration = CommandConfiguration(
+        commandName: "llfsm-generate",
+        abstract: "A utility for performing operations on LLFSM formats.",
+        version: "2.1.4",
+        subcommands: [
+            Generate.self, VHDLGenerator.self, CleanCommand.self, InstallCommand.self, GraphCommand.self,
+        ]
+    )
 
-    // /// Test the `run` methods calls the model subcommand.
-    // func testRunCallsModel() throws {
-    //     let oldData = try Data(contentsOf: jsonFile)
-    //     let oldMachine = try decoder.decode(Machine.self, from: oldData)
-    //     try FileManager.default.removeItem(at: jsonFile)
-    //     LLFSMGenerate.main(["model", self.pathRaw])
-    //     let newData = try Data(contentsOf: jsonFile)
-    //     let newMachine = try decoder.decode(Machine.self, from: newData)
-    //     XCTAssertEqual(oldMachine, newMachine)
-    // }
-
-    // /// Test the `run` method calls the vhdl subcommand.
-    // func testRunCallsVHDL() throws {
-    //     LLFSMGenerate.main(["vhdl", self.pathRaw])
-    //     let manager = FileManager.default
-    //     let path = pathRaw + "/build/vhdl/Machine0.vhd"
-    //     defer { _ = try? manager.removeItem(at: URL(fileURLWithPath: path, isDirectory: false)) }
-    //     XCTAssertTrue(manager.fileExists(atPath: path))
-    // }
-
-    /// Test sub-commands exist for parent binary.
-    func testSubCommands() {
-        let subcommands = LLFSMGenerate.configuration.subcommands
-        let expectedCommands = ["model", "vhdl", "clean", "install", "graph"]
-        XCTAssertEqual(subcommands.map { $0._commandName }.sorted(), expectedCommands.sorted())
-    }
-
-    /// Test run command handles no arguments.
-    func testRun() throws {
-        var command = LLFSMGenerate()
-        XCTAssertThrowsError(try command.run())
-    }
+    /// Initialise with default values.
+    @inlinable
+    public init() {}
 
 }
