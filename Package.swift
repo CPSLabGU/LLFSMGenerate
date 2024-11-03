@@ -43,9 +43,10 @@ let package = Package(
         // Products define the executables and libraries a package produces, making them visible to other
         // packages.
         .executable(
-            name: "llfsmgenerate",
+            name: "llfsm-generate",
             targets: ["MachineGenerator"]
-        )
+        ),
+        .library(name: "LLFSMGenerate", targets: ["GeneratorCommands"])
     ],
     dependencies: [
         .package(url: "https://github.com/apple/swift-docc-plugin", from: "1.4.2"),

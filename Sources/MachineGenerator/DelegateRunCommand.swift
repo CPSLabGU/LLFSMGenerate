@@ -1,5 +1,5 @@
-// LLFSMGenerateTests.swift
-// VHDLMachineTransformations
+// DelegateRunCommand.swift
+// LLFSMGenerate
 //
 // Created by Morgan McColl.
 // Copyright © 2024 Morgan McColl. All rights reserved.
@@ -52,49 +52,16 @@
 // along with this program; if not, see http://www.gnu.org/licenses/
 // or write to the Free Software Foundation, Inc., 51 Franklin Street,
 // Fifth Floor, Boston, MA  02110-1301, USA.
-//
 
-import ArgumentParser
-import Foundation
-import VHDLMachines
-import XCTest
+import GeneratorCommands
 
-@testable import GeneratorCommands
+/// Delegate Run Command.
+@main
+enum DelegateRunCommand {
 
-/// Test class for `llfsmgenerate` parent struct.
-final class LLFSMGenerateTests: MachineTester {
-
-    // /// Test the `run` methods calls the model subcommand.
-    // func testRunCallsModel() throws {
-    //     let oldData = try Data(contentsOf: jsonFile)
-    //     let oldMachine = try decoder.decode(Machine.self, from: oldData)
-    //     try FileManager.default.removeItem(at: jsonFile)
-    //     LLFSMGenerate.main(["model", self.pathRaw])
-    //     let newData = try Data(contentsOf: jsonFile)
-    //     let newMachine = try decoder.decode(Machine.self, from: newData)
-    //     XCTAssertEqual(oldMachine, newMachine)
-    // }
-
-    // /// Test the `run` method calls the vhdl subcommand.
-    // func testRunCallsVHDL() throws {
-    //     LLFSMGenerate.main(["vhdl", self.pathRaw])
-    //     let manager = FileManager.default
-    //     let path = pathRaw + "/build/vhdl/Machine0.vhd"
-    //     defer { _ = try? manager.removeItem(at: URL(fileURLWithPath: path, isDirectory: false)) }
-    //     XCTAssertTrue(manager.fileExists(atPath: path))
-    // }
-
-    /// Test sub-commands exist for parent binary.
-    func testSubCommands() {
-        let subcommands = LLFSMGenerate.configuration.subcommands
-        let expectedCommands = ["model", "vhdl", "clean", "install", "graph"]
-        XCTAssertEqual(subcommands.map { $0._commandName }.sorted(), expectedCommands.sorted())
-    }
-
-    /// Test run command handles no arguments.
-    func testRun() throws {
-        var command = LLFSMGenerate()
-        XCTAssertThrowsError(try command.run())
+    /// Delegate to the `LLFSMGenerate` main function.
+    static func main() {
+        LLFSMGenerate.main()
     }
 
 }
