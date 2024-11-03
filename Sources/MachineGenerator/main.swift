@@ -55,5 +55,13 @@
 
 import GeneratorCommands
 
-/// Delegate to `LLFSMGenerate`.
-LLFSMGenerate.main()
+/// Delegate Run Command.
+@main
+enum DelegateRunCommand {
+
+    /// Delegate to the `LLFSMGenerate` main function.
+    static func main() {
+        LLFSMGenerate.main()
+    }
+
+}
