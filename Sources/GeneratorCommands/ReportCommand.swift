@@ -95,7 +95,7 @@ public struct ReportCommand: ParsableCommand {
 
     /// The default path to the generated kripke structure.
     @inlinable var kripkeStructureURL: URL {
-        path.pathURL.appending(component: "output.json", directoryHint: .notDirectory)
+        path.pathURL.appendingPathComponent("output.json", isDirectory: false)
     }
 
     /// Default init.
