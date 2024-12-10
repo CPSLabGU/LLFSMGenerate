@@ -66,7 +66,7 @@ public struct LLFSMGenerate: ParsableCommand {
         version: "3.0.0",
         subcommands: [
             Generate.self, VHDLGenerator.self, CleanCommand.self, InstallCommand.self, GraphCommand.self,
-            ReportCommand.self
+            ReportCommand.self,
         ]
     )
 
