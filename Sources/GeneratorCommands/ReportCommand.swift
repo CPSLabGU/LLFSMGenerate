@@ -59,6 +59,10 @@ import JavascriptModel
 import StringHelpers
 import VHDLKripkeStructures
 
+/// A command to produce human-readable information about an LLFSM.
+/// 
+/// This struct allows the generation of human-readable reports detailing the code within an LLFSM and other
+/// statistics about the machine.
 public struct ReportCommand: ParsableCommand {
 
     /// The command configuration.
@@ -67,10 +71,12 @@ public struct ReportCommand: ParsableCommand {
         abstract: "Report Statistics about the generated machine."
     )
 
+    /// A helper JSON decoder.
     @inlinable var decoder: JSONDecoder {
         JSONDecoder()
     }
 
+    /// A helper file manager.
     @inlinable var manager: FileManager {
         FileManager.default
     }
@@ -78,13 +84,16 @@ public struct ReportCommand: ParsableCommand {
     /// A path to the machine to report.
     @OptionGroup @usableFromInline var path: PathArgument
 
+    /// Whether to write the report to a file.
     @Option(name: .shortAndLong, help: "The output file to write the report to.")
     @usableFromInline var output: String?
 
+    /// The url to the file to write the report to.
     @inlinable var outputURL: URL? {
         output.flatMap { URL(fileURLWithPath: $0, isDirectory: false) }
     }
 
+    /// The default path to the generated kripke structure.
     @inlinable var kripkeStructureURL: URL {
         path.pathURL.appending(component: "output.json", directoryHint: .notDirectory)
     }
@@ -93,6 +102,11 @@ public struct ReportCommand: ParsableCommand {
     @inlinable
     public init() {}
 
+    /// Run the report.
+    ///
+    /// This method generates a human-readable version of the LLFSM and other statistics associated with the
+    /// machine.
+    @inlinable
     public func run() throws {
         let structurePath = self.kripkeStructureURL.path
         let data = try Data(contentsOf: path.pathURL.appendingPathComponent("model.json", isDirectory: false))
@@ -113,6 +127,13 @@ public struct ReportCommand: ParsableCommand {
         try writeReport(report: report)
     }
 
+    /// Write the given report to a file if it exists.
+    ///
+    /// This method attempts to write the contents of `report` to the `outputURL` if it is not `nil`.
+    /// If the file already exists, it is removed before writing the new report. When the `outputURL` is
+    /// `nil`, this method instead prints the report to the screen.
+    /// - Parameter report: The report to write.
+    @inlinable
     func writeReport(report: String) throws {
         guard let outputURL else {
             print(report)
@@ -126,8 +147,18 @@ public struct ReportCommand: ParsableCommand {
 
 }
 
+/// Add helpers for report creation.
 extension String {
 
+    /// Create the report for a machine.
+    ///
+    /// This init generates a human-readable report containing the code and variables within a machine. The
+    /// format is very similar to YAML and contains all of the relevant information about the design of the
+    /// LLFSM.
+    /// - Parameters:
+    ///   - machine: The machine model to generate the report from.
+    ///   - name: The name of the machine.
+    @inlinable
     init(reportForMachine machine: MachineModel, name: String) {
         let stateData = machine.states.map { state in
             let actions = state.actions.compactMap {
@@ -172,6 +203,11 @@ extension String {
         self.init(category: name, data: machineInfo)
     }
 
+    /// Generate the report for a Kripke structure.
+    ///
+    /// Create a report detailing the statistics of the machines kripke structure.
+    /// - Parameter structure: The structure to create the report for.
+    @inlinable
     init(reportForStructure structure: KripkeStructure) {
         let nodes = structure.nodes.count
         let edges = structure.edges.values.reduce(0) { $0 + $1.count }
@@ -182,6 +218,20 @@ extension String {
         self.init(category: "Kripke Structure", data: data)
     }
 
+    /// Attempt to create a subsection within a report.
+    ///
+    /// This init attempts to create a subheading with name `category` within a report. If the `data` is
+    /// empty, then only the subheading is returned. The subheading and data is formatted similar to YAML,
+    /// via:
+    /// ```
+    /// - category:
+    ///     data
+    /// ```
+    /// The data is indented by 4 spaces and newlined after the subheading.
+    /// - Parameters:
+    ///   - category: The category of the report to create a subheading from.
+    ///   - data: The data to include in the new section.
+    @inlinable
     init(category: String, data: String) {
         if data.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
             self = "- \(category):"
