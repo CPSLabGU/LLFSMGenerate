@@ -228,6 +228,7 @@ final class ReportCommandTests: MachineTester {
             - Kripke Structure:
                 - Nodes: 12
                 - Edges: 13
+
         """
         XCTAssertEqual(contents, expected)
     }
@@ -281,6 +282,7 @@ final class ReportCommandTests: MachineTester {
                 - Includes:
                     library IEEE;
                     use IEEE.std_logic_1164.all;
+
         """
         XCTAssertEqual(contents, expected)
     }
