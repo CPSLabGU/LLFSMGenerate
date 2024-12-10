@@ -87,7 +87,7 @@ final class LLFSMGenerateTests: MachineTester {
     /// Test sub-commands exist for parent binary.
     func testSubCommands() {
         let subcommands = LLFSMGenerate.configuration.subcommands
-        let expectedCommands = ["model", "vhdl", "clean", "install", "graph"]
+        let expectedCommands = ["model", "vhdl", "clean", "install", "graph", "report"]
         XCTAssertEqual(subcommands.map { $0._commandName }.sorted(), expectedCommands.sorted())
     }
 
