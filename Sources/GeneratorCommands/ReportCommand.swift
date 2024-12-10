@@ -60,7 +60,7 @@ import StringHelpers
 import VHDLKripkeStructures
 
 /// A command to produce human-readable information about an LLFSM.
-/// 
+///
 /// This struct allows the generation of human-readable reports detailing the code within an LLFSM and other
 /// statistics about the machine.
 public struct ReportCommand: ParsableCommand {
@@ -120,10 +120,10 @@ public struct ReportCommand: ParsableCommand {
         let kripkeStructure = try decoder.decode(KripkeStructure.self, from: structureData)
         let structureReport = String(reportForStructure: kripkeStructure)
         let report = """
-        \(String(category: "Machine", data: machineReport))
-        \(String(category: "Kripke Structure", data: structureReport))
+            \(String(category: "Machine", data: machineReport))
+            \(String(category: "Kripke Structure", data: structureReport))
 
-        """
+            """
         try writeReport(report: report)
     }
 
@@ -161,16 +161,17 @@ extension String {
     @inlinable
     init(reportForMachine machine: MachineModel, name: String) {
         let stateData = machine.states.map { state in
-            let actions = state.actions.compactMap {
-                guard !$0.code.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
-                    return nil
+            let actions = state.actions
+                .compactMap {
+                    guard !$0.code.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+                        return nil
+                    }
+                    return """
+                        - \($0.name):
+                        \($0.code.indent(amount: 1))
+                        """
                 }
-                return """
-                - \($0.name):
-                \($0.code.indent(amount: 1))
-                """
-            }
-            .joined(separator: "\n\n")
+                .joined(separator: "\n\n")
             let transitions = machine.transitions.filter { $0.source == state.name }
                 .enumerated()
                 .map {
@@ -178,28 +179,29 @@ extension String {
                 }
                 .joined(separator: "\n")
             let stateInfo = """
-            \(String(category: "External Variables", data: state.externalVariables))
-            \(String(category: "State Variables", data: state.variables))
-            \(String(category: "Actions", data: actions))
-            \(String(category: "Transitions", data: transitions))
-            """
+                \(String(category: "External Variables", data: state.externalVariables))
+                \(String(category: "State Variables", data: state.variables))
+                \(String(category: "Actions", data: actions))
+                \(String(category: "Transitions", data: transitions))
+                """
             return String(category: state.name, data: stateInfo)
         }
-        let clockData = machine.clocks.map {
-            """
-            - \($0.name) \($0.frequency)
-            """
-        }
-        .joined(separator: "\n")
+        let clockData = machine.clocks
+            .map {
+                """
+                - \($0.name) \($0.frequency)
+                """
+            }
+            .joined(separator: "\n")
         let machineInfo = """
-        \(String(category: "External Variables", data: machine.externalVariables))
-        \(String(category: "Machine Variables", data: machine.machineVariables))
-        \(String(category: "Clocks", data: clockData))
-        \(String(category: "States", data: stateData.joined(separator: "\n")))
-        \(String(category: "Initial State", data: machine.initialState))
-        \(String(category: "Suspended State", data: machine.suspendedState ?? ""))
-        \(String(category: "Includes", data: machine.includes))
-        """
+            \(String(category: "External Variables", data: machine.externalVariables))
+            \(String(category: "Machine Variables", data: machine.machineVariables))
+            \(String(category: "Clocks", data: clockData))
+            \(String(category: "States", data: stateData.joined(separator: "\n")))
+            \(String(category: "Initial State", data: machine.initialState))
+            \(String(category: "Suspended State", data: machine.suspendedState ?? ""))
+            \(String(category: "Includes", data: machine.includes))
+            """
         self.init(category: name, data: machineInfo)
     }
 
@@ -212,9 +214,9 @@ extension String {
         let nodes = structure.nodes.count
         let edges = structure.edges.values.reduce(0) { $0 + $1.count }
         let data = """
-        - Nodes: \(nodes)
-        - Edges: \(edges)
-        """
+            - Nodes: \(nodes)
+            - Edges: \(edges)
+            """
         self.init(category: "Kripke Structure", data: data)
     }
 
@@ -237,9 +239,9 @@ extension String {
             self = "- \(category):"
         } else {
             self = """
-            - \(category):
-            \(data.indent(amount: 1))
-            """
+                - \(category):
+                \(data.indent(amount: 1))
+                """
         }
     }
 
