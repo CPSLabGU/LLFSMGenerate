@@ -118,6 +118,17 @@ final class ReportCommandTests: MachineTester {
 
     // swiftlint:enable trailing_whitespace
 
+    /// The location of the debug file.
+    var file: URL {
+        self.pingMachineFolder.appendingPathComponent("report_command_test.txt", isDirectory: false)
+    }
+
+    /// Remove file after every test case.
+    override func tearDown() {
+        super.tearDown()
+        try? self.manager.removeItem(at: file)
+    }
+
     /// Test the machine is encoded correctly.
     func testMachineEncoding() throws {
         let machine = String(reportForMachine: .pingMachine, name: "PingMachine.machine")
@@ -142,5 +153,139 @@ final class ReportCommandTests: MachineTester {
         XCTAssertEqual(String(category: "Data", data: data), withData)
         XCTAssertEqual(String(category: "Data", data: ""), withoutData)
     }
+
+    /// Test that writing to the file works correctly.
+    func testWriteReport() throws {
+        let data0 = "data0"
+        let file = self.pingMachineFolder.appendingPathComponent(
+            "report_command_test.txt", isDirectory: false
+        )
+        let printCommand = try ReportCommand.parse([self.pingMachineFolder.path])
+        try printCommand.writeReport(report: data0)
+        XCTAssertFalse(self.manager.fileExists(atPath: file.path))
+        let command = try ReportCommand.parse([self.pingMachineFolder.path, "--output", file.path])
+        try command.writeReport(report: data0)
+        let contents0 = try String(contentsOf: file, encoding: .utf8)
+        XCTAssertEqual(data0, contents0)
+        let data1 = "data1"
+        try command.writeReport(report: data1)
+        let contents1 = try String(contentsOf: file, encoding: .utf8)
+        XCTAssertEqual(data1, contents1)
+    }
+
+    // swiftlint:disable trailing_whitespace
+    // swiftlint:disable function_body_length
+
+    /// Test that the run methods works correctly.
+    func testRunWithKripkeStructure() throws {
+        ReportCommand.main([self.pingMachineFolder.path, "--output", file.path])
+        let contents = try String(contentsOf: file, encoding: .utf8)
+        let expected = """
+        - Machine:
+            - PingMachine.machine:
+                - External Variables:
+                    ping: out std_logic;
+                    pong: in std_logic;
+                - Machine Variables:
+                - Clocks:
+                    - clk 5 MHz
+                - States:
+                    - Initial:
+                        - External Variables:
+                        - State Variables:
+                        - Actions:
+                        - Transitions:
+                            - 0: true
+                    - SendPing:
+                        - External Variables:
+                            ping
+                        - State Variables:
+                        - Actions:
+                            - OnExit:
+                                ping <= '1';
+                        - Transitions:
+                            - 0: true
+                    - WaitForPong:
+                        - External Variables:
+                            ping
+                            pong
+                        - State Variables:
+                        - Actions:
+                            - Internal:
+                                ping <= '0';
+                            
+                            - OnEntry:
+                                ping <= '0';
+                        - Transitions:
+                            - 0: pong = '1'
+                - Initial State:
+                    Initial
+                - Suspended State:
+                - Includes:
+                    library IEEE;
+                    use IEEE.std_logic_1164.all;
+        - Kripke Structure:
+            - Kripke Structure:
+                - Nodes: 12
+                - Edges: 13
+        """
+        XCTAssertEqual(contents, expected)
+    }
+
+    /// Test the run method works without a kripke structure.
+    func testRunWithoutKripkeStructure() throws {
+        try self.manager.removeItem(at: self.pingMachineKripkeStructure)
+        ReportCommand.main([self.pingMachineFolder.path, "--output", file.path])
+        let contents = try String(contentsOf: file, encoding: .utf8)
+        let expected = """
+        - Machine:
+            - PingMachine.machine:
+                - External Variables:
+                    ping: out std_logic;
+                    pong: in std_logic;
+                - Machine Variables:
+                - Clocks:
+                    - clk 5 MHz
+                - States:
+                    - Initial:
+                        - External Variables:
+                        - State Variables:
+                        - Actions:
+                        - Transitions:
+                            - 0: true
+                    - SendPing:
+                        - External Variables:
+                            ping
+                        - State Variables:
+                        - Actions:
+                            - OnExit:
+                                ping <= '1';
+                        - Transitions:
+                            - 0: true
+                    - WaitForPong:
+                        - External Variables:
+                            ping
+                            pong
+                        - State Variables:
+                        - Actions:
+                            - Internal:
+                                ping <= '0';
+                            
+                            - OnEntry:
+                                ping <= '0';
+                        - Transitions:
+                            - 0: pong = '1'
+                - Initial State:
+                    Initial
+                - Suspended State:
+                - Includes:
+                    library IEEE;
+                    use IEEE.std_logic_1164.all;
+        """
+        XCTAssertEqual(contents, expected)
+    }
+
+    // swiftlint:enable function_body_length
+    // swiftlint:enable trailing_whitespace
 
 }

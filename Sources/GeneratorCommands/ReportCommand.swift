@@ -99,17 +99,15 @@ public struct ReportCommand: ParsableCommand {
         let machine = try decoder.decode(MachineModel.self, from: data)
         let machineReport = String(reportForMachine: machine, name: path.pathURL.lastPathComponent)
         guard manager.fileExists(atPath: structurePath) else {
-            try writeReport(report: machineReport)
+            try writeReport(report: String(category: "Machine", data: machineReport))
             return
         }
         let structureData = try Data(contentsOf: kripkeStructureURL)
         let kripkeStructure = try decoder.decode(KripkeStructure.self, from: structureData)
         let structureReport = String(reportForStructure: kripkeStructure)
         let report = """
-        - Machine:
-        \(machineReport.indent(amount: 1))
-        - Kripke Structure:
-        \(structureReport.indent(amount: 1))
+        \(String(category: "Machine", data: machineReport))
+        \(String(category: "Kripke Structure", data: structureReport))
         """
         try writeReport(report: report)
     }
@@ -118,6 +116,9 @@ public struct ReportCommand: ParsableCommand {
         guard let outputURL else {
             print(report)
             return
+        }
+        if manager.fileExists(atPath: outputURL.path) {
+            try manager.removeItem(at: outputURL)
         }
         try report.write(to: outputURL, atomically: true, encoding: .utf8)
     }
