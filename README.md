@@ -15,10 +15,10 @@ formal verification via Kripke structure generation.
 ## Requirements and Supported Platforms
 
 - Swift 5.10 or later (See [Installing Swift](#installing-swift)).
-- macOS 13 (Ventura) or later.
+- macOS 14 (Sonoma) or later.
 - Linux (Ubuntu 20.04 or later).
-- Windows 10 or later.
-- Windows Server Edition 2022 or later.
+- Windows 11.
+- Windows Server Edition 2022.
 
 ## Usage
 You may compile the binary by invoking a `swift build` within the package directory.
