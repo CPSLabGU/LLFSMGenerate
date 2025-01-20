@@ -14,7 +14,7 @@ formal verification via Kripke structure generation.
 
 ## Requirements and Supported Platforms
 
-- Swift 5.7 or later (See [Installing Swift](#installing-swift)).
+- Swift 5.10 or later (See [Installing Swift](#installing-swift)).
 - macOS 13 (Ventura) or later.
 - Linux (Ubuntu 20.04 or later).
 - Windows 10 or later.
@@ -130,7 +130,7 @@ You may now install swift via:
 
 ```shell
 source ~/.bash_profile
-swiftenv install 5.10
+swiftenv install 6.0
 ```
 
 The full instructions are provided in the
