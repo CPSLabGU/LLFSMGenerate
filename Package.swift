@@ -50,7 +50,7 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/apple/swift-docc-plugin", from: "1.4.2"),
-        .package(url: "https://github.com/mipalgu/VHDLMachines", from: "4.0.3"),
+        .package(url: "https://github.com/mipalgu/VHDLMachines", from: "4.0.4"),
         .package(url: "https://github.com/mipalgu/VHDLParsing", from: "2.7.0"),
         .package(url: "https://github.com/apple/swift-argument-parser", from: "1.3.0"),
         .package(url: "https://github.com/mipalgu/VHDLKripkeStructureGenerator.git", from: "0.5.1"),
