@@ -73,15 +73,15 @@ final class Machine0Tests: XCTestCase {
         .dropFirst()
 
     /// Test generation is correct.
-    func testGeneration() {
-        XCTAssertEqual(Machine(model: .machine0), Machine.machine0)
+    func testGeneration() throws {
+        XCTAssertEqual(try Machine(model: .machine0), Machine.machine0)
     }
 
     /// Test the model generation is correct.
-    func testModelGeneration() {
+    func testModelGeneration() throws {
         let machine = Machine.machine0
         let model = MachineModel.machine0
-        let result = MachineModel(
+        let result = try MachineModel(
             machine: machine,
             stateLayouts: model.states.map(\.layout),
             transitionLayouts: model.transitions.map(\.layout)

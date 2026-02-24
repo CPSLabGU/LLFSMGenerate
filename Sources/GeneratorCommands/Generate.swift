@@ -155,14 +155,10 @@ public struct Generate: ParsableCommand {
     @inlinable
     func createArrangement() throws {
         let model = try decoder.decode(ArrangementModel.self, from: model)
-        guard
-            let arrangement = Arrangement(
-                model: model,
-                basePath: self.pathURL.deletingLastPathComponent()
-            )
-        else {
-            throw GenerationError.invalidGeneration(message: "Cannot create valid arrangement from model.")
-        }
+        let arrangement = try Arrangement(
+            model: model,
+            basePath: self.pathURL.deletingLastPathComponent()
+        )
         let data = try encoder.encode(arrangement)
         try data.write(to: pathURL.appendingPathComponent("arrangement.json", isDirectory: false))
     }
@@ -172,9 +168,7 @@ public struct Generate: ParsableCommand {
     @inlinable
     func createMachine() throws {
         let model = try decoder.decode(MachineModel.self, from: model)
-        guard let machine = Machine(model: model) else {
-            throw GenerationError.invalidGeneration(message: "Cannot create valid machine from model.")
-        }
+        let machine = try Machine(model: model)
         let data = try encoder.encode(machine)
         try data.write(to: machinePath)
     }
@@ -208,15 +202,11 @@ public struct Generate: ParsableCommand {
                     """
             )
         }
-        guard
-            let newModel = MachineModel(
-                machine: machine,
-                stateLayouts: stateLayouts,
-                transitionLayouts: transitionLayouts
-            )
-        else {
-            throw GenerationError.invalidExportation(message: "Cannot create valid model from machine.")
-        }
+        let newModel = try MachineModel(
+            machine: machine,
+            stateLayouts: stateLayouts,
+            transitionLayouts: transitionLayouts
+        )
         let newData = try encoder.encode(newModel)
         try newData.write(to: modelPath)
     }

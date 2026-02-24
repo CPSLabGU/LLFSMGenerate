@@ -57,6 +57,7 @@
 import Foundation
 import JavascriptModel
 import VHDLMachines
+import VHDLMachineTransformations
 import XCTest
 
 @testable import GeneratorCommands
@@ -109,13 +110,7 @@ final class GeneratorTests: MachineTester {
         let data = try encoder.encode(model)
         try data.write(to: modelFile)
         let generator = Generate(exportModel: false, path: pathRaw)
-        XCTAssertThrowsError(try generator.createMachine()) {
-            guard let error = $0 as? GenerationError else {
-                XCTFail("Error is not of type GenerationError.")
-                return
-            }
-            XCTAssertEqual(error, .invalidGeneration(message: "Cannot create valid machine from model."))
-        }
+        XCTAssertThrowsError(try generator.createMachine())
     }
 
     /// Test that the model is created correctly.
@@ -241,16 +236,7 @@ final class GeneratorTests: MachineTester {
         let data = try self.encoder.encode(model)
         try data.write(to: modelPath)
         var command = try Generate.parse([self.arrangement1Folder.path])
-        XCTAssertThrowsError(try command.run()) {
-            guard let error = $0 as? GenerationError else {
-                XCTFail("Error is not of type GenerationError.")
-                return
-            }
-            XCTAssertEqual(
-                error,
-                .invalidGeneration(message: "Cannot create valid arrangement from model.")
-            )
-        }
+        XCTAssertThrowsError(try command.run())
     }
 
 }
