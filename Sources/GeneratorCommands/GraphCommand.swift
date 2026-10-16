@@ -61,7 +61,7 @@ import VHDLKripkeStructures
 public struct GraphCommand: ParsableCommand {
 
     /// The configuration of this command.
-    public static var configuration = CommandConfiguration(
+    public static let configuration = CommandConfiguration(
         commandName: "graph",
         abstract: "Generate a graphviz file (.dot) for the entire kripke structure."
     )

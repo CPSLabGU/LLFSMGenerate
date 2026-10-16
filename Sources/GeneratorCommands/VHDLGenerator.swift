@@ -66,7 +66,7 @@ import VHDLParsing
 public struct VHDLGenerator: ParsableCommand {
 
     /// The configuration for the command.
-    public static var configuration = CommandConfiguration(
+    public static let configuration = CommandConfiguration(
         commandName: "vhdl",
         abstract: "A utility for generating VHDL source files from LLFSM definitions."
     )
@@ -211,7 +211,7 @@ public struct VHDLGenerator: ParsableCommand {
                 message: "Failed to generate Kripke Structure for \(name.rawValue)."
             )
         }
-        try files.write(to: buildFolder, options: .atomic, originalContentsURL: nil)
+        try files.write(to: buildFolder, options: FileWrapper.WritingOptions.atomic, originalContentsURL: nil)
     }
 
 }

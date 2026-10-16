@@ -60,7 +60,7 @@ import ArgumentParser
 public struct LLFSMGenerate: ParsableCommand {
 
     /// This struct acts as an umbrella struct to multiple `ParsableCommand` subcommands.
-    public static var configuration = CommandConfiguration(
+    public static let configuration = CommandConfiguration(
         commandName: "llfsm-generate",
         abstract: "A utility for performing operations on LLFSM formats.",
         version: "3.0.0",

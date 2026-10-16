@@ -66,7 +66,7 @@ import VHDLKripkeStructures
 public struct ReportCommand: ParsableCommand {
 
     /// The command configuration.
-    public static var configuration = CommandConfiguration(
+    public static let configuration = CommandConfiguration(
         commandName: "report",
         abstract: "Report Statistics about the generated machine."
     )
