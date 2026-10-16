@@ -1,4 +1,4 @@
-// swift-tools-version: 5.10
+// swift-tools-version: 6.0
 // The swift-tools-version declares the minimum version of Swift required to build this package.
 
 import PackageDescription
@@ -15,7 +15,7 @@ let executableTarget = PackageDescription.Target.executableTarget(
         .product(name: "SwiftUtils", package: "SwiftUtils"),
         .product(name: "VHDLJSModels", package: "VHDLJSModels"),
         .product(name: "VHDLKripkeStructures", package: "VHDLKripkeStructures"),
-        .target(name: "GeneratorCommands")
+        .target(name: "GeneratorCommands"),
     ],
     swiftSettings: [.unsafeFlags(["-parse-as-library"])]
 )
@@ -31,7 +31,7 @@ let executableTarget = PackageDescription.Target.executableTarget(
         .product(name: "SwiftUtils", package: "SwiftUtils"),
         .product(name: "VHDLJSModels", package: "VHDLJSModels"),
         .product(name: "VHDLKripkeStructures", package: "VHDLKripkeStructures"),
-        .target(name: "GeneratorCommands")
+        .target(name: "GeneratorCommands"),
     ]
 )
 #endif
@@ -46,17 +46,17 @@ let package = Package(
             name: "llfsm-generate",
             targets: ["MachineGenerator"]
         ),
-        .library(name: "LLFSMGenerate", targets: ["GeneratorCommands"])
+        .library(name: "LLFSMGenerate", targets: ["GeneratorCommands"]),
     ],
     dependencies: [
         .package(url: "https://github.com/apple/swift-docc-plugin", from: "1.4.2"),
         .package(url: "https://github.com/mipalgu/VHDLMachines", from: "4.0.5"),
         .package(url: "https://github.com/mipalgu/VHDLParsing", from: "2.7.0"),
-        .package(url: "https://github.com/apple/swift-argument-parser", from: "1.3.0"),
+        .package(url: "https://github.com/apple/swift-argument-parser", from: "1.8.2"),
         .package(url: "https://github.com/mipalgu/VHDLKripkeStructureGenerator.git", from: "0.5.1"),
-        .package(url: "https://github.com/CPSLabGU/SwiftUtils.git", from: "0.1.0"),
+        .package(url: "https://github.com/CPSLabGU/SwiftUtils.git", from: "1.0.0"),
         .package(url: "https://github.com/CPSLabGU/VHDLJSModels", from: "2.0.0"),
-        .package(url: "https://github.com/CPSLabGU/VHDLKripkeStructures", from: "1.3.0")
+        .package(url: "https://github.com/CPSLabGU/VHDLKripkeStructures", from: "2.0.0"),
     ],
     targets: [
         // Targets are the basic building blocks of a package, defining a module or a test suite.
@@ -71,7 +71,7 @@ let package = Package(
                 .product(name: "VHDLKripkeStructureGenerator", package: "VHDLKripkeStructureGenerator"),
                 .product(name: "SwiftUtils", package: "SwiftUtils"),
                 .product(name: "VHDLJSModels", package: "VHDLJSModels"),
-                .product(name: "VHDLKripkeStructures", package: "VHDLKripkeStructures")
+                .product(name: "VHDLKripkeStructures", package: "VHDLKripkeStructures"),
             ],
             swiftSettings: [
                 .unsafeFlags(
@@ -91,7 +91,7 @@ let package = Package(
                 .product(name: "SwiftUtils", package: "SwiftUtils"),
                 .product(name: "VHDLJSModels", package: "VHDLJSModels"),
                 "TestHelpers",
-                .product(name: "VHDLKripkeStructures", package: "VHDLKripkeStructures")
+                .product(name: "VHDLKripkeStructures", package: "VHDLKripkeStructures"),
             ]
         ),
         .testTarget(
@@ -100,8 +100,8 @@ let package = Package(
                 .product(name: "VHDLMachines", package: "VHDLMachines"),
                 .product(name: "VHDLParsing", package: "VHDLParsing"),
                 .product(name: "VHDLJSModels", package: "VHDLJSModels"),
-                .product(name: "VHDLKripkeStructures", package: "VHDLKripkeStructures")
+                .product(name: "VHDLKripkeStructures", package: "VHDLKripkeStructures"),
             ]
-        )
+        ),
     ]
 )
