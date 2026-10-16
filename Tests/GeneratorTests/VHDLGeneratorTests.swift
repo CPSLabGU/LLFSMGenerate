@@ -79,7 +79,7 @@ final class VHDLGeneratorTests: MachineTester {
             return
         }
         let vhdlFile = VHDLFile(representation: representation)
-        XCTAssertEqual(vhdlFile.rawValue + "\n", try String(contentsOf: vhdlPath))
+        XCTAssertEqual(vhdlFile.rawValue + "\n", try String(contentsOf: vhdlPath, encoding: .utf8))
     }
 
     /// Test that the main method throws the correct error for an invalid machine.
@@ -131,7 +131,7 @@ final class VHDLGeneratorTests: MachineTester {
         var command = try VHDLGenerator.parse([path.path])
         XCTAssertThrowsError(try command.run()) {
             print($0.localizedDescription)
-            fflush(stdout)
+            // fflush(stdout)
             guard let error = $0 as? GenerationError else {
                 XCTFail("Thrown incorrect error.")
                 return
@@ -319,7 +319,8 @@ final class VHDLGeneratorTests: MachineTester {
         }
         let contents = String(data: data, encoding: .utf8)
         let result = try String(
-            contentsOf: parentFolder.appendingPathComponent("\(name)", isDirectory: false)
+            contentsOf: parentFolder.appendingPathComponent("\(name)", isDirectory: false),
+            encoding: .utf8,
         )
         XCTAssertEqual(contents, result)
     }
