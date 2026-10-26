@@ -57,11 +57,12 @@
 import ArgumentParser
 import Foundation
 import VHDLMachines
-import XCTest
+import Testing
 
 @testable import GeneratorCommands
 
 /// Test class for `llfsmgenerate` parent struct.
+@Suite
 final class LLFSMGenerateTests: MachineTester {
 
     // /// Test the `run` methods calls the model subcommand.
@@ -85,16 +86,18 @@ final class LLFSMGenerateTests: MachineTester {
     // }
 
     /// Test sub-commands exist for parent binary.
+    @Test
     func testSubCommands() {
         let subcommands = LLFSMGenerate.configuration.subcommands
         let expectedCommands = ["model", "vhdl", "clean", "install", "graph", "report"]
-        XCTAssertEqual(subcommands.map { $0._commandName }.sorted(), expectedCommands.sorted())
+        #expect(subcommands.map { $0._commandName }.sorted() == expectedCommands.sorted())
     }
 
     /// Test run command handles no arguments.
+    @Test
     func testRun() throws {
         var command = LLFSMGenerate()
-        XCTAssertThrowsError(try command.run())
+        #expect(throws: (any Error).self) { try command.run() }
     }
 
 }

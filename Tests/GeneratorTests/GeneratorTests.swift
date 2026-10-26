@@ -58,11 +58,12 @@ import Foundation
 import JavascriptModel
 import VHDLMachines
 import VHDLMachineTransformations
-import XCTest
+import Testing
 
 @testable import GeneratorCommands
 
 /// Test class for ``Generate``.
+@Suite
 final class GeneratorTests: MachineTester {
 
     // /// Test the setters set the correct values.
@@ -77,46 +78,50 @@ final class GeneratorTests: MachineTester {
     // }
 
     /// Test computed properties function correctly.
+    @Test
     func testComputedProperties() throws {
         let generator = Generate(exportModel: false, path: pathRaw)
-        XCTAssertEqual(generator.pathURL, machine0Path)
+        #expect(generator.pathURL == machine0Path)
         let machineContents = try Data(contentsOf: jsonFile)
-        XCTAssertFalse(machineContents.isEmpty)
-        XCTAssertEqual(try generator.machine, machineContents)
+        #expect(!machineContents.isEmpty)
+        #expect((try generator.machine) == machineContents)
         let modelContents = try Data(contentsOf: modelFile)
-        XCTAssertFalse(modelContents.isEmpty)
-        XCTAssertEqual(try generator.model, modelContents)
-        XCTAssertEqual(generator.machinePath, jsonFile)
-        XCTAssertEqual(generator.modelPath, modelFile)
+        #expect(!modelContents.isEmpty)
+        #expect((try generator.model) == modelContents)
+        #expect(generator.machinePath == jsonFile)
+        #expect(generator.modelPath == modelFile)
     }
 
     /// Test the `createMachine` function correctly translates the model.
+    @Test
     func testCreateMachine() throws {
         let oldData = try Data(contentsOf: jsonFile)
-        XCTAssertFalse(oldData.isEmpty)
+        #expect(!oldData.isEmpty)
         try "Invalid data".write(to: jsonFile, atomically: true, encoding: .utf8)
         let generator = Generate(exportModel: false, path: pathRaw)
         try generator.createMachine()
         let newData = try generator.machine
         let newMachine = try decoder.decode(Machine.self, from: newData)
         let oldMachine = try decoder.decode(Machine.self, from: oldData)
-        XCTAssertEqual(newMachine, oldMachine)
+        #expect(newMachine == oldMachine)
     }
 
     /// Test that the createMachine function throws the correct error for an invalid model.
+    @Test
     func testCreateMachineThrows() throws {
         var model = MachineModel.machine0
         model.externalVariables = "invalid data"
         let data = try encoder.encode(model)
         try data.write(to: modelFile)
         let generator = Generate(exportModel: false, path: pathRaw)
-        XCTAssertThrowsError(try generator.createMachine())
+        #expect(throws: (any Error).self) { try generator.createMachine() }
     }
 
     /// Test that the model is created correctly.
+    @Test
     func testCreateModel() throws {
         let oldData = try Data(contentsOf: modelFile)
-        XCTAssertFalse(oldData.isEmpty)
+        #expect(!oldData.isEmpty)
         let oldModel = try decoder.decode(MachineModel.self, from: oldData)
         var invalidModel = oldModel
         invalidModel.externalVariables = "Invalid data"
@@ -126,10 +131,11 @@ final class GeneratorTests: MachineTester {
         try generator.createModel()
         let newData = try generator.model
         let newModel = try decoder.decode(MachineModel.self, from: newData)
-        XCTAssertEqual(newModel, oldModel)
+        #expect(newModel == oldModel)
     }
 
     /// Test that the `createModel` method throws the correct error for an invalid state layout.
+    @Test
     func testCreateModelDetectsInvalidStateLayouts() throws {
         let oldData = try Data(contentsOf: modelFile)
         let oldModel = try decoder.decode(MachineModel.self, from: oldData)
@@ -138,25 +144,21 @@ final class GeneratorTests: MachineTester {
         let invalidData = try encoder.encode(invalidModel)
         try invalidData.write(to: modelFile)
         let generator = Generate(exportModel: true, path: pathRaw)
-        XCTAssertThrowsError(try generator.createModel()) {
-            guard let error = $0 as? GenerationError else {
-                XCTFail("Error is not of type GenerationError.")
-                return
-            }
-            XCTAssertEqual(
-                error,
-                .invalidLayout(
+        let error = #expect(throws: GenerationError.self) { try generator.createModel() }
+        #expect(
+            error
+                == .invalidLayout(
                     message: """
                         Found incorrect number of state layouts.
                         Machine: 2
                         Model: 1
                         """
                 )
-            )
-        }
+        )
     }
 
     /// Test that `createModel` detects an invalid number of transition layouts.
+    @Test
     func testCreateModelDetectsInvalidTransitionLayouts() throws {
         let oldData = try Data(contentsOf: modelFile)
         let oldModel = try decoder.decode(MachineModel.self, from: oldData)
@@ -165,25 +167,21 @@ final class GeneratorTests: MachineTester {
         let invalidData = try encoder.encode(invalidModel)
         try invalidData.write(to: modelFile)
         let generator = Generate(exportModel: true, path: pathRaw)
-        XCTAssertThrowsError(try generator.createModel()) {
-            guard let error = $0 as? GenerationError else {
-                XCTFail("Error is not of type GenerationError.")
-                return
-            }
-            XCTAssertEqual(
-                error,
-                .invalidLayout(
+        let error = #expect(throws: GenerationError.self) { try generator.createModel() }
+        #expect(
+            error
+                == .invalidLayout(
                     message: """
                         Found incorrect number of transition layouts.
                         Machine: 1
                         Model: 0
                         """
                 )
-            )
-        }
+        )
     }
 
     /// Test that `run` correctly generates model.
+    @Test
     func testRunGeneratesModel() throws {
         let oldData = try Data(contentsOf: modelFile)
         let oldModel = try decoder.decode(MachineModel.self, from: oldData)
@@ -194,10 +192,11 @@ final class GeneratorTests: MachineTester {
         Generate.main(["--export-model", pathRaw])
         let newData = try Data(contentsOf: modelFile)
         let newModel = try decoder.decode(MachineModel.self, from: newData)
-        XCTAssertEqual(newModel, oldModel)
+        #expect(newModel == oldModel)
     }
 
     /// Test that the `run` method generates the machine correctly.
+    @Test
     func testRunGeneratesMachine() throws {
         let oldData = try Data(contentsOf: jsonFile)
         let oldMachine = try decoder.decode(Machine.self, from: oldData)
@@ -205,10 +204,11 @@ final class GeneratorTests: MachineTester {
         Generate.main([pathRaw])
         let newData = try Data(contentsOf: jsonFile)
         let newMachine = try decoder.decode(Machine.self, from: newData)
-        XCTAssertEqual(newMachine, oldMachine)
+        #expect(newMachine == oldMachine)
     }
 
     /// Test that the arrangement is created correctly.
+    @Test
     func testArrangementCreation() throws {
         Generate.main([self.arrangement1Folder.path])
         guard
@@ -221,14 +221,15 @@ final class GeneratorTests: MachineTester {
                     .path
             )
         else {
-            XCTFail("Failed to read file.")
+            Issue.record("Failed to read file.")
             return
         }
         let arrangement = try self.decoder.decode(Arrangement.self, from: data)
-        XCTAssertEqual(arrangement, .pingArrangement)
+        #expect(arrangement == .pingArrangement)
     }
 
     /// Test that arrangement creation throws the correct error when arrangement generation fails.
+    @Test
     func testArrangementCreationThrowsCorrectErrorWhenFails() throws {
         let modelPath = self.arrangement1Folder.appendingPathComponent("model.json", isDirectory: false)
         try self.manager.removeItem(at: modelPath)
@@ -236,7 +237,7 @@ final class GeneratorTests: MachineTester {
         let data = try self.encoder.encode(model)
         try data.write(to: modelPath)
         var command = try Generate.parse([self.arrangement1Folder.path])
-        XCTAssertThrowsError(try command.run())
+        #expect(throws: (any Error).self) { try command.run() }
     }
 
 }

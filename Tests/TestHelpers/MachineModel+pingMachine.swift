@@ -59,7 +59,7 @@ import JavascriptModel
 extension MachineModel {
 
     /// Add ping machine.
-    public static let pingMachine = MachineModel(
+    package static let pingMachine = MachineModel(
         states: [
             StateModel(
                 name: "Initial",

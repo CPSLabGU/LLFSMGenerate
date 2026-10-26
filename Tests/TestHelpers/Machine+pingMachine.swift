@@ -62,7 +62,7 @@ import VHDLParsing
 extension Machine {
 
     /// A `PingMachine`.
-    public static let pingMachine = Machine(
+    package static let pingMachine = Machine(
         actions: [.internal, .onEntry, .onExit],
         includes: [.library(value: .ieee), .include(statement: .stdLogic1164)],
         externalSignals: [

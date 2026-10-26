@@ -61,7 +61,7 @@ import Foundation
 public struct CleanCommand: ParsableCommand {
 
     /// The command configuration.
-    public static var configuration = CommandConfiguration(
+    public static let configuration = CommandConfiguration(
         commandName: "clean",
         abstract: "Clean the generated source files from the machine."
     )

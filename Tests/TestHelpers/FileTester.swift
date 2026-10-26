@@ -54,38 +54,50 @@
 // Fifth Floor, Boston, MA  02110-1301, USA.
 
 import Foundation
-import XCTest
 
-/// Add helper methods for testing files.
-open class FileTester: XCTestCase {
+package protocol FileTester {
+    var encoder: JSONEncoder { get }
+    var decoder: JSONDecoder { get }
+    var manager: FileManager { get }
+    var currentDirectory: URL { get }
+    var generatorDirectory: URL { get }
+    var testsDirectory: URL { get }
+    var transformationsDirectory: URL { get }
+}
 
+extension FileTester {
     /// A `JSON` encoder.
-    public let encoder = JSONEncoder()
+    package var encoder: JSONEncoder {
+        JSONEncoder()
+    }
 
     /// A `JSON` decoder.
-    public let decoder = JSONDecoder()
+    package var decoder: JSONDecoder {
+        JSONDecoder()
+    }
 
     /// A file manager.
-    public let manager = FileManager.default
+    package var manager: FileManager {
+        FileManager.default
+    }
 
     /// The path to the root directory of the package.
-    public var currentDirectory: URL {
+    package var currentDirectory: URL {
         URL(fileURLWithPath: manager.currentDirectoryPath, isDirectory: true)
     }
 
     /// The path to the `MachineGeneratorTests` target.
-    public var generatorDirectory: URL {
+    package var generatorDirectory: URL {
         testsDirectory.appendingPathComponent("MachineGeneratorTests", isDirectory: true)
     }
 
     /// The path to the `Tests` directory.
-    public var testsDirectory: URL {
+    package var testsDirectory: URL {
         currentDirectory.appendingPathComponent("Tests", isDirectory: true)
     }
 
     /// The path to the `VHDLMachinesTransformationsTests` target.
-    public var transformationsDirectory: URL {
+    package var transformationsDirectory: URL {
         testsDirectory.appendingPathComponent("VHDLMachineTransformationsTests", isDirectory: true)
     }
-
 }

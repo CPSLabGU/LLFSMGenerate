@@ -63,14 +63,14 @@ import VHDLParsing
 extension KripkeStructure {
 
     /// The ping pong kripke structure.
-    public static let pingPongStructure: KripkeStructure = {
+    package static let pingPongStructure: KripkeStructure = {
         let decoder = JSONDecoder()
         // swiftlint:disable:next force_unwrapping
         return (try? decoder.decode(KripkeStructure.self, from: KripkeStructure.raw.data(using: .utf8)!))!
     }()
 
     /// The raw JSON string for the ping pong kripke structure.
-    static let raw = """
+    package static let raw = """
         {
         "edges" : [
             {

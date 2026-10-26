@@ -55,12 +55,13 @@
 
 import ArgumentParser
 import Foundation
-import XCTest
+import Testing
 
 @testable import GeneratorCommands
 
 /// Test class for ``PathArgument``.
-final class PathArgumentTests: XCTestCase {
+@Suite
+struct PathArgumentTests {
 
     /// A command with a path.
     var command: Generate {
@@ -77,15 +78,16 @@ final class PathArgumentTests: XCTestCase {
     }
 
     /// Test that the computed properties are correct.
+    @Test
     func testComputedProperties() throws {
         let url = URL(fileURLWithPath: "path", isDirectory: true)
-        XCTAssertEqual(try argument.pathURL, url)
+        #expect(try argument.pathURL == url)
         let machine = url.appendingPathComponent("machine.json", isDirectory: false)
-        XCTAssertEqual(try argument.machine, machine)
+        #expect(try argument.machine == machine)
         let build = url.appendingPathComponent("build", isDirectory: true)
-        XCTAssertEqual(try argument.buildFolder, build)
+        #expect(try argument.buildFolder == build)
         let vhdl = build.appendingPathComponent("vhdl", isDirectory: true)
-        XCTAssertEqual(try argument.vhdlFolder, vhdl)
+        #expect(try argument.vhdlFolder == vhdl)
     }
 
 }

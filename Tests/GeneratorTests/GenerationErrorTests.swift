@@ -53,21 +53,23 @@
 // or write to the Free Software Foundation, Inc., 51 Franklin Street,
 // Fifth Floor, Boston, MA  02110-1301, USA.
 
-import XCTest
+import Testing
 
 @testable import GeneratorCommands
 
 /// Test class for ``GenerationError``.
-final class GenerationErrorTests: XCTestCase {
+@Suite
+struct GenerationErrorTests {
 
     /// Test that the description gets the message correctly.
+    @Test
     func testDescription() {
-        XCTAssertEqual(GenerationError.invalidExportation(message: "A").description, "A")
-        XCTAssertEqual(GenerationError.invalidFormat(message: "B").description, "B")
-        XCTAssertEqual(GenerationError.invalidGeneration(message: "C").description, "C")
-        XCTAssertEqual(GenerationError.invalidInput(message: "D").description, "D")
-        XCTAssertEqual(GenerationError.invalidLayout(message: "E").description, "E")
-        XCTAssertEqual(GenerationError.invalidMachine(message: "F").description, "F")
+        #expect(GenerationError.invalidExportation(message: "A").description == "A")
+        #expect(GenerationError.invalidFormat(message: "B").description == "B")
+        #expect(GenerationError.invalidGeneration(message: "C").description == "C")
+        #expect(GenerationError.invalidInput(message: "D").description == "D")
+        #expect(GenerationError.invalidLayout(message: "E").description == "E")
+        #expect(GenerationError.invalidMachine(message: "F").description == "F")
     }
 
 }

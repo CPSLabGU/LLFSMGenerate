@@ -60,7 +60,7 @@ import Foundation
 public struct InstallCommand: ParsableCommand {
 
     /// The configuration of this command.
-    public static var configuration = CommandConfiguration(
+    public static let configuration = CommandConfiguration(
         commandName: "install",
         abstract: "Install the VHDL files into a specified directory."
     )

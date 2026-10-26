@@ -53,119 +53,113 @@
 // or write to the Free Software Foundation, Inc., 51 Franklin Street,
 // Fifth Floor, Boston, MA  02110-1301, USA.
 
-import XCTest
+import Testing
+import Foundation
 
 @testable import GeneratorCommands
 
 /// Test class for ``CleanCommand``.
+@Suite
 final class CleanCommandTests: MachineTester {
 
     /// Build the machine before every test.
-    override func setUp() {
-        super.setUp()
+    override init() {
+        super.init()
         let path = self.machine0Path.path
         Generate.main([path])
         VHDLGenerator.main(["--include-kripke-structure", path])
         var isDirectory: ObjCBool = true
-        XCTAssertTrue(manager.fileExists(atPath: self.jsonFile.path, isDirectory: &isDirectory))
-        XCTAssertFalse(isDirectory.boolValue)
-        XCTAssertTrue(manager.fileExists(atPath: self.buildFolder.path, isDirectory: &isDirectory))
-        XCTAssertTrue(isDirectory.boolValue)
+        #expect(manager.fileExists(atPath: self.jsonFile.path, isDirectory: &isDirectory))
+        #expect(!isDirectory.boolValue)
+        #expect(manager.fileExists(atPath: self.buildFolder.path, isDirectory: &isDirectory))
+        #expect(isDirectory.boolValue)
     }
 
     /// Test the clean command removes all generated files.
+    @Test
     func testCleanCommand() throws {
         let commandTypeErased = try CleanCommand.parseAsRoot([self.machine0Path.path])
         guard var command = commandTypeErased as? CleanCommand else {
-            XCTFail("Failed to create command.")
+            Issue.record("Failed to create command.")
             return
         }
-        XCTAssertFalse(command.cleanBuildFolder)
+        #expect(!command.cleanBuildFolder)
         try command.run()
-        XCTAssertFalse(manager.fileExists(atPath: self.jsonFile.path))
-        XCTAssertFalse(manager.fileExists(atPath: self.buildFolder.path))
+        #expect(!manager.fileExists(atPath: self.jsonFile.path))
+        #expect(!manager.fileExists(atPath: self.buildFolder.path))
         var isDirectory: ObjCBool = true
-        XCTAssertTrue(manager.fileExists(atPath: self.modelFile.path, isDirectory: &isDirectory))
-        XCTAssertFalse(isDirectory.boolValue)
+        #expect(manager.fileExists(atPath: self.modelFile.path, isDirectory: &isDirectory))
+        #expect(!isDirectory.boolValue)
     }
 
     /// Test command doesn't throw errors when files don't exist.
+    @Test
     func testCleanCommandStillWorksWithoutBuild() throws {
         CleanCommand.main([self.machine0Path.path])
         CleanCommand.main([self.machine0Path.path])
-        XCTAssertFalse(manager.fileExists(atPath: self.jsonFile.path))
-        XCTAssertFalse(manager.fileExists(atPath: self.buildFolder.path))
+        #expect(!manager.fileExists(atPath: self.jsonFile.path))
+        #expect(!manager.fileExists(atPath: self.buildFolder.path))
         var isDirectory: ObjCBool = true
-        XCTAssertTrue(manager.fileExists(atPath: self.modelFile.path, isDirectory: &isDirectory))
-        XCTAssertFalse(isDirectory.boolValue)
+        #expect(manager.fileExists(atPath: self.modelFile.path, isDirectory: &isDirectory))
+        #expect(!isDirectory.boolValue)
     }
 
     /// Test that the correct error is thrown when the build folder is malformed.
+    @Test
     func testCommandThrowsErrorForInvalidBuildFolder() throws {
         try manager.removeItem(atPath: self.buildFolder.path)
         guard manager.createFile(atPath: self.buildFolder.path, contents: nil) else {
-            XCTFail("Failed to create build file.")
+            Issue.record("Failed to create build file.")
             return
         }
         let commandTypeErased = try CleanCommand.parseAsRoot([self.machine0Path.path])
         guard var command = commandTypeErased as? CleanCommand else {
-            XCTFail("Failed to create command.")
+            Issue.record("Failed to create command.")
             return
         }
-        XCTAssertThrowsError(try command.run()) {
-            guard let error = $0 as? GenerationError else {
-                XCTFail("Failed to throw correct error.")
-                return
-            }
-            XCTAssertEqual(error, .invalidExportation(message: "Found a file at the build folders location."))
-        }
+        let error = #expect(throws: (GenerationError.self)) { try command.run() }
+        #expect(error == .invalidExportation(message: "Found a file at the build folders location."))
     }
 
     /// Test that the correct error is thrown when the machine file is malformed.
+    @Test
     func testCommandThrowsErrorForInvalidMachine() throws {
         try manager.removeItem(at: jsonFile)
         let newPath = URL(fileURLWithPath: jsonFile.path, isDirectory: true)
         try manager.createDirectory(at: newPath, withIntermediateDirectories: true)
         let commandTypeErased = try CleanCommand.parseAsRoot([self.machine0Path.path])
         guard var command = commandTypeErased as? CleanCommand else {
-            XCTFail("Failed to create command.")
+            Issue.record("Failed to create command.")
             return
         }
-        XCTAssertThrowsError(try command.run()) {
-            guard let error = $0 as? GenerationError else {
-                XCTFail("Failed to throw correct error.")
-                return
-            }
-            XCTAssertEqual(
-                error,
-                .invalidExportation(message: "Found a directory at the machine files location.")
-            )
-        }
+        let error = #expect(throws: (GenerationError.self)) { try command.run() }
+        #expect(error == .invalidExportation(message: "Found a directory at the machine files location."))
     }
 
     /// Test that the `--clean-build-folder` flag ignores the machine file.
+    @Test
     func testFlagPreservesMachine() throws {
         CleanCommand.main(["--clean-build-folder", self.machine0Path.path])
         var isDirectory: ObjCBool = true
-        XCTAssertTrue(manager.fileExists(atPath: self.jsonFile.path, isDirectory: &isDirectory))
-        XCTAssertFalse(isDirectory.boolValue)
-        XCTAssertFalse(manager.fileExists(atPath: self.buildFolder.path))
+        #expect(manager.fileExists(atPath: self.jsonFile.path, isDirectory: &isDirectory))
+        #expect(!isDirectory.boolValue)
+        #expect(!manager.fileExists(atPath: self.buildFolder.path))
     }
 
     /// Test that arrangements are cleaned correctly.
+    @Test
     func testCleanArrangement() throws {
         Generate.main([self.arrangement1Folder.path])
         VHDLGenerator.main([self.arrangement1Folder.path])
         let filesBefore = try self.manager.contentsOfDirectory(atPath: self.arrangement1Folder.path)
-        XCTAssertGreaterThan(filesBefore.count, 1)
+        #expect(filesBefore.count > 1)
         CleanCommand.main([self.arrangement1Folder.path])
         let files = try self.manager.contentsOfDirectory(atPath: self.arrangement1Folder.path)
             .map {
                 self.arrangement1Folder.appendingPathComponent($0)
             }
-        XCTAssertEqual(
-            files,
-            [self.arrangement1Folder.appendingPathComponent("model.json", isDirectory: false)]
+        #expect(
+            files == [self.arrangement1Folder.appendingPathComponent("model.json", isDirectory: false)]
         )
     }
 

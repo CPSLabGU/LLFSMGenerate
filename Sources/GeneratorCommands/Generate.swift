@@ -64,7 +64,7 @@ import VHDLMachineTransformations
 public struct Generate: ParsableCommand {
 
     /// The command configuration describing a sub-command.
-    public static var configuration = CommandConfiguration(
+    public static let configuration = CommandConfiguration(
         commandName: "model",
         abstract: "A utility for converting LLFSM formats."
     )

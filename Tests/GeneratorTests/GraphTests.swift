@@ -53,17 +53,20 @@
 // or write to the Free Software Foundation, Inc., 51 Franklin Street,
 // Fifth Floor, Boston, MA  02110-1301, USA.
 
+import Foundation
 import VHDLKripkeStructures
-import XCTest
+import Testing
 
 @testable import GeneratorCommands
 
 /// Test class for ``GraphCommand``.
+@Suite(.serialized)
 final class GraphTests: MachineTester {
 
     /// The path to the dot file.
     var dotFile: URL {
-        self.packageRootPath.appendingPathComponent("output.dot", isDirectory: false)
+        URL(fileURLWithPath: FileManager.default.currentDirectoryPath, isDirectory: true)
+            .appendingPathComponent("output.dot", isDirectory: false)
     }
 
     /// The dot file in the build folder.
@@ -72,111 +75,117 @@ final class GraphTests: MachineTester {
     }
 
     /// Remove the dot file after every test.
-    override func tearDown() {
-        super.tearDown()
+    deinit {
         try? manager.removeItem(at: self.dotFile)
     }
 
     /// Test the kripke structure is generated correctly for a machine.
+    @Test
     func testMachineGeneration() throws {
-        XCTAssertFalse(manager.fileExists(atPath: dotFile.path))
+        #expect(!manager.fileExists(atPath: dotFile.path))
         GraphCommand.main(["--machine", self.pingMachineFolder.path])
         var isDirectory: ObjCBool = false
-        XCTAssertTrue(manager.fileExists(atPath: dotFile.path, isDirectory: &isDirectory))
-        XCTAssertFalse(isDirectory.boolValue)
-        XCTAssertFalse(try Data(contentsOf: dotFile).isEmpty)
+        #expect(manager.fileExists(atPath: dotFile.path, isDirectory: &isDirectory))
+        #expect(!isDirectory.boolValue)
+        #expect(!(try Data(contentsOf: dotFile)).isEmpty)
     }
 
     /// Test the kripke structure is generated correctly for a machine with a destination.
+    @Test
     func testMachineGenerationWithDestination() throws {
-        XCTAssertFalse(manager.fileExists(atPath: buildDotFile.path))
+        #expect(!manager.fileExists(atPath: buildDotFile.path))
         GraphCommand.main(["--machine", self.pingMachineFolder.path, "--destination", self.buildDotFile.path])
         var isDirectory: ObjCBool = false
-        XCTAssertTrue(manager.fileExists(atPath: buildDotFile.path, isDirectory: &isDirectory))
-        XCTAssertFalse(isDirectory.boolValue)
-        XCTAssertFalse(try Data(contentsOf: buildDotFile).isEmpty)
+        #expect(manager.fileExists(atPath: buildDotFile.path, isDirectory: &isDirectory))
+        #expect(!isDirectory.boolValue)
+        #expect(!(try Data(contentsOf: buildDotFile)).isEmpty)
     }
 
     /// Test the generation given the file as a path.
+    @Test
     func testGeneration() throws {
-        XCTAssertFalse(manager.fileExists(atPath: dotFile.path))
+        #expect(!manager.fileExists(atPath: dotFile.path))
         GraphCommand.main([self.pingMachineKripkeStructure.path])
         var isDirectory: ObjCBool = false
-        XCTAssertTrue(manager.fileExists(atPath: dotFile.path, isDirectory: &isDirectory))
-        XCTAssertFalse(isDirectory.boolValue)
-        XCTAssertFalse(try Data(contentsOf: dotFile).isEmpty)
+        #expect(manager.fileExists(atPath: dotFile.path, isDirectory: &isDirectory))
+        #expect(!isDirectory.boolValue)
+        #expect(!(try Data(contentsOf: dotFile)).isEmpty)
     }
 
     /// Test that generation works with a destination.
+    @Test
     func testGenerationWithDestination() throws {
-        XCTAssertFalse(manager.fileExists(atPath: buildDotFile.path))
+        #expect(!manager.fileExists(atPath: buildDotFile.path))
         GraphCommand.main([self.pingMachineKripkeStructure.path, "--destination", self.buildDotFile.path])
         var isDirectory: ObjCBool = false
-        XCTAssertTrue(manager.fileExists(atPath: buildDotFile.path, isDirectory: &isDirectory))
-        XCTAssertFalse(isDirectory.boolValue)
-        XCTAssertFalse(try Data(contentsOf: buildDotFile).isEmpty)
+        #expect(manager.fileExists(atPath: buildDotFile.path, isDirectory: &isDirectory))
+        #expect(!isDirectory.boolValue)
+        #expect(!(try Data(contentsOf: buildDotFile)).isEmpty)
     }
 
     /// Test that the command throws an error for an invalid machine.
+    @Test
     func testGenerationThrowsErrorForInvalidMachine() throws {
         let command = try GraphCommand.parse(["--machine", self.pingMachineKripkeStructure.path])
-        XCTAssertThrowsError(try command.run()) {
-            guard let error = $0 as? GenerationError, case .invalidInput(let message) = error else {
-                XCTFail("Expected GenerationError but got \($0)")
-                return
-            }
-            XCTAssertEqual(message, "The path must be a valid machines location.")
+        let error = #expect(throws: (GenerationError.self)) { try command.run() }
+        guard case .invalidInput(let message) = error else {
+            Issue.record("Expected GenerationError but got \(error)")
+            return
         }
-        XCTAssertFalse(manager.fileExists(atPath: dotFile.path))
+        #expect(message == "The path must be a valid machines location.")
+        #expect(!manager.fileExists(atPath: dotFile.path))
     }
 
     /// Test that the correct error is thrown when the kripke structure is not present.
+    @Test
     func testCommandThrowsErrorForMissingKripkeStructure() throws {
         try manager.removeItem(at: self.pingMachineKripkeStructure)
         let command = try GraphCommand.parse([self.pingMachineKripkeStructure.path])
-        XCTAssertThrowsError(try command.run()) {
-            guard let error = $0 as? GenerationError, case .invalidMachine(let message) = error else {
-                XCTFail("Expected GenerationError but got \($0)")
-                return
-            }
-            XCTAssertEqual(message, "The Kripke structure does not exist at this specified location.")
+        let error = #expect(throws: (GenerationError.self)) { try command.run() }
+        guard case .invalidMachine(let message) = error else {
+            Issue.record("Expected GenerationError but got \(error)")
+            return
         }
-        XCTAssertFalse(manager.fileExists(atPath: dotFile.path))
+        #expect(message == "The Kripke structure does not exist at this specified location.")
+        #expect(!manager.fileExists(atPath: dotFile.path))
     }
 
     /// Test command overwrites existing `.dot` file.
+    @Test
     func testCommandOverwritesFile() throws {
-        XCTAssertTrue(manager.createFile(atPath: dotFile.path, contents: nil))
+        #expect(manager.createFile(atPath: dotFile.path, contents: nil))
         GraphCommand.main([self.pingMachineKripkeStructure.path, "--destination", self.dotFile.path])
         var isDirectory: ObjCBool = false
-        XCTAssertTrue(manager.fileExists(atPath: dotFile.path, isDirectory: &isDirectory))
-        XCTAssertFalse(isDirectory.boolValue)
-        XCTAssertFalse(try Data(contentsOf: dotFile).isEmpty)
+        #expect(manager.fileExists(atPath: dotFile.path, isDirectory: &isDirectory))
+        #expect(!isDirectory.boolValue)
+        #expect(!(try Data(contentsOf: dotFile)).isEmpty)
     }
 
     /// Test that the file is created in a subdirectory that exists.
+    @Test
     func testCommandPlacesFileInFolderthatExists() throws {
         try manager.createDirectory(at: self.pingMachineBuildFolder, withIntermediateDirectories: true)
-        XCTAssertFalse(manager.fileExists(atPath: self.buildDotFile.path))
+        #expect(!manager.fileExists(atPath: self.buildDotFile.path))
         GraphCommand.main([
             self.pingMachineKripkeStructure.path, "--destination", self.pingMachineBuildFolder.path,
         ])
         var isDirectory: ObjCBool = false
-        XCTAssertTrue(manager.fileExists(atPath: buildDotFile.path, isDirectory: &isDirectory))
-        XCTAssertFalse(isDirectory.boolValue)
-        XCTAssertFalse(try Data(contentsOf: buildDotFile).isEmpty)
+        #expect(manager.fileExists(atPath: buildDotFile.path, isDirectory: &isDirectory))
+        #expect(!isDirectory.boolValue)
+        #expect(!(try Data(contentsOf: buildDotFile)).isEmpty)
     }
 
     /// Test that the file is created in a subdirectory that doesn't exist.
+    @Test
     func testCommandPlacesFileInFolder() throws {
-        XCTAssertFalse(manager.fileExists(atPath: self.pingMachineBuildFolder.path))
+        #expect(!manager.fileExists(atPath: self.pingMachineBuildFolder.path))
         GraphCommand.main([
             self.pingMachineKripkeStructure.path, "--destination", self.pingMachineBuildFolder.path,
         ])
         var isDirectory: ObjCBool = false
-        XCTAssertTrue(manager.fileExists(atPath: buildDotFile.path, isDirectory: &isDirectory))
-        XCTAssertFalse(isDirectory.boolValue)
-        XCTAssertFalse(try Data(contentsOf: buildDotFile).isEmpty)
+        #expect(manager.fileExists(atPath: buildDotFile.path, isDirectory: &isDirectory))
+        #expect(!isDirectory.boolValue)
+        #expect(!(try Data(contentsOf: buildDotFile)).isEmpty)
     }
 
 }
