@@ -102,7 +102,7 @@ SUBCOMMANDS:
 ## Documentation
 
 The latest documentation may be found on the
-[documentation website](https://cpslabgu.github.io/llfsm-generate/).
+[documentation website](https://cpslabgu.github.io/LLFSMGenerate/).
 
 ## Installing Swift
 
