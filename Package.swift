@@ -50,10 +50,10 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/apple/swift-docc-plugin", from: "1.4.2"),
-        .package(url: "https://github.com/mipalgu/VHDLMachines", from: "4.0.5"),
+        .package(url: "https://github.com/mipalgu/VHDLMachines", from: "4.1.0"),
         .package(url: "https://github.com/mipalgu/VHDLParsing", from: "2.7.0"),
         .package(url: "https://github.com/apple/swift-argument-parser", from: "1.8.2"),
-        .package(url: "https://github.com/mipalgu/VHDLKripkeStructureGenerator.git", from: "0.5.1"),
+        .package(url: "https://github.com/mipalgu/VHDLKripkeStructureGenerator.git", from: "0.6.0"),
         .package(url: "https://github.com/CPSLabGU/SwiftUtils.git", from: "1.0.0"),
         .package(url: "https://github.com/CPSLabGU/VHDLJSModels", from: "2.0.0"),
         .package(url: "https://github.com/CPSLabGU/VHDLKripkeStructures", from: "2.0.0"),
@@ -90,7 +90,7 @@ let package = Package(
                 .product(name: "VHDLKripkeStructureGenerator", package: "VHDLKripkeStructureGenerator"),
                 .product(name: "SwiftUtils", package: "SwiftUtils"),
                 .product(name: "VHDLJSModels", package: "VHDLJSModels"),
-                "TestHelpers",
+                .target(name: "TestHelpers"),
                 .product(name: "VHDLKripkeStructures", package: "VHDLKripkeStructures"),
             ]
         ),
