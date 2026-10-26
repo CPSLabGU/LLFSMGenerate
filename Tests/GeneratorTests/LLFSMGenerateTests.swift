@@ -56,8 +56,8 @@
 
 import ArgumentParser
 import Foundation
-import VHDLMachines
 import Testing
+import VHDLMachines
 
 @testable import GeneratorCommands
 

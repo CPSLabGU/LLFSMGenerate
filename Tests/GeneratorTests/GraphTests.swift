@@ -54,8 +54,8 @@
 // Fifth Floor, Boston, MA  02110-1301, USA.
 
 import Foundation
-import VHDLKripkeStructures
 import Testing
+import VHDLKripkeStructures
 
 @testable import GeneratorCommands
 
@@ -72,11 +72,6 @@ final class GraphTests: MachineTester {
     /// The dot file in the build folder.
     var buildDotFile: URL {
         self.pingMachineBuildFolder.appendingPathComponent("output.dot", isDirectory: false)
-    }
-
-    /// Remove the dot file after every test.
-    deinit {
-        try? manager.removeItem(at: self.dotFile)
     }
 
     /// Test the kripke structure is generated correctly for a machine.
@@ -186,6 +181,11 @@ final class GraphTests: MachineTester {
         #expect(manager.fileExists(atPath: buildDotFile.path, isDirectory: &isDirectory))
         #expect(!isDirectory.boolValue)
         #expect(!(try Data(contentsOf: buildDotFile)).isEmpty)
+    }
+
+    /// Remove the dot file after every test.
+    deinit {
+        try? manager.removeItem(at: self.dotFile)
     }
 
 }

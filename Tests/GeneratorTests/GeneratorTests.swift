@@ -56,9 +56,9 @@
 
 import Foundation
 import JavascriptModel
+import Testing
 import VHDLMachines
 import VHDLMachineTransformations
-import Testing
 
 @testable import GeneratorCommands
 

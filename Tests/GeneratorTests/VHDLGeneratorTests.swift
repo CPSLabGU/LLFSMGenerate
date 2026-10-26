@@ -56,10 +56,10 @@
 
 import Foundation
 import SwiftUtils
+import Testing
 import VHDLKripkeStructureGenerator
 import VHDLMachines
 import VHDLParsing
-import Testing
 
 @testable import GeneratorCommands
 

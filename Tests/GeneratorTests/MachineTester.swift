@@ -57,14 +57,16 @@
 import Foundation
 import JavascriptModel
 import TestHelpers
+import Testing
 import VHDLKripkeStructures
 import VHDLMachines
-import Testing
-import Foundation
 
-/// A super class for mutating Machine0 on the file system.
+/// A helper class for testing and managing machine files on the file system.
 class MachineTester {
 
+    /// The parent scope of each test is a UUID.
+    ///
+    /// This UUID ensures that any artifacts created by tests remain in their own isolated scope.
     let packageScope: String = UUID().uuidString
 
     /// A JSON encoder.
@@ -99,6 +101,7 @@ class MachineTester {
         machineScope.appendingPathComponent("Machine0.machine", isDirectory: true)
     }
 
+    /// The path to the scope folder for the current test's machines.
     var machineScope: URL {
         machinesFolder.appendingPathComponent(packageScope, isDirectory: true)
     }

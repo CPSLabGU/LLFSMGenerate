@@ -53,11 +53,11 @@
 // or write to the Free Software Foundation, Inc., 51 Franklin Street,
 // Fifth Floor, Boston, MA  02110-1301, USA.
 
+import Foundation
 @testable import GeneratorCommands
 import JavascriptModel
 import TestHelpers
 import Testing
-import Foundation
 
 /// Test class for ``ReportCommand``.
 @Suite
@@ -123,11 +123,6 @@ final class ReportCommandTests: MachineTester {
     /// The location of the debug file.
     var file: URL {
         self.pingMachineFolder.appendingPathComponent("report_command_test.txt", isDirectory: false)
-    }
-
-    /// Remove file after every test case.
-    deinit {
-        try? self.manager.removeItem(at: file)
     }
 
     /// Test the machine is encoded correctly.
@@ -297,5 +292,10 @@ final class ReportCommandTests: MachineTester {
 
     // swiftlint:enable function_body_length
     // swiftlint:enable trailing_whitespace
+
+    /// Remove file after every test case.
+    deinit {
+        try? self.manager.removeItem(at: file)
+    }
 
 }

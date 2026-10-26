@@ -55,9 +55,9 @@
 //
 
 import JavascriptModel
+import Testing
 import VHDLMachines
 import VHDLMachineTransformations
-import Testing
 
 /// Test class for ``Machine0``.
 @Suite

@@ -107,11 +107,6 @@ final class InstallCommandTests: MachineTester {
         VHDLGenerator.main([self.machine0Path.path])
     }
 
-    /// Remove install locations.
-    deinit {
-        #expect((try? self.manager.removeItem(at: vivadoPath)) != nil)
-    }
-
     /// Test the computed properties create the correct values.
     @Test
     func testComputedProperties() throws {
@@ -255,6 +250,11 @@ final class InstallCommandTests: MachineTester {
         let command = try InstallCommand.parse([self.machine0Path.path, "--vivado", self.vivadoPath.path])
         let error = #expect(throws: GenerationError.self) { try command.run() }
         #expect(error == .invalidInput(message: "The vivado project is not set up correctly."))
+    }
+
+    /// Remove install locations.
+    deinit {
+        #expect((try? self.manager.removeItem(at: vivadoPath)) != nil)
     }
 
 }

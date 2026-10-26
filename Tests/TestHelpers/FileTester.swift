@@ -65,6 +65,7 @@ package protocol FileTester {
     var transformationsDirectory: URL { get }
 }
 
+/// Add default implementations.
 extension FileTester {
     /// A `JSON` encoder.
     package var encoder: JSONEncoder {
