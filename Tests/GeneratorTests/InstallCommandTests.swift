@@ -182,7 +182,7 @@ final class InstallCommandTests: MachineTester {
     /// Test that an error is thrown for folders without the `.machine` extension.
     @Test
     func testThrowsErrorForIncorrectMachineFolder() throws {
-        let command = try InstallCommand.parse([self.machinesFolder.path, self.vivadoPath.path])
+        let command = try InstallCommand.parse([self.machineScope.path, self.vivadoPath.path])
         let error = #expect(throws: GenerationError.self) { try command.run() }
         #expect(error == .invalidMachine(message: "The path provided is not a machine."))
     }

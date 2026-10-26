@@ -82,15 +82,15 @@ class MachineTester {
     }
 
     /// A URL to the package root.
-    let packagePath = FileManager.default.currentDirectoryPath
+    private let packagePath = FileManager.default.currentDirectoryPath
 
     /// The path to the package root.
-    var packageRootPath: URL {
+    private var packageRootPath: URL {
         URL(fileURLWithPath: String(packagePath), isDirectory: true)
     }
 
     /// The path to the machines folder.
-    var machinesFolder: URL {
+    private var machinesFolder: URL {
         packageRootPath.appendingPathComponent("Tests/GeneratorTests/machines", isDirectory: true)
     }
 

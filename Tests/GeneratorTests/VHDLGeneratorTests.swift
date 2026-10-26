@@ -103,7 +103,7 @@ final class VHDLGeneratorTests: MachineTester {
     /// Test the correct error is thrown for paths without the correct extension.
     @Test
     func testPathWithoutExtension() throws {
-        let invalidPath = self.machinesFolder.appendingPathComponent("invalid", isDirectory: true)
+        let invalidPath = self.machineScope.appendingPathComponent("invalid", isDirectory: true)
         try self.manager.copyItem(at: self.machine0Path, to: invalidPath)
         defer { _ = try? self.manager.removeItem(at: invalidPath) }
         var command = try VHDLGenerator.parse([invalidPath.path])
@@ -120,7 +120,7 @@ final class VHDLGeneratorTests: MachineTester {
     /// Test correct errors are thrown for paths with only the machine extension.
     @Test
     func testEmptyMachinePath() throws {
-        let path = self.machinesFolder.appendingPathComponent(".machine", isDirectory: true)
+        let path = self.machineScope.appendingPathComponent(".machine", isDirectory: true)
         try self.manager.copyItem(at: self.machine0Path, to: path)
         defer { _ = try? self.manager.removeItem(at: path) }
         var command = try VHDLGenerator.parse([path.path])
@@ -137,7 +137,7 @@ final class VHDLGeneratorTests: MachineTester {
     /// Test that VHDL keyword in machine name throw an error.
     @Test
     func testVHDLNameInPath() throws {
-        let path = self.machinesFolder.appendingPathComponent("signal.machine", isDirectory: true)
+        let path = self.machineScope.appendingPathComponent("signal.machine", isDirectory: true)
         try self.manager.copyItem(at: self.machine0Path, to: path)
         defer { _ = try? self.manager.removeItem(at: path) }
         var command = try VHDLGenerator.parse([path.path])
@@ -174,7 +174,7 @@ final class VHDLGeneratorTests: MachineTester {
         VHDLGenerator.main([self.arrangement1Folder.path])
         guard
             let contents = self.manager.contents(
-                atPath: self.machinesFolder
+                atPath: self.machineScope
                     .appendingPathComponent(
                         "Arrangement1.arrangement/build/vhdl/Arrangement1.vhd",
                         isDirectory: false
@@ -197,7 +197,7 @@ final class VHDLGeneratorTests: MachineTester {
     /// Test that invalid names are detected.
     @Test
     func testArrangementCreationFailsForInvalidName() throws {
-        let newDir = self.machinesFolder.appendingPathComponent(
+        let newDir = self.machineScope.appendingPathComponent(
             "Arrangement1.new.arrangement",
             isDirectory: true
         )
@@ -221,7 +221,7 @@ final class VHDLGeneratorTests: MachineTester {
         VHDLGenerator.main([self.arrangement1Folder.path])
         guard
             let contents = self.manager.contents(
-                atPath: self.machinesFolder
+                atPath: self.machineScope
                     .appendingPathComponent(
                         "Arrangement1.arrangement/build/vhdl/Arrangement1.vhd",
                         isDirectory: false
@@ -250,7 +250,7 @@ final class VHDLGeneratorTests: MachineTester {
         VHDLGenerator.main([self.arrangement1Folder.path])
         guard
             let contents = self.manager.contents(
-                atPath: self.machinesFolder
+                atPath: self.machineScope
                     .appendingPathComponent(
                         "Arrangement1.arrangement/build/vhdl/Arrangement1.vhd",
                         isDirectory: false

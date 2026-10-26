@@ -65,7 +65,8 @@ final class GraphTests: MachineTester {
 
     /// The path to the dot file.
     var dotFile: URL {
-        self.packageRootPath.appendingPathComponent("output.dot", isDirectory: false)
+        URL(fileURLWithPath: FileManager.default.currentDirectoryPath, isDirectory: true)
+            .appendingPathComponent("output.dot", isDirectory: false)
     }
 
     /// The dot file in the build folder.
