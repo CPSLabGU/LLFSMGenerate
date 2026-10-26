@@ -63,41 +63,41 @@ import VHDLParsing
 /// Add common test variables.
 extension VariableName {
 
-    public static let arrangement1 = VariableName(rawValue: "Arrangement1")!
+    package static let arrangement1 = VariableName(rawValue: "Arrangement1")!
 
-    public static let beginExecution = VariableName(rawValue: "beginExecution")!
+    package static let beginExecution = VariableName(rawValue: "beginExecution")!
 
-    public static let clk = VariableName(rawValue: "clk")!
+    package static let clk = VariableName(rawValue: "clk")!
 
-    public static let externalPing = VariableName(rawValue: "externalPing")!
+    package static let externalPing = VariableName(rawValue: "externalPing")!
 
-    public static let externalPong = VariableName(rawValue: "externalPong")!
+    package static let externalPong = VariableName(rawValue: "externalPong")!
 
-    public static let ieee = VariableName(rawValue: "IEEE")!
+    package static let ieee = VariableName(rawValue: "IEEE")!
 
-    public static let initial = VariableName(rawValue: "Initial")!
+    package static let initial = VariableName(rawValue: "Initial")!
 
-    public static let `internal` = VariableName(rawValue: "Internal")!
+    package static let `internal` = VariableName(rawValue: "Internal")!
 
-    public static let mathReal = VariableName(rawValue: "math_real")!
+    package static let mathReal = VariableName(rawValue: "math_real")!
 
-    public static let onEntry = VariableName(rawValue: "OnEntry")!
+    package static let onEntry = VariableName(rawValue: "OnEntry")!
 
-    public static let onExit = VariableName(rawValue: "OnExit")!
+    package static let onExit = VariableName(rawValue: "OnExit")!
 
-    public static let ping = VariableName(rawValue: "ping")!
+    package static let ping = VariableName(rawValue: "ping")!
 
-    public static let pingMachine = VariableName(rawValue: "PingMachine")!
+    package static let pingMachine = VariableName(rawValue: "PingMachine")!
 
-    public static let pingMachineInst = VariableName(rawValue: "PingMachine_inst")!
+    package static let pingMachineInst = VariableName(rawValue: "PingMachine_inst")!
 
-    public static let pong = VariableName(rawValue: "pong")!
+    package static let pong = VariableName(rawValue: "pong")!
 
-    public static let sendPing = VariableName(rawValue: "SendPing")!
+    package static let sendPing = VariableName(rawValue: "SendPing")!
 
-    public static let stdLogic1164 = VariableName(rawValue: "std_logic_1164")!
+    package static let stdLogic1164 = VariableName(rawValue: "std_logic_1164")!
 
-    public static let waitForPong = VariableName(rawValue: "WaitForPong")!
+    package static let waitForPong = VariableName(rawValue: "WaitForPong")!
 
 }
 

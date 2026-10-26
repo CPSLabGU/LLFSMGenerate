@@ -59,10 +59,13 @@ import JavascriptModel
 import TestHelpers
 import VHDLKripkeStructures
 import VHDLMachines
-import XCTest
+import Testing
+import Foundation
 
 /// A super class for mutating Machine0 on the file system.
-class MachineTester: XCTestCase {
+class MachineTester {
+
+    let packageScope: String = UUID().uuidString
 
     /// A JSON encoder.
     let encoder = JSONEncoder()
@@ -75,7 +78,7 @@ class MachineTester: XCTestCase {
 
     /// A path to Machine0.
     var pathRaw: String {
-        String(packagePath) + "/Tests/GeneratorTests/machines/Machine0.machine"
+        String(packagePath) + "/Tests/GeneratorTests/machines/\(packageScope)/Machine0.machine"
     }
 
     /// A URL to the package root.
@@ -93,7 +96,11 @@ class MachineTester: XCTestCase {
 
     /// The path to Machine0.
     var machine0Path: URL {
-        machinesFolder.appendingPathComponent("Machine0.machine", isDirectory: true)
+        machineScope.appendingPathComponent("Machine0.machine", isDirectory: true)
+    }
+
+    var machineScope: URL {
+        machinesFolder.appendingPathComponent(packageScope, isDirectory: true)
     }
 
     /// The path to the machines json file.
@@ -113,12 +120,12 @@ class MachineTester: XCTestCase {
 
     /// The path to the `Arragnement1` folder.
     var arrangement1Folder: URL {
-        machinesFolder.appendingPathComponent("Arrangement1.arrangement", isDirectory: true)
+        machineScope.appendingPathComponent("Arrangement1.arrangement", isDirectory: true)
     }
 
     /// The path to the `PingMachine` folder.
     var pingMachineFolder: URL {
-        machinesFolder.appendingPathComponent("PingMachine.machine", isDirectory: true)
+        machineScope.appendingPathComponent("PingMachine.machine", isDirectory: true)
     }
 
     /// The build folder in the ping machine.
@@ -132,7 +139,7 @@ class MachineTester: XCTestCase {
     }
 
     /// Create test machines before every test.
-    override func setUp() {
+    init() {
         let createDir: ()? =
             try? manager
             .createDirectory(at: machine0Path, withIntermediateDirectories: true)
@@ -148,7 +155,7 @@ class MachineTester: XCTestCase {
             let modelData = try? encoder.encode(MachineModel.machine0),
             let structureData = try? encoder.encode(KripkeStructure.pingPongStructure)
         else {
-            XCTFail("Failed to create machine!")
+            Issue.record("Failed to create machine!")
             return
         }
         try? self.manager.createDirectory(at: self.pingMachineFolder, withIntermediateDirectories: true)
@@ -159,17 +166,18 @@ class MachineTester: XCTestCase {
             to: arrangement1Folder.appendingPathComponent("model.json", isDirectory: false)
         )
         let result: ()? = try? data.write(to: jsonFile)
-        XCTAssertNotNil(result)
+        #expect(result != nil)
         let modelResult: ()? = try? modelData.write(to: modelFile)
-        XCTAssertNotNil(modelResult)
+        #expect(modelResult != nil)
     }
 
-    /// Remove test machines before every test.
-    override func tearDown() {
-        let result: ()? = try? FileManager.default.removeItem(at: machine0Path)
+    /// Remove test machines after every test.
+    deinit {
+        let result: ()? = try? FileManager.default.removeItem(at: machineScope)
+        try? self.manager.removeItem(at: machine0Path)
         try? self.manager.removeItem(at: arrangement1Folder)
         try? self.manager.removeItem(at: pingMachineFolder)
-        XCTAssertNotNil(result)
+        #expect(result != nil)
     }
 
 }

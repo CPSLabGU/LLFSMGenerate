@@ -62,7 +62,7 @@ extension ArrangementModel {
     /// Create a ping arrangement that contains a ping machine located at `path`.
     /// - Parameter path: The location of the ping machine.
     /// - Returns: The arrangement model.
-    public static func pingArrangement(path: URL) -> ArrangementModel {
+    package static func pingArrangement(path: URL) -> ArrangementModel {
         ArrangementModel(
             clocks: [ClockModel(name: "clk", frequency: "5 MHz")],
             externalVariables: "externalPing: out std_logic; externalPong: out std_logic;",

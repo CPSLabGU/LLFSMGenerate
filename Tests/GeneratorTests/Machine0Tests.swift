@@ -57,27 +57,20 @@
 import JavascriptModel
 import VHDLMachines
 import VHDLMachineTransformations
-import XCTest
+import Testing
 
 /// Test class for ``Machine0``.
-final class Machine0Tests: XCTestCase {
-
-    /// A path to Machine0.
-    var pathRaw: String {
-        String(packagePath) + "/Tests/GeneratorTests/machines"
-    }
-
-    /// A URL to the package root.
-    let packagePath = URL(fileURLWithPath: #file).pathComponents.prefix { $0 != "Tests" }
-        .joined(separator: "/")
-        .dropFirst()
+@Suite
+final class Machine0Tests: MachineTester {
 
     /// Test generation is correct.
+    @Test
     func testGeneration() throws {
-        XCTAssertEqual(try Machine(model: .machine0), Machine.machine0)
+        #expect(try Machine(model: .machine0) == Machine.machine0)
     }
 
     /// Test the model generation is correct.
+    @Test
     func testModelGeneration() throws {
         let machine = Machine.machine0
         let model = MachineModel.machine0
@@ -86,7 +79,7 @@ final class Machine0Tests: XCTestCase {
             stateLayouts: model.states.map(\.layout),
             transitionLayouts: model.transitions.map(\.layout)
         )
-        XCTAssertEqual(model, result)
+        #expect(model == result)
     }
 
 }

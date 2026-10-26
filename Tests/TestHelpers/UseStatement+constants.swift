@@ -62,12 +62,12 @@ import VHDLParsing
 extension UseStatement {
 
     /// An import to the `IEEE.std_logic_1164.all` module.
-    public static let stdLogic1164 = UseStatement(
+    package static let stdLogic1164 = UseStatement(
         nonEmptyComponents: [.module(name: .ieee), .module(name: .stdLogic1164), .all]
     )!
 
     /// An import to the `IEEE.math_real.all` module.
-    public static let mathReal = UseStatement(
+    package static let mathReal = UseStatement(
         nonEmptyComponents: [.module(name: .ieee), .module(name: .mathReal), .all]
     )!
 

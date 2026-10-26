@@ -55,11 +55,12 @@
 
 import ArgumentParser
 import Foundation
-import XCTest
+import Testing
 
 @testable import GeneratorCommands
 
 /// Test class for ``InstallCommand``.
+@Suite
 final class InstallCommandTests: MachineTester {
 
     /// The name of the vivado project.
@@ -67,7 +68,7 @@ final class InstallCommandTests: MachineTester {
 
     /// The path to the vivado project.
     var vivadoPath: URL {
-        self.machinesFolder.appendingPathComponent("vivado_project", isDirectory: true)
+        self.machineScope.appendingPathComponent("vivado_project", isDirectory: true)
     }
 
     /// The path to the destination of the VHDL sources.
@@ -91,15 +92,15 @@ final class InstallCommandTests: MachineTester {
     }
 
     /// Setup install locations before every run.
-    override func setUp() {
-        super.setUp()
+    override init() {
+        super.init()
         let projectContents = Data("project file!".utf8)
         guard
             (try? self.manager.createDirectory(at: vivadoPath, withIntermediateDirectories: true)) != nil,
             manager.createFile(atPath: self.projectFilePath.path, contents: projectContents),
             (try? self.manager.createDirectory(at: newPath, withIntermediateDirectories: true)) != nil
         else {
-            XCTFail("Failed to create vivado project.")
+            Issue.record("Failed to create vivado project.")
             return
         }
         Generate.main([self.machine0Path.path])
@@ -107,18 +108,19 @@ final class InstallCommandTests: MachineTester {
     }
 
     /// Remove install locations.
-    override func tearDown() {
-        super.tearDown()
-        XCTAssertNotNil(try? self.manager.removeItem(at: vivadoPath))
+    deinit {
+        #expect((try? self.manager.removeItem(at: vivadoPath)) != nil)
     }
 
     /// Test the computed properties create the correct values.
+    @Test
     func testComputedProperties() throws {
         let command = try InstallCommand.parse([self.machine0Path.path, self.vivadoPath.path])
-        XCTAssertEqual(command.installURL, self.vivadoPath)
+        #expect(command.installURL == self.vivadoPath)
     }
 
     /// Test files are copied correctly.
+    @Test
     func testInstallCommandWorksLocally() throws {
         try manager.removeItem(
             at: self.vivadoPath.appendingPathComponent("\(vivadoName).srcs", isDirectory: true)
@@ -129,165 +131,130 @@ final class InstallCommandTests: MachineTester {
         let contents = try String(contentsOf: vhdlFilePath, encoding: .utf8)
         let vivadoVHDLFile = self.vivadoPath.appendingPathComponent("Machine0.vhd", isDirectory: false)
         let vivadoContents = try String(contentsOf: vivadoVHDLFile, encoding: .utf8)
-        XCTAssertEqual(contents, vivadoContents)
+        #expect(contents == vivadoContents)
         let files = try self.manager.contentsOfDirectory(at: self.vivadoPath, includingPropertiesForKeys: nil)
-        XCTAssertEqual(files.count, 2)
+        #expect(files.count == 2)
         let expected: Set<String> = [self.projectFilePath.path, vivadoVHDLFile.path]
-        XCTAssertTrue(files.map(\.path).allSatisfy { expected.contains($0) })
-        XCTAssertEqual(Set(files).count, 2)
-        XCTAssertEqual(
+        #expect(files.map(\.path).allSatisfy { expected.contains($0) })
+        #expect(Set(files).count == 2)
+        #expect(
             try String(
                 contentsOf: self.buildFolder.appendingPathComponent("vhdl/Machine0.vhd", isDirectory: false),
                 encoding: .utf8
-            ),
-            try String(contentsOf: vivadoVHDLFile, encoding: .utf8)
+            ) == (try String(contentsOf: vivadoVHDLFile, encoding: .utf8))
         )
-        XCTAssertEqual(previousProjectContents, try String(contentsOf: self.projectFilePath, encoding: .utf8))
+        #expect(previousProjectContents == (try String(contentsOf: self.projectFilePath, encoding: .utf8)))
     }
 
     /// Test files are copied for vivado installation.
+    @Test
     func testInstallCommandWorksForVivado() throws {
         let previousProjectContents = try String(contentsOf: self.projectFilePath, encoding: .utf8)
         InstallCommand.main([self.machine0Path.path, "--vivado", self.vivadoPath.path])
-        XCTAssertEqual(try String(contentsOf: self.projectFilePath, encoding: .utf8), previousProjectContents)
+        #expect(try String(contentsOf: self.projectFilePath, encoding: .utf8) == previousProjectContents)
         let projectFiles = try manager.contentsOfDirectory(
             at: self.vivadoPath,
             includingPropertiesForKeys: nil
         )
-        XCTAssertEqual(projectFiles.count, 2)
-        XCTAssertEqual(Set(projectFiles).count, 2)
+        #expect(projectFiles.count == 2)
+        #expect(Set(projectFiles).count == 2)
         let expected: Set<String> = [self.projectFilePath.path, self.vhdlSourcesPath.path]
-        XCTAssertTrue(projectFiles.map(\.path).allSatisfy(expected.contains))
-        XCTAssertEqual(
+        #expect(projectFiles.map(\.path).allSatisfy(expected.contains))
+        #expect(
             try manager.contentsOfDirectory(at: self.vhdlSourcesPath, includingPropertiesForKeys: nil)
-                .map(\.path),
-            [self.sources1Path.path]
+                .map(\.path) == [self.sources1Path.path]
         )
-        XCTAssertEqual(
+        #expect(
             try manager.contentsOfDirectory(at: self.sources1Path, includingPropertiesForKeys: nil)
-                .map(\.path),
-            [self.newPath.path]
+                .map(\.path) == [self.newPath.path]
         )
         let vhdlFiles = try manager.contentsOfDirectory(at: self.newPath, includingPropertiesForKeys: nil)
-        XCTAssertEqual(
-            vhdlFiles.map(\.path),
-            [self.newPath.appendingPathComponent("Machine0.vhd", isDirectory: false).path]
+        #expect(
+            vhdlFiles.map(\.path) == [
+                self.newPath.appendingPathComponent("Machine0.vhd", isDirectory: false).path
+            ]
         )
         let vhdlFilePath = self.buildFolder.appendingPathComponent("vhdl/Machine0.vhd", isDirectory: false)
         let contents = try String(contentsOf: vhdlFilePath, encoding: .utf8)
-        XCTAssertEqual(contents, try String(contentsOf: vhdlFilePath, encoding: .utf8))
+        #expect(contents == (try String(contentsOf: vhdlFilePath, encoding: .utf8)))
     }
 
     /// Test that an error is thrown for folders without the `.machine` extension.
+    @Test
     func testThrowsErrorForIncorrectMachineFolder() throws {
         let command = try InstallCommand.parse([self.machinesFolder.path, self.vivadoPath.path])
-        XCTAssertThrowsError(try command.run()) {
-            guard let error = $0 as? GenerationError else {
-                XCTFail("Error is not of type GenerationError.")
-                return
-            }
-            XCTAssertEqual(error, .invalidMachine(message: "The path provided is not a machine."))
-        }
+        let error = #expect(throws: GenerationError.self) { try command.run() }
+        #expect(error == .invalidMachine(message: "The path provided is not a machine."))
     }
 
     /// Test that the correct error is thrown for a file path to the machine.
+    @Test
     func testThrowsErrorForFilePath() throws {
         let newFile = self.vivadoPath.appendingPathComponent("Machine0.machine", isDirectory: false)
-        XCTAssertTrue(self.manager.createFile(atPath: newFile.path, contents: Data("new file".utf8)))
+        #expect(self.manager.createFile(atPath: newFile.path, contents: Data("new file".utf8)))
         let command = try InstallCommand.parse([newFile.path, self.vivadoPath.path])
-        XCTAssertThrowsError(try command.run()) {
-            guard let error = $0 as? GenerationError else {
-                XCTFail("Error is not of type GenerationError.")
-                return
-            }
-            XCTAssertEqual(error, .invalidMachine(message: "The path provided is not a valid machine."))
-        }
+        let error = #expect(throws: GenerationError.self) { try command.run() }
+        #expect(error == .invalidMachine(message: "The path provided is not a valid machine."))
     }
 
     /// Test that the correct error is thrown for an invalid install location.
+    @Test
     func testThrowsErrorForInvalidInstallLocation() throws {
         let command = try InstallCommand.parse([self.machine0Path.path, self.projectFilePath.path])
-        XCTAssertThrowsError(try command.run()) {
-            guard let error = $0 as? GenerationError else {
-                XCTFail("Error is not of type GenerationError.")
-                return
-            }
-            XCTAssertEqual(error, .invalidInput(message: "The install directory is incorrect."))
-        }
+        let error = #expect(throws: GenerationError.self) { try command.run() }
+        #expect(error == .invalidInput(message: "The install directory is incorrect."))
     }
 
     /// Test that the correct error is thrown when the VHDL files are not generated.
+    @Test
     func testThrowsErrorForMissingBuildFolder() throws {
         try manager.removeItem(at: self.buildFolder)
         let command = try InstallCommand.parse([self.machine0Path.path, self.vivadoPath.path])
-        XCTAssertThrowsError(try command.run()) {
-            guard let error = $0 as? GenerationError else {
-                XCTFail("Error is not of type GenerationError.")
-                return
-            }
-            XCTAssertEqual(
-                error,
-                .invalidGeneration(
+        let error = #expect(throws: GenerationError.self) { try command.run() }
+        #expect(
+            error
+                == .invalidGeneration(
                     message: "The build folder does not exist. Have you generated the VHDL files?"
                 )
-            )
-        }
+        )
     }
 
     /// Test that the correct error is thrown when untracked files are placed in the build folder.
+    @Test
     func testThrowsErrorForCorruptedBuildFolder() throws {
         let corruptedFile = self.buildFolder.appendingPathComponent("vhdl/Machine0", isDirectory: false)
-        XCTAssertTrue(
+        #expect(
             self.manager.createFile(
                 atPath: corruptedFile.path,
                 contents: Data("corrupted".utf8)
             )
         )
         let command = try InstallCommand.parse([self.machine0Path.path, self.vivadoPath.path])
-        XCTAssertThrowsError(try command.run()) {
-            guard let error = $0 as? GenerationError else {
-                XCTFail("Error is not of type GenerationError.")
-                return
-            }
-            XCTAssertEqual(
-                error,
-                .invalidGeneration(
+        let error = #expect(throws: GenerationError.self) { try command.run() }
+        #expect(
+            error
+                == .invalidGeneration(
                     message: "The build folder is corrupted! Please regenerate the VHDL files."
                 )
-            )
-        }
+        )
     }
 
     /// Test that the correct error is thrown when the vivado project is invalid.
+    @Test
     func testVivadoGenerationThrowsErrorForInvalidVivadoProject() throws {
         try manager.removeItem(at: self.projectFilePath)
         let command = try InstallCommand.parse([self.machine0Path.path, "--vivado", self.vivadoPath.path])
-        XCTAssertThrowsError(try command.run()) {
-            guard let error = $0 as? GenerationError else {
-                XCTFail("Error is not of type GenerationError.")
-                return
-            }
-            XCTAssertEqual(
-                error,
-                .invalidInput(message: "The install directory is not a valid vivado project.")
-            )
-        }
+        let error = #expect(throws: GenerationError.self) { try command.run() }
+        #expect(error == .invalidInput(message: "The install directory is not a valid vivado project."))
     }
 
     /// Test that the correct error is thrown when the vivado project is missing key folders.
+    @Test
     func testVivadoGenerationThrowsErrorForCorruptedVivadoProject() throws {
         try manager.removeItem(at: self.vhdlSourcesPath)
         let command = try InstallCommand.parse([self.machine0Path.path, "--vivado", self.vivadoPath.path])
-        XCTAssertThrowsError(try command.run()) {
-            guard let error = $0 as? GenerationError else {
-                XCTFail("Error is not of type GenerationError.")
-                return
-            }
-            XCTAssertEqual(
-                error,
-                .invalidInput(message: "The vivado project is not set up correctly.")
-            )
-        }
+        let error = #expect(throws: GenerationError.self) { try command.run() }
+        #expect(error == .invalidInput(message: "The vivado project is not set up correctly."))
     }
 
 }

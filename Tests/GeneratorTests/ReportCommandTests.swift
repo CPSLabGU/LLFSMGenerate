@@ -56,9 +56,11 @@
 @testable import GeneratorCommands
 import JavascriptModel
 import TestHelpers
-import XCTest
+import Testing
+import Foundation
 
 /// Test class for ``ReportCommand``.
+@Suite
 final class ReportCommandTests: MachineTester {
 
     // swiftlint:disable trailing_whitespace
@@ -124,24 +126,26 @@ final class ReportCommandTests: MachineTester {
     }
 
     /// Remove file after every test case.
-    override func tearDown() {
-        super.tearDown()
+    deinit {
         try? self.manager.removeItem(at: file)
     }
 
     /// Test the machine is encoded correctly.
+    @Test
     func testMachineEncoding() throws {
         let machine = String(reportForMachine: .pingMachine, name: "PingMachine.machine")
-        XCTAssertEqual(machine, pingMachineRaw)
+        #expect(machine == pingMachineRaw)
     }
 
     /// Test the kripke structure is encoded correctly.
+    @Test
     func testKripkeStructureEncoding() throws {
         let structure = String(reportForStructure: .pingPongStructure)
-        XCTAssertEqual(structure, structureRaw)
+        #expect(structure == structureRaw)
     }
 
     /// Test the string category init handles data correctly.
+    @Test
     func testStringCategoryInit() {
         let data = "This is\nsome data!"
         let withData = """
@@ -150,11 +154,12 @@ final class ReportCommandTests: MachineTester {
                 some data!
             """
         let withoutData = "- Data:"
-        XCTAssertEqual(String(category: "Data", data: data), withData)
-        XCTAssertEqual(String(category: "Data", data: ""), withoutData)
+        #expect(String(category: "Data", data: data) == withData)
+        #expect(String(category: "Data", data: "") == withoutData)
     }
 
     /// Test that writing to the file works correctly.
+    @Test
     func testWriteReport() throws {
         let data0 = "data0"
         let file = self.pingMachineFolder.appendingPathComponent(
@@ -163,21 +168,22 @@ final class ReportCommandTests: MachineTester {
         )
         let printCommand = try ReportCommand.parse([self.pingMachineFolder.path])
         try printCommand.writeReport(report: data0)
-        XCTAssertFalse(self.manager.fileExists(atPath: file.path))
+        #expect(!self.manager.fileExists(atPath: file.path))
         let command = try ReportCommand.parse([self.pingMachineFolder.path, "--output", file.path])
         try command.writeReport(report: data0)
         let contents0 = try String(contentsOf: file, encoding: .utf8)
-        XCTAssertEqual(data0, contents0)
+        #expect(data0 == contents0)
         let data1 = "data1"
         try command.writeReport(report: data1)
         let contents1 = try String(contentsOf: file, encoding: .utf8)
-        XCTAssertEqual(data1, contents1)
+        #expect(data1 == contents1)
     }
 
     // swiftlint:disable trailing_whitespace
     // swiftlint:disable function_body_length
 
     /// Test that the run methods works correctly.
+    @Test
     func testRunWithKripkeStructure() throws {
         ReportCommand.main([self.pingMachineFolder.path, "--output", file.path])
         let contents = try String(contentsOf: file, encoding: .utf8)
@@ -231,10 +237,11 @@ final class ReportCommandTests: MachineTester {
                     - Edges: 13
 
             """
-        XCTAssertEqual(contents, expected)
+        #expect(contents == expected)
     }
 
     /// Test the run method works without a kripke structure.
+    @Test
     func testRunWithoutKripkeStructure() throws {
         try self.manager.removeItem(at: self.pingMachineKripkeStructure)
         ReportCommand.main([self.pingMachineFolder.path, "--output", file.path])
@@ -285,7 +292,7 @@ final class ReportCommandTests: MachineTester {
                         use IEEE.std_logic_1164.all;
 
             """
-        XCTAssertEqual(contents, expected)
+        #expect(contents == expected)
     }
 
     // swiftlint:enable function_body_length
