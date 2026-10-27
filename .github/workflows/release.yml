@@ -7,7 +7,9 @@ jobs:
   build_release:
     uses: cpslabgu/swift-workflows/.github/workflows/release.yml@main
     with:
-      release_artifacts: '[".build/release/llfsm-generate", ".build/release/llfsm-generate.exe"]'
+      release_artifacts: |
+        .build/release/llfsm-generate
+        .build/release/llfsm-generate.exe
     secrets:
       SSH_PRIVATE_KEY: ${{ secrets.WORKFLOWS_SSH_PRIVATE_KEY }}
       SSH_PUBLIC_KEY: ${{ secrets.WORKFLOWS_SSH_PUBLIC_KEY }}
